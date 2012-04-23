@@ -1,8 +1,8 @@
-tree grammar PandaSQLSemanticAnalyzer;
+tree grammar SQLSemanticAnalyzer;
 
 options 
 {
-    tokenVocab	    = PandaSQL;
+    tokenVocab	    = SQL;
     language	    = C;
     ASTLabelType	= pANTLR3_BASE_TREE;
 }

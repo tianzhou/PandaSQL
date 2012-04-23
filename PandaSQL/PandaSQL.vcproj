@@ -68,7 +68,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="3rdParty\antlr\include"
+				AdditionalIncludeDirectories="3rdParty\antlr\include;."
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -155,7 +155,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="3rdParty\antlr\include"
+				AdditionalIncludeDirectories="3rdParty\antlr\include;."
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -243,7 +243,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="3rdParty\antlr\include"
+				AdditionalIncludeDirectories="3rdParty\antlr\include;."
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -333,7 +333,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="3rdParty\antlr\include"
+				AdditionalIncludeDirectories="3rdParty\antlr\include;."
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -393,7 +393,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\PandaSQL.cpp"
+				RelativePath=".\main.cpp"
 				>
 			</File>
 			<File
@@ -433,143 +433,167 @@
 				</FileConfiguration>
 			</File>
 			<Filter
-				Name="antlr"
+				Name="Utils"
 				>
-				<Filter
-					Name="Grammar"
+				<File
+					RelativePath=".\utils\Status.cpp"
 					>
-					<File
-						RelativePath=".\Parser\PandaSQL.g"
-						>
-					</File>
-					<File
-						RelativePath=".\Parser\PandaSQLSemanticAnalyzer.g"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="Generated"
+				</File>
+				<File
+					RelativePath=".\utils\Status.h"
 					>
-					<File
-						RelativePath=".\Parser\PandaSQLLexer.c"
+				</File>
+			</Filter>
+			<Filter
+				Name="Parser"
+				>
+				<File
+					RelativePath=".\Parser\SQLParserDriver.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Parser\SQLParserDriver.h"
+					>
+				</File>
+				<Filter
+					Name="antlr"
+					>
+					<Filter
+						Name="grammar"
 						>
-						<FileConfiguration
-							Name="Debug|Win32"
+						<File
+							RelativePath=".\Parser\SQL.g3pl"
 							>
-							<Tool
-								Name="VCCLCompilerTool"
-								UsePrecompiledHeader="0"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Debug|x64"
+						</File>
+						<File
+							RelativePath=".\Parser\SQLSemanticAnalyzer.g3t"
 							>
-							<Tool
-								Name="VCCLCompilerTool"
-								UsePrecompiledHeader="0"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								UsePrecompiledHeader="0"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|x64"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								UsePrecompiledHeader="0"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath=".\Parser\PandaSQLLexer.h"
+						</File>
+					</Filter>
+					<Filter
+						Name="Generated"
 						>
-					</File>
-					<File
-						RelativePath=".\Parser\PandaSQLParser.c"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
+						<File
+							RelativePath=".\parser\SQLLexer.c"
 							>
-							<Tool
-								Name="VCCLCompilerTool"
-								UsePrecompiledHeader="0"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Debug|x64"
+							<FileConfiguration
+								Name="Debug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									UsePrecompiledHeader="0"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Debug|x64"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									UsePrecompiledHeader="0"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Release|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									UsePrecompiledHeader="0"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Release|x64"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									UsePrecompiledHeader="0"
+								/>
+							</FileConfiguration>
+						</File>
+						<File
+							RelativePath=".\parser\SQLLexer.h"
 							>
-							<Tool
-								Name="VCCLCompilerTool"
-								UsePrecompiledHeader="0"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
+						</File>
+						<File
+							RelativePath=".\parser\SQLParser.c"
 							>
-							<Tool
-								Name="VCCLCompilerTool"
-								UsePrecompiledHeader="0"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|x64"
+							<FileConfiguration
+								Name="Debug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									UsePrecompiledHeader="0"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Debug|x64"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									UsePrecompiledHeader="0"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Release|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									UsePrecompiledHeader="0"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Release|x64"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									UsePrecompiledHeader="0"
+								/>
+							</FileConfiguration>
+						</File>
+						<File
+							RelativePath=".\parser\SQLParser.h"
 							>
-							<Tool
-								Name="VCCLCompilerTool"
-								UsePrecompiledHeader="0"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath=".\Parser\PandaSQLParser.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Parser\PandaSQLSemanticAnalyzer.c"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
+						</File>
+						<File
+							RelativePath=".\parser\SQLSemanticAnalyzer.c"
 							>
-							<Tool
-								Name="VCCLCompilerTool"
-								UsePrecompiledHeader="0"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Debug|x64"
+							<FileConfiguration
+								Name="Debug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									UsePrecompiledHeader="0"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Debug|x64"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									UsePrecompiledHeader="0"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Release|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									UsePrecompiledHeader="0"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Release|x64"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									UsePrecompiledHeader="0"
+								/>
+							</FileConfiguration>
+						</File>
+						<File
+							RelativePath=".\parser\SQLSemanticAnalyzer.h"
 							>
-							<Tool
-								Name="VCCLCompilerTool"
-								UsePrecompiledHeader="0"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								UsePrecompiledHeader="0"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|x64"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								UsePrecompiledHeader="0"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath=".\Parser\PandaSQLSemanticAnalyzer.h"
-						>
-					</File>
+						</File>
+					</Filter>
 				</Filter>
 			</Filter>
 		</Filter>

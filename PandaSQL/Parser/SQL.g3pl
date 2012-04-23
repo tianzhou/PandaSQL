@@ -1,4 +1,4 @@
-grammar PandaSQL;
+grammar SQL;
 options 
 {
     // Note that in the C implementation, all implementations of trees and
