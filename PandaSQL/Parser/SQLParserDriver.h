@@ -16,6 +16,8 @@ public:
 
 	Status PerformQuery(std::string inQueryString, bool fromFile);
 
+	void PrintCurrentState();
+
 private:
 	SQLParserDriver(const SQLParserDriver& rhs);
 	SQLParserDriver& operator=(const SQLParserDriver& rhs);

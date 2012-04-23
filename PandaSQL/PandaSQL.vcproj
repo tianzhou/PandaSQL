@@ -43,30 +43,37 @@
 			/>
 			<Tool
 				Name="Antlr3Lexer"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="Antlr3ParserLexer"
+				ExecutionBucket="2"
 			/>
 			<Tool
 				Name="Antlr3Parser"
 			/>
 			<Tool
-				Name="Antlr3TreeParser"
+				Name="Antlr3ParserLexer"
+				ExecutionBucket="4"
 			/>
 			<Tool
 				Name="VCXMLDataGeneratorTool"
 			/>
 			<Tool
+				Name="Antlr3TreeParser"
+				ExecutionBucket="5"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+				ExecutionBucket="6"
+			/>
+			<Tool
 				Name="VCWebServiceProxyGeneratorTool"
+				ExecutionBucket="7"
 			/>
 			<Tool
 				Name="VCMIDLTool"
+				ExecutionBucket="8"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				ExecutionBucket="9"
 				Optimization="0"
 				AdditionalIncludeDirectories="3rdParty\antlr\include;."
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
@@ -79,15 +86,19 @@
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
+				ExecutionBucket="10"
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
+				ExecutionBucket="11"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
+				ExecutionBucket="12"
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				ExecutionBucket="13"
 				AdditionalDependencies="antlr3c.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="3rdParty\antlr\lib\$(PlatformName)"
@@ -97,15 +108,19 @@
 			/>
 			<Tool
 				Name="VCALinkTool"
+				ExecutionBucket="14"
 			/>
 			<Tool
 				Name="VCManifestTool"
+				ExecutionBucket="15"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
+				ExecutionBucket="16"
 			/>
 			<Tool
 				Name="VCBscMakeTool"
+				ExecutionBucket="17"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -115,6 +130,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				ExecutionBucket="19"
 			/>
 		</Configuration>
 		<Configuration
@@ -462,11 +478,11 @@
 						Name="grammar"
 						>
 						<File
-							RelativePath=".\Parser\SQL.g3pl"
+							RelativePath=".\Parser\SQL.g"
 							>
 						</File>
 						<File
-							RelativePath=".\Parser\SQLSemanticAnalyzer.g3t"
+							RelativePath=".\Parser\SQLSemanticAnalyzer.g"
 							>
 						</File>
 					</Filter>
@@ -474,7 +490,7 @@
 						Name="Generated"
 						>
 						<File
-							RelativePath=".\parser\SQLLexer.c"
+							RelativePath=".\Parser\SQLLexer.c"
 							>
 							<FileConfiguration
 								Name="Debug|Win32"
@@ -482,6 +498,7 @@
 								<Tool
 									Name="VCCLCompilerTool"
 									UsePrecompiledHeader="0"
+									CompileAs="2"
 								/>
 							</FileConfiguration>
 							<FileConfiguration
@@ -490,6 +507,7 @@
 								<Tool
 									Name="VCCLCompilerTool"
 									UsePrecompiledHeader="0"
+									CompileAs="2"
 								/>
 							</FileConfiguration>
 							<FileConfiguration
@@ -498,6 +516,7 @@
 								<Tool
 									Name="VCCLCompilerTool"
 									UsePrecompiledHeader="0"
+									CompileAs="2"
 								/>
 							</FileConfiguration>
 							<FileConfiguration
@@ -506,6 +525,7 @@
 								<Tool
 									Name="VCCLCompilerTool"
 									UsePrecompiledHeader="0"
+									CompileAs="2"
 								/>
 							</FileConfiguration>
 						</File>
@@ -514,7 +534,7 @@
 							>
 						</File>
 						<File
-							RelativePath=".\parser\SQLParser.c"
+							RelativePath=".\Parser\SQLParser.c"
 							>
 							<FileConfiguration
 								Name="Debug|Win32"
@@ -522,6 +542,7 @@
 								<Tool
 									Name="VCCLCompilerTool"
 									UsePrecompiledHeader="0"
+									CompileAs="2"
 								/>
 							</FileConfiguration>
 							<FileConfiguration
@@ -530,6 +551,7 @@
 								<Tool
 									Name="VCCLCompilerTool"
 									UsePrecompiledHeader="0"
+									CompileAs="2"
 								/>
 							</FileConfiguration>
 							<FileConfiguration
@@ -538,6 +560,7 @@
 								<Tool
 									Name="VCCLCompilerTool"
 									UsePrecompiledHeader="0"
+									CompileAs="2"
 								/>
 							</FileConfiguration>
 							<FileConfiguration
@@ -546,6 +569,7 @@
 								<Tool
 									Name="VCCLCompilerTool"
 									UsePrecompiledHeader="0"
+									CompileAs="2"
 								/>
 							</FileConfiguration>
 						</File>
@@ -554,7 +578,7 @@
 							>
 						</File>
 						<File
-							RelativePath=".\parser\SQLSemanticAnalyzer.c"
+							RelativePath=".\Parser\SQLSemanticAnalyzer.c"
 							>
 							<FileConfiguration
 								Name="Debug|Win32"
@@ -562,6 +586,7 @@
 								<Tool
 									Name="VCCLCompilerTool"
 									UsePrecompiledHeader="0"
+									CompileAs="2"
 								/>
 							</FileConfiguration>
 							<FileConfiguration
@@ -570,6 +595,7 @@
 								<Tool
 									Name="VCCLCompilerTool"
 									UsePrecompiledHeader="0"
+									CompileAs="2"
 								/>
 							</FileConfiguration>
 							<FileConfiguration
@@ -578,6 +604,7 @@
 								<Tool
 									Name="VCCLCompilerTool"
 									UsePrecompiledHeader="0"
+									CompileAs="2"
 								/>
 							</FileConfiguration>
 							<FileConfiguration
@@ -586,6 +613,7 @@
 								<Tool
 									Name="VCCLCompilerTool"
 									UsePrecompiledHeader="0"
+									CompileAs="2"
 								/>
 							</FileConfiguration>
 						</File>

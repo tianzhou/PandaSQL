@@ -7,8 +7,25 @@ options
     ASTLabelType	= pANTLR3_BASE_TREE;
 }
 
+@treeparser::header
+{
+
+
+#include "Parser/SQLParserDriver.h"
+
+
+}
+
 //Starting rule
-statement
+statement[PandaSQL::SQLParserDriver *io_pDriver]
+scope
+{
+	PandaSQL::SQLParserDriver *pDriver;
+}
+@init
+{
+	$statement::pDriver = io_pDriver;
+}
 	:	dml_statement
 	;
 	
@@ -27,6 +44,8 @@ select_statement
 }
 	:	^(KW_SELECT select_list from_clause)
 	{
+		PandaSQL::SQLParserDriver *pDriver = $statement::pDriver;
+		pDriver->PrintCurrentState();
 	}
 	;
 	

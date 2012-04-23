@@ -197,7 +197,7 @@ Status SQLParserDriver::PerformQuery(std::string inQueryString, bool fromFile)
 		//
 		treePsr	= SQLSemanticAnalyzerNew(nodes);
 
-		treePsr->statement(treePsr);
+		treePsr->statement(treePsr, this);
 		nodes   ->free  (nodes);	    nodes	= NULL;
 		treePsr ->free  (treePsr);	    treePsr	= NULL;
 	}
@@ -211,6 +211,11 @@ Status SQLParserDriver::PerformQuery(std::string inQueryString, bool fromFile)
 	input   ->close (input);	input	= NULL;
 
 	return result;
+}
+
+void SQLParserDriver::PrintCurrentState()
+{
+	printf("PrintCurrentState\n");
 }
 
 }	// namespace PandaSQL
