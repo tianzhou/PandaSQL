@@ -1,0 +1,8 @@
+#exclude antlr generated files
+
+SQL.tokens
+SQLSemanticaAnalyzer.tokens
+SQLLexer.[hc]
+SQLParser.[hc]
+SQLSemanticAnalyzer.[hc]
+

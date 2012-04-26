@@ -1,5 +1,5 @@
-#ifndef PANDA_SQL_STATUS_H
-#define PANDA_SQL_STATUS_H
+#ifndef PANDASQL_STATUS_H
+#define PANDASQL_STATUS_H
 
 namespace PandaSQL
 {
@@ -46,4 +46,4 @@ inline Status& Status::operator=(const Status& rhs)
 
 }	// namespace PandaSQL
 
-#endif	// PANDA_SQL_STATUS_H
+#endif	// PANDASQL_STATUS_H

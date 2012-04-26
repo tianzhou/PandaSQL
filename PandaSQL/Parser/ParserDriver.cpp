@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "SQLParserDriver.h"
+#include "ParserDriver.h"
 
 #include "Parser/SQLLexer.h"
 #include "Parser/SQLParser.h"
@@ -9,16 +9,57 @@
 namespace PandaSQL
 {
 
-SQLParserDriver::SQLParserDriver()
+const std::string Statement::kNoTable = "*";
+
+
+static const std::string kTableColumnSep = ".";
+
+Statement::Statement()
+:
+mStmtType(kStmtUnknown)
 {
 }
 
-SQLParserDriver::~SQLParserDriver()
+Statement::~Statement()
+{
+}
+
+void Statement::AddColumnRef(const std::string& inTableName, const std::string& inColumnName)
+{
+	if (inTableName == Statement::kNoTable)
+	{
+		mSelectColumnRefs.push_back(inColumnName);
+	}
+	else
+	{
+		mSelectColumnRefs.push_back(inTableName + kTableColumnSep + inColumnName);
+	}
+}
+
+void Statement::AddTableRef(const std::string& inTableName)
+{
+	mTableRefs.push_back(inTableName);
+}
+
+void Statement::PrintStatement()
 {
 
 }
 
-Status SQLParserDriver::PerformQuery(std::string inQueryString, bool fromFile)
+/**************************************************
+**ParserDriver**
+***************************************************/
+
+ParserDriver::ParserDriver()
+{
+}
+
+ParserDriver::~ParserDriver()
+{
+
+}
+
+Status ParserDriver::PerformQuery(std::string inQueryString, bool fromFile)
 {
 	Status result;
 
@@ -77,7 +118,7 @@ Status SQLParserDriver::PerformQuery(std::string inQueryString, bool fromFile)
     // the starting rule (any rule can start first of course). This is a generated type
     // based upon the rule we start with.
     //
-    SQLParser_statement_return	    langAST;
+    SQLParser_stmt_return	    langAST;
 
 
     // The tree nodes are managed by a tree adaptor, which doles
@@ -176,7 +217,7 @@ Status SQLParserDriver::PerformQuery(std::string inQueryString, bool fromFile)
     // It also has the side advantage, if you are using an IDE such as VS2005 that can do it
     // that when you type ->, you will see a list of all the methods the object supports.
     //
-    langAST = psr->statement(psr);
+    langAST = psr->stmt(psr);
 
     // If the parser ran correctly, we will have a tree to parse. In general I recommend
     // keeping your own flags as part of the error trapping, but here is how you can
@@ -197,7 +238,7 @@ Status SQLParserDriver::PerformQuery(std::string inQueryString, bool fromFile)
 		//
 		treePsr	= SQLSemanticAnalyzerNew(nodes);
 
-		treePsr->statement(treePsr, this);
+		treePsr->stmt(treePsr, this);
 		nodes   ->free  (nodes);	    nodes	= NULL;
 		treePsr ->free  (treePsr);	    treePsr	= NULL;
 	}
@@ -213,9 +254,18 @@ Status SQLParserDriver::PerformQuery(std::string inQueryString, bool fromFile)
 	return result;
 }
 
-void SQLParserDriver::PrintCurrentState()
+void ParserDriver::PrintCurrentState()
 {
 	printf("PrintCurrentState\n");
+}
+
+void ParserDriver::GetIdentifier(ANTLR3_BASE_TREE *tree, std::string &o_str)
+{
+	ANTLR3_COMMON_TOKEN *token = tree->getToken(tree);
+	ANTLR3_STRING *antlrString = token->getText(token);
+
+	o_str = std::string((const char *)token->start
+		, (const char *)token->stop - (const char *)token->start + 1);
 }
 
 }	// namespace PandaSQL

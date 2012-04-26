@@ -459,16 +459,24 @@
 					RelativePath=".\utils\Status.h"
 					>
 				</File>
+				<File
+					RelativePath=".\Utils\Types.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Utils\Types.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Parser"
 				>
 				<File
-					RelativePath=".\Parser\SQLParserDriver.cpp"
+					RelativePath=".\Parser\ParserDriver.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Parser\SQLParserDriver.h"
+					RelativePath=".\Parser\ParserDriver.h"
 					>
 				</File>
 				<Filter

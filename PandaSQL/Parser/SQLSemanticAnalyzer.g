@@ -10,30 +10,28 @@ options
 @treeparser::header
 {
 
-
-#include "Parser/SQLParserDriver.h"
-
+#include "Parser/ParserDriver.h"
 
 }
 
 //Starting rule
-statement[PandaSQL::SQLParserDriver *io_pDriver]
+stmt[PandaSQL::ParserDriver *io_pDriver]
 scope
 {
-	PandaSQL::SQLParserDriver *pDriver;
+	PandaSQL::ParserDriver *pDriver;
 }
 @init
 {
-	$statement::pDriver = io_pDriver;
+	$stmt::pDriver = io_pDriver;
 }
-	:	dml_statement
+	:	dml_stmt
 	;
 	
-dml_statement
-	:	select_statement
+dml_stmt
+	:	select_stmt
 	;
 	
-select_statement
+select_stmt
 @init
 {
 	printf("***select_statement begin***\n");
@@ -42,30 +40,99 @@ select_statement
 {
 	printf("***select_statement end***\n");
 }
-	:	^(KW_SELECT select_list from_clause)
-	{
-		PandaSQL::SQLParserDriver *pDriver = $statement::pDriver;
-		pDriver->PrintCurrentState();
-	}
+	:	^(TOK_SELECT_STMT select_core order_by_clause? limit_clause?)
+		{
+			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+			pDriver->PrintCurrentState();
+		}
+	;
+	
+select_core
+	:	^(TOK_SELECT_CORE set_qualifier select_list from_clause? where_clause? group_by_clause?)
+	;
+	
+order_by_clause
+	:	KW_ORDER KW_BY
+		{
+		}
+	;
+	
+limit_clause
+	:	KW_LIMIT
+		{
+		}
+	;
+	
+set_qualifier
+	:	KW_ALL
+		{
+		}
+	|	KW_DISTINCT
+		{
+		}
 	;
 	
 select_list
-	:	^(TOK_COLUMN_LIST TOK_ALL_COLUMNS)
-	{
-		printf("selectList: *\n");
-	}
+	:	^(TOK_SELECT_LIST TOK_ALL_COLUMNS)
+		{
+			printf("selectList: *\n");
+		}
+	|	^(TOK_SELECT_LIST column_ref+)
+		{
+			printf("selectColumnRef: *\n");
+		}
 	;
 	
 from_clause
-	:	^(TOK_FROM tableName=table_name)
-	{
-		printf("tableName: \%s\n", $tableName.text->chars);
-	} 	
+@init
+{
+}
+	:	^(TOK_FROM_CLAUSE table_ref)
+		{
+		} 	
 	;
 	
-table_name
-	:	^(TOK_TABLE_NAME IDENTIFIER)
-	{
-		
-	}
+where_clause
+	:	KW_WHERE
+		{
+		}
+	;
+	
+group_by_clause
+	:	KW_GROUP KW_BY
+		{
+		}
+	;
+	
+column_ref
+@init
+{
+	std::string columnRef;
+	std::string tableRef = PandaSQL::Statement::kNoTable;
+	bool hasTableRef = false;
+}
+	:	^(TOK_COLUMN_REF identifier[columnRef] identifier[tableRef]?)
+		{
+			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+			pDriver->GetStatement().AddColumnRef(tableRef, columnRef);
+		}
+	;
+	
+table_ref
+@init
+{
+	std::string tableRef;
+}
+	:	^(TOK_TABLE_REF identifier[tableRef])
+		{
+			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+			pDriver->GetStatement().AddTableRef(tableRef);
+		}
+	;
+	
+identifier[std::string &o_str]
+	:	id=IDENTIFIER
+		{
+			PandaSQL::ParserDriver::GetIdentifier($id, o_str);
+		}
 	;
