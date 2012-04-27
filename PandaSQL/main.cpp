@@ -16,9 +16,21 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	PandaSQL::Status result = parserDriver.PerformQuery(inQueryString, true);
 #else
-	std::string inQueryString("SELECT t2.field1, t1.field2 FROM t1;");
+	std::string inQueryString;
+	PandaSQL::Status result;
 
-	PandaSQL::Status result = parserDriver.PerformQuery(inQueryString, false);
+	inQueryString = ("SELECT t1.field1, t2.field2 FROM t1;");
+	//result = parserDriver.PerformQuery(inQueryString, false);
+
+	inQueryString = ("UPDATE t1 SET t1.field1=1, t2.field2='hello';");
+	//result = parserDriver.PerformQuery(inQueryString, false);
+
+	inQueryString = ("INSERT INTO t1 (t1.field1, t2.field2) VALUES (1, 'hello');");
+	//result = parserDriver.PerformQuery(inQueryString, false);
+
+	inQueryString = ("DELETE FROM t1;");
+	result = parserDriver.PerformQuery(inQueryString, false);
+
 #endif
 
 	system("pause");

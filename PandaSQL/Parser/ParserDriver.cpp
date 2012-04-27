@@ -24,21 +24,19 @@ Statement::~Statement()
 {
 }
 
-void Statement::AddColumnRef(const std::string& inTableName, const std::string& inColumnName)
+void Statement::AddColumnRef(const std::string& inColumnRef)
 {
-	if (inTableName == Statement::kNoTable)
-	{
-		mSelectColumnRefs.push_back(inColumnName);
-	}
-	else
-	{
-		mSelectColumnRefs.push_back(inTableName + kTableColumnSep + inColumnName);
-	}
+	mSelectColumnRefs.push_back(inColumnRef);
 }
 
 void Statement::AddTableRef(const std::string& inTableName)
 {
 	mTableRefs.push_back(inTableName);
+}
+
+void Statement::AddExprRef(const Expr& inExpr)
+{
+	mSetExprList.push_back(inExpr);
 }
 
 void Statement::PrintStatement()
@@ -257,6 +255,22 @@ Status ParserDriver::PerformQuery(std::string inQueryString, bool fromFile)
 void ParserDriver::PrintCurrentState()
 {
 	printf("PrintCurrentState\n");
+}
+
+std::string ParserDriver::GetColumnRef(const std::string& inTableName, const std::string& inColumnName)
+{
+	std::string result;
+
+	if (inTableName == Statement::kNoTable)
+	{
+		result = inColumnName;
+	}
+	else
+	{
+		result = inTableName + kTableColumnSep + inColumnName;
+	}
+
+	return result;
 }
 
 void ParserDriver::GetIdentifier(ANTLR3_BASE_TREE *tree, std::string &o_str)

@@ -11,6 +11,19 @@
 namespace PandaSQL
 {
 
+typedef enum
+{
+	kExprNumber = 0,
+	kExprText = 1,
+	kExprColumnRef = 2
+}ExprType;
+
+typedef struct
+{
+	ExprType type;
+	std::string text;
+}Expr;
+
 class Statement
 {
 public:
@@ -32,14 +45,17 @@ public:
 	void SetStatementType(StatementType inStmtType) { mStmtType = inStmtType; }
 	StatementType GetStatementType() const { return mStmtType; }
 
-	void AddColumnRef(const std::string& inTableName, const std::string& inColumnName);
+	void AddColumnRef(const std::string& inColumnRef);
 	void AddTableRef(const std::string& inTableName);
+	void AddExprRef(const Expr& inExpr);
 
 	void PrintStatement();
 private:
 	StatementType mStmtType;
 	std::vector<std::string> mSelectColumnRefs;
 	std::vector<std::string> mTableRefs;
+
+	std::vector<Expr> mSetExprList;
 };
 
 class ParserDriver
@@ -51,6 +67,7 @@ public:
 	Status PerformQuery(std::string inQueryString, bool fromFile);
 	void PrintCurrentState();
 
+	static std::string GetColumnRef(const std::string& inTableName, const std::string& inColumnName);
 	static void GetIdentifier(ANTLR3_BASE_TREE *tree, std::string &o_str);
 privileged:
 
