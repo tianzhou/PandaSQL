@@ -29,6 +29,18 @@ int _tmain(int argc, _TCHAR* argv[])
 	//result = parserDriver.PerformQuery(inQueryString, false);
 
 	inQueryString = ("DELETE FROM t1;");
+	//result = parserDriver.PerformQuery(inQueryString, false);
+
+	inQueryString = ("CREATE TABLE t1 (field1 INT PRIMARY KEY, field2 TEXT NOT NULL);");
+	//result = parserDriver.PerformQuery(inQueryString, false);
+
+	inQueryString = ("CREATE INDEX idx1 ON t1 (field1);");
+	//result = parserDriver.PerformQuery(inQueryString, false);
+
+	inQueryString = ("DROP TABLE t1;");
+	result = parserDriver.PerformQuery(inQueryString, false);
+
+	inQueryString = ("DROP INDEX idx;");
 	result = parserDriver.PerformQuery(inQueryString, false);
 
 #endif

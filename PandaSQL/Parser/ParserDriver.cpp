@@ -29,14 +29,24 @@ void Statement::AddColumnRef(const std::string& inColumnRef)
 	mSelectColumnRefs.push_back(inColumnRef);
 }
 
-void Statement::AddTableRef(const std::string& inTableName)
+void Statement::AddTableRef(const std::string& inTableRef)
 {
-	mTableRefs.push_back(inTableName);
+	mTableRefs.push_back(inTableRef);
 }
 
 void Statement::AddExprRef(const Expr& inExpr)
 {
 	mSetExprList.push_back(inExpr);
+}
+
+void Statement::AddColumnDef(const ColumnDef& inDef)
+{
+	mColumnDefs.push_back(inDef);
+}
+
+void Statement::SetIndexRef(const std::string& inIndexRef)
+{
+	mIndexRef = inIndexRef;
 }
 
 void Statement::PrintStatement()

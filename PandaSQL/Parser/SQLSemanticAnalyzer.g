@@ -24,7 +24,137 @@ scope
 {
 	$stmt::pDriver = io_pDriver;
 }
-	:	dml_stmt
+	:	ddl_stmt
+	|	dml_stmt
+	;
+	
+ddl_stmt
+	:	create_table_stmt
+		{
+			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+			pDriver->GetStatement().SetStatementType(PandaSQL::Statement::kStmtCreateTable);
+		}
+	|	create_index_stmt
+		{
+			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+			pDriver->GetStatement().SetStatementType(PandaSQL::Statement::kStmtCreateIndex);
+		}
+	|	drop_table_stmt
+		{
+			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+			pDriver->GetStatement().SetStatementType(PandaSQL::Statement::kStmtDropTable);
+		}
+	|	drop_index_stmt
+		{
+			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+			pDriver->GetStatement().SetStatementType(PandaSQL::Statement::kStmtDropIndex);
+		}
+	;
+	
+create_table_stmt
+@init
+{
+	std::string tableRef;
+}
+	:	^(TOK_CREATE_TABLE_STMT table_ref[tableRef] column_def_list)
+		{
+			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+			pDriver->GetStatement().AddTableRef(tableRef);
+		}
+	;
+	
+column_def_list
+	:	^(TOK_COLUMN_DEF_LIST column_def+)
+		{
+			
+		}
+	;
+	
+column_def
+@init
+{
+	PandaSQL::ColumnDef columnDef;
+	std::string columnRef;
+}
+	:	^(TOK_COLUMN_DEF column_ref[columnRef] type=type_name constraint=column_constraint)
+		{
+			columnDef.columnName = columnRef;
+			columnDef.dataType = type;
+			columnDef.constraintType = constraint; 
+			
+			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+			pDriver->GetStatement().AddColumnDef(columnDef);
+		}
+	;
+	
+type_name returns [PandaSQL::DataType dataType]
+	:	KW_INT
+		{
+			dataType = PandaSQL::kInt;
+		}
+	|	KW_TEXT
+		{
+			dataType = PandaSQL::kText;
+		}
+	;
+	
+column_constraint returns[PandaSQL::ConstraintType constraintType]
+@init
+{
+	constraintType = PandaSQL::kConstraintNone;
+}
+	:	KW_PRIMARY KW_KEY
+		{
+			constraintType = PandaSQL::kConstraintPrimaryKey;
+		}
+	|	KW_UNIQUE
+		{
+			constraintType = PandaSQL::kConstraintUnique;
+		}
+	|	KW_NOT KW_NULL
+		{
+			constraintType = PandaSQL::kConstraintNotNULL;
+		}
+	;
+	
+create_index_stmt
+@init
+{
+	std::string indexRef;
+	std::string tableRef;
+	std::string columnRef;
+}
+	:	^(TOK_CREATE_INDEX_STMT index_ref[indexRef] table_ref[tableRef] column_ref[columnRef])
+		{
+			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+			pDriver->GetStatement().SetIndexRef(indexRef);
+			pDriver->GetStatement().AddTableRef(tableRef);
+			pDriver->GetStatement().AddColumnRef(columnRef);
+		}
+	;
+	
+drop_table_stmt
+@init
+{
+	std::string tableRef;
+}
+	:	^(TOK_DROP_TABLE table_ref[tableRef])
+		{
+			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+			pDriver->GetStatement().AddTableRef(tableRef);
+		}
+	;
+	
+drop_index_stmt
+@init
+{
+	std::string indexRef;
+}
+	:	^(TOK_DROP_INDEX index_ref[indexRef])
+		{
+			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+			pDriver->GetStatement().SetIndexRef(indexRef);
+		}
 	;
 	
 dml_stmt
@@ -235,6 +365,13 @@ table_ref[std::string &o_tableRef]
 }
 	:	^(TOK_TABLE_REF identifier[o_tableRef])
 		{
+		}
+	;
+	
+index_ref[std::string &o_tableRef]
+	:	^(TOK_INDEX_REF identifier[o_tableRef])
+		{
+			
 		}
 	;
 	

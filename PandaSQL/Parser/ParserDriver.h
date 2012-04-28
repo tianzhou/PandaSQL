@@ -24,6 +24,27 @@ typedef struct
 	std::string text;
 }Expr;
 
+typedef enum
+{
+	kInt = 0,
+	kText = 1,
+}DataType;
+
+typedef enum
+{
+	kConstraintNone = 0,
+	kConstraintPrimaryKey = 1,
+	kConstraintUnique = 2,
+	kConstraintNotNULL = 3,
+}ConstraintType;
+
+typedef struct
+{
+	std::string columnName;
+	DataType dataType;
+	ConstraintType constraintType;
+}ColumnDef;
+
 class Statement
 {
 public:
@@ -37,7 +58,10 @@ public:
 		kStmtUpdate = 2,
 		kStmtInsert = 3,
 		kStmtDelete = 4,
-		kStmtCreate = 5
+		kStmtCreateTable = 5,
+		kStmtCreateIndex = 6,
+		kStmtDropTable = 7,
+		kStmtDropIndex = 8,
 	}StatementType;
 
 	static const std::string kNoTable;
@@ -46,8 +70,12 @@ public:
 	StatementType GetStatementType() const { return mStmtType; }
 
 	void AddColumnRef(const std::string& inColumnRef);
-	void AddTableRef(const std::string& inTableName);
+	void AddTableRef(const std::string& inTableRef);
 	void AddExprRef(const Expr& inExpr);
+
+	void AddColumnDef(const ColumnDef& inDef);
+
+	void SetIndexRef(const std::string& inIndexRef);
 
 	void PrintStatement();
 private:
@@ -56,6 +84,10 @@ private:
 	std::vector<std::string> mTableRefs;
 
 	std::vector<Expr> mSetExprList;
+
+	std::vector<ColumnDef> mColumnDefs;
+
+	std::string mIndexRef;
 };
 
 class ParserDriver

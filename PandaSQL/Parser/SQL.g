@@ -16,11 +16,18 @@ tokens
 {
 TOK_ALL_COLUMNS;
 TOK_COLUMN_REF;
+TOK_CREATE_TABLE_STMT;
+TOK_CREATE_INDEX_STMT;
+TOK_COLUMN_DEF_LIST;
+TOK_COLUMN_DEF;
 TOK_DELETE_STMT;
+TOK_DROP_TABLE;
+TOK_DROP_INDEX;
 TOK_FROM_CLAUSE;
 TOK_SELECT_CORE;
 TOK_SELECT_LIST;
 TOK_SELECT_STMT;
+TOK_INDEX_REF;
 TOK_INSERT_STMT;
 TOK_INSERT_VALUES;
 TOK_UPDATE_CORE;
@@ -41,7 +48,15 @@ TOK_TABLE_REF;
 
 //Starting rule
 stmt
-	:	dml_stmt^ (';' | EOF)!
+	:	ddl_stmt^ (';' | EOF)!
+	|	dml_stmt^ (';' | EOF)!
+	;
+	
+ddl_stmt
+	:	create_table_stmt
+	|	create_index_stmt
+	|	drop_table_stmt
+	|	drop_index_stmt
 	;
 	
 dml_stmt
@@ -49,6 +64,47 @@ dml_stmt
 	|	update_stmt
 	|	insert_stmt
 	|	delete_stmt
+	;
+	
+create_table_stmt
+	:	KW_CREATE KW_TABLE table_ref LPAREN column_def_list RPAREN
+		-> ^(TOK_CREATE_TABLE_STMT table_ref column_def_list)
+	;
+	
+column_def_list
+	:	column_def (COMMA column_def)* -> ^(TOK_COLUMN_DEF_LIST column_def+)
+	;
+	
+column_def
+	:	column_ref type_name column_constraint -> ^(TOK_COLUMN_DEF column_ref type_name column_constraint)
+	;
+	
+type_name
+	:	KW_INT
+	|	KW_TEXT
+	;
+	
+column_constraint
+	:	KW_PRIMARY KW_KEY
+	|	KW_UNIQUE
+	|	KW_NOT KW_NULL
+	;
+	
+create_index_stmt
+	:	KW_CREATE KW_INDEX index_ref KW_ON table_ref LPAREN column_ref RPAREN
+		-> ^(TOK_CREATE_INDEX_STMT index_ref table_ref column_ref)
+	;
+	
+index_ref
+	:	IDENTIFIER -> ^(TOK_INDEX_REF IDENTIFIER)
+	;
+	
+drop_table_stmt
+	:	KW_DROP KW_TABLE table_ref -> ^(TOK_DROP_TABLE table_ref)
+	;
+	
+drop_index_stmt
+	:	KW_DROP KW_INDEX index_ref -> ^(TOK_DROP_INDEX index_ref)
 	;
 	
 select_stmt
@@ -147,12 +203,20 @@ KW_BY
 	: ('B'|'b')('Y'|'y')
 	;
 	
+KW_CREATE
+	: ('C'|'c')('R'|'r')('E'|'e')('A'|'a')('T'|'t')('E'|'e')
+	;
+	
 KW_DELETE
 	: ('D'|'d')('E'|'e')('L'|'l')('E'|'e')('T'|'t')('E'|'e')
 	;
 		
 KW_DISTINCT
 	: ('D'|'d')('I'|'i')('S'|'s')('T'|'t')('I'|'i')('C'|'c')('T'|'t')
+	;
+	
+KW_DROP
+	: ('D'|'d')('R'|'r')('O'|'o')('P'|'p')
 	;
 	
 KW_FROM
@@ -167,16 +231,40 @@ KW_INTO
 	: ('I'|'i')('N'|'n')('T'|'t')('O'|'o')
 	;
 	
+KW_KEY
+	: ('K'|'k')('E'|'e')('Y'|'y')
+	;
+	
 KW_LIMIT
 	: ('L'|'l')('I'|'i')('M'|'m')('I'|'i')('T'|'t')
+	;
+	
+KW_INDEX
+	: ('I'|'i')('N'|'n')('D'|'d')('E'|'e')('X'|'x')
+	;
+	
+KW_NOT
+	: ('N'|'n')('O'|'o')('T'|'t')
+	;
+	
+KW_NULL
+	: ('N'|'n')('U'|'u')('L'|'l')('L'|'l')
 	;
 	
 KW_GROUP
 	: ('G'|'g')('R'|'r')('O'|'o')('U'|'u')('P'|'p')
 	;
 	
+KW_ON
+	: ('O'|'o')('N'|'n')
+	;
+	
 KW_ORDER
 	: ('O'|'o')('R'|'r')('D'|'d')('E'|'e')('R'|'r')
+	;
+	
+KW_PRIMARY
+	: ('P'|'p')('R'|'r')('I'|'i')('M'|'m')('A'|'a')('R'|'r')('Y'|'y')
 	;
 	
 KW_UPDATE
@@ -199,8 +287,28 @@ KW_VALUES
 	: ('V'|'v')('A'|'a')('L'|'l')('U'|'u')('E'|'e')('S'|'s')
 	;
 	
+KW_UNIQUE
+	: ('U'|'u')('N'|'n')('I'|'i')('Q'|'q')('U'|'u')('E'|'e')
+	;
+	
 KW_WHERE
 	: ('W'|'w')('H'|'h')('E'|'e')('R'|'r')('E'|'e')
+	;
+	
+KW_ASC
+	: ('A'|'a')('S'|'s')('C'|'c')
+	;
+	
+KW_DESC
+	: ('D'|'d')('E'|'e')('S'|'s')('C'|'c')
+	;
+	
+KW_INT
+	: ('I'|'i')('N'|'n')('T'|'t')
+	;
+	
+KW_TEXT
+	: ('T'|'t')('E'|'e')('X'|'x')('T'|'t')
 	;
 
 IDENTIFIER
