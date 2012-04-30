@@ -150,7 +150,7 @@ Status ParserDriver::PerformQuery(std::string inQueryString, bool fromFile)
 	}
 	else
 	{		
-		input = antlr3StringStreamNew(fName, ANTLR3_ENC_8BIT, inQueryString.length(), (pANTLR3_UINT8)"Memory");
+		input = antlr3StringStreamNew(fName, ANTLR3_ENC_8BIT, (ANTLR3_UINT32)inQueryString.length(), (pANTLR3_UINT8)"Memory");
 	}
 
     // The input will be created successfully, providing that there is enough
