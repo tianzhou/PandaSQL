@@ -18,7 +18,7 @@ public:
 	~Status() {}
 
 	Status(const Status& rhs);
-	Status& operator=(const Status& rhs);
+	Status& operator=(const Status &rhs);
 
 	bool IsOK() const { return mState == kOK; }
 

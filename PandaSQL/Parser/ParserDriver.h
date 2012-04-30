@@ -11,39 +11,39 @@
 namespace PandaSQL
 {
 
-typedef enum
+enum ExprType
 {
 	kExprNumber = 0,
 	kExprText = 1,
 	kExprColumnRef = 2
-}ExprType;
+};
 
-typedef struct
+struct Expr
 {
 	ExprType type;
 	std::string text;
-}Expr;
+};
 
-typedef enum
+enum DataType
 {
 	kInt = 0,
 	kText = 1,
-}DataType;
+};
 
-typedef enum
+enum ConstraintType
 {
 	kConstraintNone = 0,
 	kConstraintPrimaryKey = 1,
 	kConstraintUnique = 2,
 	kConstraintNotNULL = 3,
-}ConstraintType;
+};
 
-typedef struct
+struct ColumnDef
 {
 	std::string columnName;
 	DataType dataType;
 	ConstraintType constraintType;
-}ColumnDef;
+};
 
 class Statement
 {
@@ -51,7 +51,7 @@ public:
 	Statement();
 	~Statement();
 
-	typedef enum
+	enum StatementType
 	{
 		kStmtUnknown = 0,
 		kStmtSelect = 1,
@@ -62,20 +62,20 @@ public:
 		kStmtCreateIndex = 6,
 		kStmtDropTable = 7,
 		kStmtDropIndex = 8,
-	}StatementType;
+	};
 
 	static const std::string kNoTable;
 
 	void SetStatementType(StatementType inStmtType) { mStmtType = inStmtType; }
 	StatementType GetStatementType() const { return mStmtType; }
 
-	void AddColumnRef(const std::string& inColumnRef);
-	void AddTableRef(const std::string& inTableRef);
-	void AddExprRef(const Expr& inExpr);
+	void AddColumnRef(const std::string &inColumnRef);
+	void AddTableRef(const std::string &inTableRef);
+	void AddExprRef(const Expr &inExpr);
 
-	void AddColumnDef(const ColumnDef& inDef);
+	void AddColumnDef(const ColumnDef &inDef);
 
-	void SetIndexRef(const std::string& inIndexRef);
+	void SetIndexRef(const std::string &inIndexRef);
 
 	void PrintStatement();
 private:
@@ -99,7 +99,7 @@ public:
 	Status PerformQuery(std::string inQueryString, bool fromFile);
 	void PrintCurrentState();
 
-	static std::string GetColumnRef(const std::string& inTableName, const std::string& inColumnName);
+	static std::string GetColumnRef(const std::string &inTableName, const std::string &inColumnName);
 	static void GetIdentifier(ANTLR3_BASE_TREE *tree, std::string &o_str);
 privileged:
 
@@ -115,8 +115,8 @@ private:
 		~SQLParserSelect();
 	};
 
-	ParserDriver(const ParserDriver& rhs);
-	ParserDriver& operator=(const ParserDriver& rhs);
+	ParserDriver(const ParserDriver &rhs);
+	ParserDriver& operator=(const ParserDriver &rhs);
 
 
 	Statement mStmt;

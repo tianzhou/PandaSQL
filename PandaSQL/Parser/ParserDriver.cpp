@@ -24,27 +24,27 @@ Statement::~Statement()
 {
 }
 
-void Statement::AddColumnRef(const std::string& inColumnRef)
+void Statement::AddColumnRef(const std::string &inColumnRef)
 {
 	mSelectColumnRefs.push_back(inColumnRef);
 }
 
-void Statement::AddTableRef(const std::string& inTableRef)
+void Statement::AddTableRef(const std::string &inTableRef)
 {
 	mTableRefs.push_back(inTableRef);
 }
 
-void Statement::AddExprRef(const Expr& inExpr)
+void Statement::AddExprRef(const Expr &inExpr)
 {
 	mSetExprList.push_back(inExpr);
 }
 
-void Statement::AddColumnDef(const ColumnDef& inDef)
+void Statement::AddColumnDef(const ColumnDef &inDef)
 {
 	mColumnDefs.push_back(inDef);
 }
 
-void Statement::SetIndexRef(const std::string& inIndexRef)
+void Statement::SetIndexRef(const std::string &inIndexRef)
 {
 	mIndexRef = inIndexRef;
 }
@@ -267,7 +267,7 @@ void ParserDriver::PrintCurrentState()
 	printf("PrintCurrentState\n");
 }
 
-std::string ParserDriver::GetColumnRef(const std::string& inTableName, const std::string& inColumnName)
+std::string ParserDriver::GetColumnRef(const std::string &inTableName, const std::string &inColumnName)
 {
 	std::string result;
 

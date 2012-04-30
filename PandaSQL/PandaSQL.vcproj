@@ -409,6 +409,14 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\DB.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DB.h"
+				>
+			</File>
+			<File
 				RelativePath=".\main.cpp"
 				>
 			</File>

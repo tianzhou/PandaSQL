@@ -4,6 +4,7 @@
 #include "stdafx.h"
 
 #include "Parser/ParserDriver.h"
+#include "DB.h"
 #include "Utils/Status.h"
 
 
@@ -38,10 +39,15 @@ int _tmain(int argc, _TCHAR* argv[])
 	//result = parserDriver.PerformQuery(inQueryString, false);
 
 	inQueryString = ("DROP TABLE t1;");
-	result = parserDriver.PerformQuery(inQueryString, false);
+	//result = parserDriver.PerformQuery(inQueryString, false);
 
 	inQueryString = ("DROP INDEX idx;");
 	result = parserDriver.PerformQuery(inQueryString, false);
+
+	PandaSQL::DB *pDB = NULL;
+
+	PandaSQL::DB::Options openOptions;
+	result = PandaSQL::DB::Open("testdb.pdsql", openOptions, &pDB);
 
 #endif
 
