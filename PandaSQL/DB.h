@@ -3,10 +3,13 @@
 
 #include "Utils/Status.h"
 
-#include <string>
+#include <vector>
 
 namespace PandaSQL
 {
+
+class VFS;
+class File;
 
 class DB
 {
@@ -19,13 +22,20 @@ public:
 		Options();
 	};
 
-	static Status Open(const std::string &inDBPath, const Options &inOptions, DB **o_pDB);
+	DB();
 	~DB();
+	Status Open(const std::string &inDBPath, const Options &inOptions);
 
 private:
-	DB();
+	
 	DB(const DB &rhs);
 	DB& operator=(const DB &rhs);
+
+	VFS	*mpVFS;
+	File *mpMainFile;
+	File *mpTableFile;
+	std::vector<File*> mDataFileList;
+	std::vector<File*> mIndexFileList;
 };
 
 }	// PandaSQL

@@ -475,6 +475,14 @@
 					RelativePath=".\Utils\Types.h"
 					>
 				</File>
+				<File
+					RelativePath=".\Utils\WinUtils.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Utils\WinUtils.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Parser"
@@ -639,6 +647,42 @@
 						</File>
 					</Filter>
 				</Filter>
+			</Filter>
+			<Filter
+				Name="VFS"
+				>
+				<File
+					RelativePath=".\VFS\File.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\VFS\File.h"
+					>
+				</File>
+				<File
+					RelativePath=".\VFS\VFS.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\VFS\VFS.h"
+					>
+				</File>
+				<File
+					RelativePath=".\VFS\WinFile.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\VFS\WinFile.h"
+					>
+				</File>
+				<File
+					RelativePath=".\VFS\WinVFS.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\VFS\WinVFS.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter

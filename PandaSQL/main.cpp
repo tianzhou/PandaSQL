@@ -42,12 +42,13 @@ int _tmain(int argc, _TCHAR* argv[])
 	//result = parserDriver.PerformQuery(inQueryString, false);
 
 	inQueryString = ("DROP INDEX idx;");
-	result = parserDriver.PerformQuery(inQueryString, false);
+	//result = parserDriver.PerformQuery(inQueryString, false);
 
-	PandaSQL::DB *pDB = NULL;
+	PandaSQL::DB db;
 
 	PandaSQL::DB::Options openOptions;
-	result = PandaSQL::DB::Open("testdb.pdsql", openOptions, &pDB);
+	openOptions.create_if_missing = true;
+	result = db.Open("C:\\Users\\Tianzhou\\Desktop\\PD_Data\\testDB", openOptions);
 
 #endif
 

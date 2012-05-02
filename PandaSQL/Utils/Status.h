@@ -10,7 +10,8 @@ public:
 	enum Code
 	{
 		kOK = 0,
-		kError = 1
+		kMemoryError = 1,
+		kIOError = 2,
 	};
 
 	Status() : mState(kOK) {}
@@ -20,7 +21,7 @@ public:
 	Status(const Status& rhs);
 	Status& operator=(const Status &rhs);
 
-	bool IsOK() const { return mState == kOK; }
+	bool OK() const { return mState == kOK; }
 
 	Code GetCode() const { return mState; }
 	void SetCode(Code inCode) { mState = inCode; }
