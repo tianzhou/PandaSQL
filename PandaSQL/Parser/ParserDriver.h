@@ -1,6 +1,7 @@
 #ifndef PANDASQL_PARSER_DRIVER_H
 #define PANDASQL_PARSER_DRIVER_H
 
+#include "DB.h"
 #include "Utils/Status.h"
 #include "Utils/Types.h"
 
@@ -48,7 +49,7 @@ struct ColumnDef
 class Statement
 {
 public:
-	Statement();
+	Statement(DB *io_pDB);
 	~Statement();
 
 	enum StatementType
@@ -66,19 +67,41 @@ public:
 
 	static const std::string kNoTable;
 
+	void SetOriginalStmtText(const std::string inStmtText);
+
 	void SetStatementType(StatementType inStmtType) { mStmtType = inStmtType; }
 	StatementType GetStatementType() const { return mStmtType; }
 
+	//For create_index_stmt, indexed column[1]
+	//For select_stmt, selected column[1..N]
+	//For insert_stmt, affected column[1..N]
+	//For update_stmt, affected column[1..N]
 	void AddColumnRef(const std::string &inColumnRef);
+
+	//For create_table_stmt, created table[1]
+	//For create_index_stmt, affected table[1]
+	//For drop_table_stmt, affected table[1]
+	//For insert_stmt, affected table[1]
+	//For delete_stmt, affected table[1]
 	void AddTableRef(const std::string &inTableRef);
+
+	//For update_stmt, applied value[1..N]
+	//For insert_stmt, applied value[1..N]
 	void AddExprRef(const Expr &inExpr);
 
+	//For cerate_table_stmt, column def[1..N]
 	void AddColumnDef(const ColumnDef &inDef);
 
+	//For create_index_stmt
 	void SetIndexRef(const std::string &inIndexRef);
 
+	Status Execute();
 	void PrintStatement();
 private:
+	DB *mpDB;
+
+	std::string	mOrigStmtText;
+
 	StatementType mStmtType;
 	std::vector<std::string> mSelectColumnRefs;
 	std::vector<std::string> mTableRefs;
@@ -93,10 +116,11 @@ private:
 class ParserDriver
 {
 public:
-	ParserDriver();
+	ParserDriver(DB *io_pDB);
 	~ParserDriver();
 
-	Status PerformQuery(std::string inQueryString, bool fromFile);
+	Status ParseQuery(std::string inQueryString, bool fromFile);
+	Status Execute();
 	void PrintCurrentState();
 
 	static std::string GetColumnRef(const std::string &inTableName, const std::string &inColumnName);
@@ -119,6 +143,7 @@ private:
 	ParserDriver& operator=(const ParserDriver &rhs);
 
 
+	DB *mpDB;
 	Statement mStmt;
 };
 

@@ -6,9 +6,6 @@
 
 #include "Utils/Status.h"
 
-#include <iostream>
-#include <fstream>
-
 namespace PandaSQL
 {
 
@@ -16,17 +13,19 @@ class WinFile : public File
 {
 public:
 
-	WinFile(std::fstream *inFileStream);
+	WinFile(FILE *io_pFile);
 	virtual ~WinFile();
 
-	virtual Status Read(PandaSQL::uint64_t offset, PandaSQL::uint64_t amount, void *o_buf, PandaSQL::uint64_t *o_bytesRead);
-	virtual Status Write(PandaSQL::uint64_t offset, PandaSQL::uint64_t amount, const void *inBuf, PandaSQL::uint64_t *o_bytesWritten);
+	virtual Status Read(File::Offset offset, File::Size amount, void *o_buf, File::Size *o_bytesRead);
+	virtual Status Write(File::Offset offset, File::Size amount, const void *inBuf, File::Size *o_bytesWritten);
+	virtual Status WriteAppend(File::Size amount, const void *inBuf, File::Size *o_bytesWritten);
+	virtual Status Flush();
 
 private:
 	WinFile(const WinFile &rhs);
 	WinFile& operator=(const WinFile &rhs);
 
-	std::fstream *pFileStream;
+	FILE *mpFile;
 };
 
 }	// PandaSQL

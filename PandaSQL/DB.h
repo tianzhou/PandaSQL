@@ -25,6 +25,7 @@ public:
 	DB();
 	~DB();
 	Status Open(const std::string &inDBPath, const Options &inOptions);
+	Status CreateTable(const std::string &inCreateStmt);
 
 private:
 	

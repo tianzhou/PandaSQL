@@ -1,1 +1,3 @@
-select * from field1;
+
+CREATE TABLE t2 (field1 INT PRIMARY KEY,
+field2 TEXT NOT NULL);

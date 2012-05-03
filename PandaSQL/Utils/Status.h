@@ -10,8 +10,9 @@ public:
 	enum Code
 	{
 		kOK = 0,
-		kMemoryError = 1,
-		kIOError = 2,
+		kEOF = 1,
+		kMemoryError = 2,
+		kIOError = 3
 	};
 
 	Status() : mState(kOK) {}

@@ -14,14 +14,40 @@ const std::string Statement::kNoTable = "*";
 
 static const std::string kTableColumnSep = ".";
 
-Statement::Statement()
+Statement::Statement(DB *io_pDB)
 :
-mStmtType(kStmtUnknown)
+mpDB(io_pDB)
+,mStmtType(kStmtUnknown)
 {
 }
 
 Statement::~Statement()
 {
+}
+
+void Statement::SetOriginalStmtText(const std::string inStmtText)
+{
+	mOrigStmtText = inStmtText;
+
+	//Replace line feed with space
+
+	std::string space(" ");
+	std::string crlf("\r\n");
+	std::string lf("\n");
+
+	size_t pos = 0;
+	while((pos = mOrigStmtText.find(crlf, pos)) != std::string::npos)
+	{
+		mOrigStmtText.replace(pos, crlf.length(), space);
+		pos += space.length();
+	}
+
+	pos = 0;
+	while((pos = mOrigStmtText.find(lf, pos)) != std::string::npos)
+	{
+		mOrigStmtText.replace(pos, lf.length(), space);
+		pos += space.length();
+	}
 }
 
 void Statement::AddColumnRef(const std::string &inColumnRef)
@@ -49,6 +75,25 @@ void Statement::SetIndexRef(const std::string &inIndexRef)
 	mIndexRef = inIndexRef;
 }
 
+Status Statement::Execute()
+{
+	Status result;
+
+	switch (mStmtType)
+	{
+	case kStmtCreateTable:
+		{
+			result = mpDB->CreateTable(mOrigStmtText);
+
+			break;
+		}
+	default:
+		break;
+	}
+
+	return result;
+}
+
 void Statement::PrintStatement()
 {
 
@@ -58,7 +103,10 @@ void Statement::PrintStatement()
 **ParserDriver**
 ***************************************************/
 
-ParserDriver::ParserDriver()
+ParserDriver::ParserDriver(DB *io_pDB)
+:
+mpDB(io_pDB)
+,mStmt(io_pDB)
 {
 }
 
@@ -67,7 +115,7 @@ ParserDriver::~ParserDriver()
 
 }
 
-Status ParserDriver::PerformQuery(std::string inQueryString, bool fromFile)
+Status ParserDriver::ParseQuery(std::string inQueryString, bool fromFile)
 {
 	Status result;
 
@@ -225,7 +273,7 @@ Status ParserDriver::PerformQuery(std::string inQueryString, bool fromFile)
     // It also has the side advantage, if you are using an IDE such as VS2005 that can do it
     // that when you type ->, you will see a list of all the methods the object supports.
     //
-    langAST = psr->stmt(psr);
+    langAST = psr->stmt(psr, this);
 
     // If the parser ran correctly, we will have a tree to parse. In general I recommend
     // keeping your own flags as part of the error trapping, but here is how you can
@@ -265,6 +313,11 @@ Status ParserDriver::PerformQuery(std::string inQueryString, bool fromFile)
 void ParserDriver::PrintCurrentState()
 {
 	printf("PrintCurrentState\n");
+}
+
+Status ParserDriver::Execute()
+{
+	return mStmt.Execute();
 }
 
 std::string ParserDriver::GetColumnRef(const std::string &inTableName, const std::string &inColumnName)

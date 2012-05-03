@@ -28,19 +28,21 @@ Status WinVFS::OpenFile(const std::string &inPath, bool create_if_missing, File 
 		else
 		{
 			result = Status::kIOError;
-		}
-		
+		}	
 	}
 	
 	if (result.OK())
 	{
-		std::fstream *pFileStream = new std::fstream();
-
-		pFileStream->open(inPath.c_str(), std::fstream::in | std::fstream::out);
-	
-		// WinFile owns pFileStream
-		WinFile *pFile = new WinFile(pFileStream);
-		*file = pFile;
+		FILE *newFile = NULL;
+		if (fopen_s(&newFile, inPath.c_str(), "a+") != 0)
+		{
+			result = Status::kIOError;
+		}
+		else
+		{
+			WinFile *pFile = new WinFile(newFile);
+			*file = pFile;
+		}
 	}
 
 	return result;
@@ -52,6 +54,7 @@ Status WinVFS::CloseFile(File *file)
 
 	PDASSERT(file);
 
+	//Destructor will close the internal file descryptor
 	delete file;
 
 	return result;

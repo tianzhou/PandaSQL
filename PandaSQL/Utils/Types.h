@@ -4,6 +4,15 @@
 namespace PandaSQL
 {
 
+#if _WIN32 || _WIN64
+#if _WIN64
+#define PANDASQL_64
+#else
+#define PANDASQL_32
+#endif
+#endif
+
+
 typedef char int8_t;
 typedef unsigned char uint8_t;
 typedef short int16_t;

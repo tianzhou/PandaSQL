@@ -39,6 +39,9 @@ TOK_TABLE_REF;
 
 @parser::includes
 {
+
+#include "Parser/ParserDriver.h"
+
 }
 
 @lexer::includes
@@ -47,7 +50,23 @@ TOK_TABLE_REF;
 
 
 //Starting rule
-stmt
+stmt[PandaSQL::ParserDriver *io_pDriver]
+scope
+{
+	PandaSQL::ParserDriver *pDriver;
+}
+@init
+{
+	$stmt::pDriver = io_pDriver;
+}
+@after
+{
+	std::string theStmt;
+	theStmt.assign((const char *)$stmt.text->chars);
+	
+	PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+	pDriver->GetStatement().SetOriginalStmtText(theStmt);
+}
 	:	ddl_stmt^ (';' | EOF)!
 	|	dml_stmt^ (';' | EOF)!
 	;

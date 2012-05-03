@@ -11,10 +11,21 @@ class File
 {
 public:
 
+#ifdef PANDASQL_64
+	typedef uint64_t Offset;
+	typedef uint64_t Size;
+#else
+	typedef uint32_t Offset;
+	typedef uint32_t Size;
+#endif
+
 	File();
 	virtual ~File() = 0 {}
-	virtual Status Read(PandaSQL::uint64_t offset, PandaSQL::uint64_t amount, void *o_buf, PandaSQL::uint64_t *o_bytesRead) = 0;
-	virtual Status Write(PandaSQL::uint64_t offset, PandaSQL::uint64_t amount, const void *inBuf, PandaSQL::uint64_t *o_bytesWritten) = 0;
+
+	virtual Status Read(File::Offset offset, File::Size amount, void *o_buf, File::Size *o_bytesRead) = 0;
+	virtual Status Write(File::Offset offset, File::Size amount, const void *inBuf, File::Size *o_bytesWritten) = 0;
+	virtual Status WriteAppend(File::Size amount, const void *inBuf, File::Size *o_bytesWritten) = 0;
+	virtual Status Flush() = 0;
 
 private:
 	File(const File &rhs);
