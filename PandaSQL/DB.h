@@ -1,6 +1,8 @@
 #ifndef PANDASQL_DB_H
 #define PANDASQL_DB_H
 
+#include "Catalog/Table.h"
+
 #include "Utils/Status.h"
 
 #include <vector>
@@ -14,6 +16,8 @@ class File;
 class DB
 {
 public:
+
+	typedef std::vector<Table*> TableList;
 	
 	struct Options
 	{
@@ -25,7 +29,15 @@ public:
 	DB();
 	~DB();
 	Status Open(const std::string &inDBPath, const Options &inOptions);
+	Status Close();
 	Status CreateTable(const std::string &inCreateStmt);
+
+	//Take the ownership of pTable;
+	Status AddTable(Table *pTable);
+
+	Status InsertData(const Table::ColumnRefList &columnList, const Table::ColumnValueList &columnValueList);
+
+	VFS& GetVFS() { return *mpVFS; }
 
 private:
 	
@@ -37,6 +49,8 @@ private:
 	File *mpTableFile;
 	std::vector<File*> mDataFileList;
 	std::vector<File*> mIndexFileList;
+
+	TableList mTableList;
 };
 
 }	// PandaSQL

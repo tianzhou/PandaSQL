@@ -2,6 +2,11 @@
 #define PANDASQL_PARSER_DRIVER_H
 
 #include "DB.h"
+
+#include "Catalog/Table.h"
+
+#include "VFS/File.h"
+
 #include "Utils/Status.h"
 #include "Utils/Types.h"
 
@@ -11,40 +16,6 @@
 
 namespace PandaSQL
 {
-
-enum ExprType
-{
-	kExprNumber = 0,
-	kExprText = 1,
-	kExprColumnRef = 2
-};
-
-struct Expr
-{
-	ExprType type;
-	std::string text;
-};
-
-enum DataType
-{
-	kInt = 0,
-	kText = 1,
-};
-
-enum ConstraintType
-{
-	kConstraintNone = 0,
-	kConstraintPrimaryKey = 1,
-	kConstraintUnique = 2,
-	kConstraintNotNULL = 3,
-};
-
-struct ColumnDef
-{
-	std::string columnName;
-	DataType dataType;
-	ConstraintType constraintType;
-};
 
 class Statement
 {
@@ -95,20 +66,21 @@ public:
 	//For create_index_stmt
 	void SetIndexRef(const std::string &inIndexRef);
 
-	Status Execute();
+	Status Execute(bool loadTable);
 	void PrintStatement();
+
 private:
 	DB *mpDB;
 
 	std::string	mOrigStmtText;
 
 	StatementType mStmtType;
-	std::vector<std::string> mSelectColumnRefs;
-	std::vector<std::string> mTableRefs;
+	Table::ColumnRefList mSelectColumnRefs;
+	Table::TableRefList mTableRefs;
 
-	std::vector<Expr> mSetExprList;
+	Table::ColumnValueList mSetExprList;
 
-	std::vector<ColumnDef> mColumnDefs;
+	Table::ColumnDefList mColumnDefs;
 
 	std::string mIndexRef;
 };
@@ -119,12 +91,16 @@ public:
 	ParserDriver(DB *io_pDB);
 	~ParserDriver();
 
-	Status ParseQuery(std::string inQueryString, bool fromFile);
+	Status LoadFromFile(File *inFile);
+	Status ParseQuery(std::string inQueryString);
 	Status Execute();
 	void PrintCurrentState();
+	void SetLoadTable(bool isLoadTable) { mLoadTable = isLoadTable; }
+	bool IsLoadTable() const { return mLoadTable; }
 
 	static std::string GetColumnRef(const std::string &inTableName, const std::string &inColumnName);
 	static void GetIdentifier(ANTLR3_BASE_TREE *tree, std::string &o_str);
+
 privileged:
 
 	const Statement& GetStatement() const { return mStmt; }
@@ -145,6 +121,9 @@ private:
 
 	DB *mpDB;
 	Statement mStmt;
+	
+	//True when we are reading statment from table file to load table def.
+	bool mLoadTable;
 };
 
 }	// namespace PandaSQL

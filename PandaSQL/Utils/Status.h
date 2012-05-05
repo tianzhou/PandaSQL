@@ -23,6 +23,7 @@ public:
 	Status& operator=(const Status &rhs);
 
 	bool OK() const { return mState == kOK; }
+	bool IsEOF() const { return mState == kEOF; }
 
 	Code GetCode() const { return mState; }
 	void SetCode(Code inCode) { mState = inCode; }

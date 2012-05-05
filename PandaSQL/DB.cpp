@@ -5,6 +5,10 @@
 #include "VFS/WinVFS.h"
 #include "VFS/File.h"
 
+#include "Parser/ParserDriver.h"
+
+#include "Catalog/Table.h"
+
 namespace PandaSQL
 {
 
@@ -30,9 +34,9 @@ mpVFS(create_vfs())
 
 DB::~DB()
 {
-	mpVFS->CloseFile(mpMainFile);
-	mpVFS->CloseFile(mpTableFile);
-	delete mpVFS;
+	PDASSERT(!mpVFS);
+	PDASSERT(!mpMainFile);
+	PDASSERT(!mpTableFile);
 }
 
 Status DB::Open(const std::string &inDBPath, const Options &inOptions)
@@ -48,13 +52,44 @@ Status DB::Open(const std::string &inDBPath, const Options &inOptions)
 
 	if (result.OK())
 	{
-		result = mpVFS->OpenFile(inDBPath + "\\testDB.pdm", create_if_missing, &mpMainFile);
+		std::string mainFilePath = inDBPath + "\\testDB.pdm";
+		result = mpVFS->OpenFile(mainFilePath, create_if_missing, &mpMainFile);
 
 		if (result.OK())
 		{
-			result = mpVFS->OpenFile(inDBPath + "\\testDB.pdt", create_if_missing, &mpTableFile);
+			std::string tableFilePath = inDBPath + "\\testDB.pdt";
+			result = mpVFS->OpenFile(tableFilePath, create_if_missing, &mpTableFile);
+
+			if (result.OK())
+			{
+				ParserDriver parser(this);
+				parser.SetLoadTable(true);
+				result = parser.LoadFromFile(mpTableFile);
+			}
 		}
 	}
+
+	return result;
+}
+
+Status DB::Close()
+{
+	Status result;
+
+	TableList::iterator iter = mTableList.begin();
+
+	for (; iter != mTableList.end(); iter++)
+	{
+		delete *iter;
+	}
+
+	mpVFS->CloseFile(mpMainFile);
+	mpMainFile = NULL;
+	mpVFS->CloseFile(mpTableFile);
+	mpTableFile = NULL;
+
+	delete mpVFS;
+	mpVFS = NULL;
 
 	return result;
 }
@@ -70,6 +105,22 @@ Status DB::CreateTable(const std::string &inCreateStmt)
 	{
 		result = mpTableFile->Flush();
 	}
+
+	return result;
+}
+
+Status DB::AddTable(Table *pTable)
+{
+	Status result;
+
+	mTableList.push_back(pTable);
+
+	return result;
+}
+
+Status DB::InsertData(const Table::ColumnRefList &columnList, const Table::ColumnValueList &columnValueList)
+{
+	Status result;
 
 	return result;
 }

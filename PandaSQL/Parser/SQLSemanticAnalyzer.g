@@ -11,6 +11,7 @@ options
 {
 
 #include "Parser/ParserDriver.h"
+#include "Catalog/Table.h"
 
 }
 

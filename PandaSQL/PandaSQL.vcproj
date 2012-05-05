@@ -684,6 +684,18 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Catalog"
+				>
+				<File
+					RelativePath=".\Catalog\Table.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Catalog\Table.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -705,6 +717,10 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 		</Filter>
+		<File
+			RelativePath=".\input"
+			>
+		</File>
 		<File
 			RelativePath=".\ReadMe.txt"
 			>

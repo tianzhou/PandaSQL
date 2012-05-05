@@ -34,7 +34,9 @@ Status WinVFS::OpenFile(const std::string &inPath, bool create_if_missing, File 
 	if (result.OK())
 	{
 		FILE *newFile = NULL;
-		if (fopen_s(&newFile, inPath.c_str(), "a+") != 0)
+
+		//Open it in binary mode, otherwise, CR LN is replaced by LN
+		if (fopen_s(&newFile, inPath.c_str(), "a+b") != 0)
 		{
 			result = Status::kIOError;
 		}

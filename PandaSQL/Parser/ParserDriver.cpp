@@ -6,6 +6,11 @@
 #include "Parser/SQLParser.h"
 #include "Parser/SQLSemanticAnalyzer.h"
 
+#include "Utils/Status.h"
+
+#include <fstream>
+#include <sstream>
+
 namespace PandaSQL
 {
 
@@ -75,7 +80,7 @@ void Statement::SetIndexRef(const std::string &inIndexRef)
 	mIndexRef = inIndexRef;
 }
 
-Status Statement::Execute()
+Status Statement::Execute(bool loadTable)
 {
 	Status result;
 
@@ -83,10 +88,33 @@ Status Statement::Execute()
 	{
 	case kStmtCreateTable:
 		{
-			result = mpDB->CreateTable(mOrigStmtText);
+			if (loadTable)
+			{
+				Table *theTable = new Table();
+				theTable->SetName(mTableRefs[0]);
+
+				Table::ColumnDefList::const_iterator iter = mColumnDefs.begin();
+
+				for (; iter != mColumnDefs.end(); iter++)
+				{
+					theTable->AddColumnDef(*iter);
+				}
+
+				result = mpDB->AddTable(theTable);
+			}
+			else
+			{
+				result = mpDB->CreateTable(mOrigStmtText);
+			}
 
 			break;
 		}
+	case kStmtInsert:
+		{
+			result = mpDB->InsertData(mSelectColumnRefs, mSetExprList);
+			break;
+		}
+
 	default:
 		break;
 	}
@@ -107,6 +135,7 @@ ParserDriver::ParserDriver(DB *io_pDB)
 :
 mpDB(io_pDB)
 ,mStmt(io_pDB)
+,mLoadTable(false)
 {
 }
 
@@ -115,7 +144,43 @@ ParserDriver::~ParserDriver()
 
 }
 
-Status ParserDriver::ParseQuery(std::string inQueryString, bool fromFile)
+Status ParserDriver::LoadFromFile(File *inFile)
+{
+	Status result;
+	File::Offset offset = 0;
+	File::Size amount = 512;
+	File::Size o_bytesRead = 0;
+	char buf[513]; //Add Null terminator
+
+	do
+	{
+		result = inFile->ReadToDelimiter(offset, 512, ";", true, buf, &o_bytesRead);
+
+		if (o_bytesRead > 0)
+		{
+			buf[o_bytesRead] = '\0';
+			result = this->ParseQuery(buf);
+
+			if (result.OK())
+			{
+				result = this->Execute();
+			}
+		}
+
+		offset += o_bytesRead;
+
+	}while (result.OK());
+	
+	if (result.IsEOF())
+	{
+		result = Status::kOK;
+	}
+
+
+	return result;
+}
+
+Status ParserDriver::ParseQuery(std::string inQueryString)
 {
 	Status result;
 
@@ -186,20 +251,13 @@ Status ParserDriver::ParseQuery(std::string inQueryString, bool fromFile)
 
     // Finally, when the parser runs, it will produce an AST that can be traversed by the 
     // the tree parser: c.f. LangDumpDecl.g3t
-    //
     pSQLSemanticAnalyzer		    treePsr;
 
 	fName = (pANTLR3_UINT8)inQueryString.c_str();
 
-	// Input from file
-	if (fromFile)
-	{
-		input = antlr3FileStreamNew(fName, ANTLR3_ENC_8BIT);
-	}
-	else
-	{		
-		input = antlr3StringStreamNew(fName, ANTLR3_ENC_8BIT, (ANTLR3_UINT32)inQueryString.length(), (pANTLR3_UINT8)"Memory");
-	}
+	//Input from file
+	//input = antlr3FileStreamNew(fName, ANTLR3_ENC_8BIT);	
+	input = antlr3StringStreamNew(fName, ANTLR3_ENC_8BIT, (ANTLR3_UINT32)inQueryString.length(), (pANTLR3_UINT8)"Memory");
 
     // The input will be created successfully, providing that there is enough
     // memory and the file exists etc
@@ -286,17 +344,23 @@ Status ParserDriver::ParseQuery(std::string inQueryString, bool fromFile)
 	}
 	else
 	{
-		nodes	= antlr3CommonTreeNodeStreamNewTree(langAST.tree, ANTLR3_SIZE_HINT); // sIZE HINT WILL SOON BE DEPRECATED!!
+		if (langAST.tree)
+		{
+			nodes	= antlr3CommonTreeNodeStreamNewTree(langAST.tree, ANTLR3_SIZE_HINT); // sIZE HINT WILL SOON BE DEPRECATED!!
 
-		printf("Nodes: %s\n", langAST.tree->toStringTree(langAST.tree)->chars);
+			if (!this->IsLoadTable())
+			{
+				printf("Nodes: %s\n", langAST.tree->toStringTree(langAST.tree)->chars);
+			}
 
-		// Tree parsers are given a common tree node stream (or your override)
-		//
-		treePsr	= SQLSemanticAnalyzerNew(nodes);
+			// Tree parsers are given a common tree node stream (or your override)
+			//
+			treePsr	= SQLSemanticAnalyzerNew(nodes);
 
-		treePsr->stmt(treePsr, this);
-		nodes   ->free  (nodes);	    nodes	= NULL;
-		treePsr ->free  (treePsr);	    treePsr	= NULL;
+			treePsr->stmt(treePsr, this);
+			nodes   ->free  (nodes);	    nodes	= NULL;
+			treePsr ->free  (treePsr);	    treePsr	= NULL;
+		}
 	}
 
 	// We did not return anything from this parser rule, so we can finish. It only remains
@@ -317,7 +381,7 @@ void ParserDriver::PrintCurrentState()
 
 Status ParserDriver::Execute()
 {
-	return mStmt.Execute();
+	return mStmt.Execute(this->IsLoadTable());
 }
 
 std::string ParserDriver::GetColumnRef(const std::string &inTableName, const std::string &inColumnName)

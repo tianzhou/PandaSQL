@@ -61,14 +61,18 @@ scope
 }
 @after
 {
-	std::string theStmt;
-	theStmt.assign((const char *)$stmt.text->chars);
+	if ($stmt.text)
+	{
+		std::string theStmt;
+		theStmt.assign((const char *)$stmt.text->chars);
 	
-	PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-	pDriver->GetStatement().SetOriginalStmtText(theStmt);
+		PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+		pDriver->GetStatement().SetOriginalStmtText(theStmt);
+	}
 }
-	:	ddl_stmt^ (';' | EOF)!
-	|	dml_stmt^ (';' | EOF)!
+	:	ddl_stmt^ SEMI!
+	|	dml_stmt^ SEMI!
+	|	EOF!
 	;
 	
 ddl_stmt
@@ -339,6 +343,8 @@ COMMA : ',' ;
 DOT : '.' ;
 	
 EQUAL : '=' ;
+
+SEMI : ';' ;
 
 STAR : '*' ;
 	
