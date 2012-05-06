@@ -12,7 +12,8 @@ public:
 		kOK = 0,
 		kEOF = 1,
 		kMemoryError = 2,
-		kIOError = 3
+		kIOError = 3,
+		kTableMissing = 4,
 	};
 
 	Status() : mState(kOK) {}

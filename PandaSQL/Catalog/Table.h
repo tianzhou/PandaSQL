@@ -1,16 +1,16 @@
 #ifndef PANDASQL_TABLE_H
 #define PANDASQL_TABLE_H
 
+
+#include "Utils/Types.h"
+#include "Utils/Status.h"
+
 #include <vector>
 
 namespace PandaSQL
 {
 
-enum DataType
-{
-	kInt = 0,
-	kText = 1,
-};
+class IStorage;
 
 enum ConstraintType
 {
@@ -57,6 +57,8 @@ public:
 	std::string GetName() const { return mName; }
 	void AddColumnDef(const ColumnDef &inColumDef);
 
+	Status InsertRow(const ColumnRefList &columnList, const ColumnValueList &columnValueList);
+
 private:
 	
 	Table(const Table &rhs);
@@ -64,6 +66,8 @@ private:
 
 	std::string mName;
 	ColumnDefList mColumnList;
+
+	IStorage *mpDataHost;
 };
 
 }	// PandaSQL

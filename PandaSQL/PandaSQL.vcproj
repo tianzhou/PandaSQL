@@ -696,6 +696,50 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Storage"
+				>
+				<File
+					RelativePath=".\Storage\IStorage.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Storage\IStorage.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Storage\ITuple.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Storage\ITuple.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Storage\TupleImpl.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Storage\TupleImpl.h"
+					>
+				</File>
+				<Filter
+					Name="Buffer"
+					>
+				</Filter>
+				<Filter
+					Name="CVS"
+					>
+					<File
+						RelativePath=".\Storage\CVS\CVSStorage.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Storage\CVS\CVSStorage.h"
+						>
+					</File>
+				</Filter>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"

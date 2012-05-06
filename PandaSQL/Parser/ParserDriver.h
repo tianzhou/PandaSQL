@@ -52,6 +52,7 @@ public:
 	//For create_table_stmt, created table[1]
 	//For create_index_stmt, affected table[1]
 	//For drop_table_stmt, affected table[1]
+	//For update_stmt, affected table[1]
 	//For insert_stmt, affected table[1]
 	//For delete_stmt, affected table[1]
 	void AddTableRef(const std::string &inTableRef);

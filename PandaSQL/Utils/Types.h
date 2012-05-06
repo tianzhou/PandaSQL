@@ -27,6 +27,13 @@ typedef unsigned long long uint64_t;
 #define privileged public
 #endif
 
+//DB Types
+enum DataType
+{
+	kInt = 0,
+	kText = 1,
+};
+
 }	// namespace PandaSQL
 
 #endif	// PANDASQL_TYPES_H

@@ -118,9 +118,44 @@ Status DB::AddTable(Table *pTable)
 	return result;
 }
 
-Status DB::InsertData(const Table::ColumnRefList &columnList, const Table::ColumnValueList &columnValueList)
+Status DB::InsertData(const std::string &tableName, const Table::ColumnRefList &columnList, const Table::ColumnValueList &columnValueList)
 {
 	Status result;
+
+	Table *theTable = NULL;
+	
+	result = DB::GetTableByName(tableName, &theTable);
+
+	if (result.OK())
+	{
+		result = theTable->InsertRow(columnList, columnValueList);
+	}
+
+	return result;
+}
+
+//Private
+Status DB::GetTableByName(const std::string &name, Table **o_table) const
+{
+	Status result;
+
+	*o_table = NULL;
+
+	TableList::const_iterator iter = mTableList.begin();
+
+	for(; iter != mTableList.end(); iter++)
+	{
+		if (name == (*iter)->GetName())
+		{
+			*o_table = *iter;
+			break;
+		}
+	}
+
+	if (iter == mTableList.end())
+	{
+		result = Status::kTableMissing;
+	}
 
 	return result;
 }

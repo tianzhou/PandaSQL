@@ -268,7 +268,8 @@ update_core
 }
 	:	^(TOK_UPDATE_CORE table_ref[tableRef] set_clause_list where_clause?)
 		{
-			
+			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+			pDriver->GetStatement().AddTableRef(tableRef);
 		}
 	;
 	

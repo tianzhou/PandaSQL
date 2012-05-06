@@ -35,14 +35,15 @@ public:
 	//Take the ownership of pTable;
 	Status AddTable(Table *pTable);
 
-	Status InsertData(const Table::ColumnRefList &columnList, const Table::ColumnValueList &columnValueList);
+	Status InsertData(const std::string &tableName, const Table::ColumnRefList &columnList, const Table::ColumnValueList &columnValueList);
 
 	VFS& GetVFS() { return *mpVFS; }
 
 private:
-	
 	DB(const DB &rhs);
 	DB& operator=(const DB &rhs);
+
+	Status GetTableByName(const std::string &name, Table **o_table) const;
 
 	VFS	*mpVFS;
 	File *mpMainFile;

@@ -111,7 +111,7 @@ Status Statement::Execute(bool loadTable)
 		}
 	case kStmtInsert:
 		{
-			result = mpDB->InsertData(mSelectColumnRefs, mSetExprList);
+			result = mpDB->InsertData(mTableRefs[0], mSelectColumnRefs, mSetExprList);
 			break;
 		}
 
