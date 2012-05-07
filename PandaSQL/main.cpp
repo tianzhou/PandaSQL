@@ -5,7 +5,7 @@
 
 #include "Parser/ParserDriver.h"
 #include "DB.h"
-#include "VFS/VFS.h"
+#include "VFS/IVFS.h"
 #include "Utils/Status.h"
 
 #include <iostream>

@@ -8,7 +8,7 @@
 namespace PandaSQL
 {
 
-class VFS;
+class IVFS;
 class File;
 class ITuple;
 
@@ -16,7 +16,7 @@ class CVSStorage : public IStorage
 {
 public:
 
-	CVSStorage(VFS *io_VFS, const std::string &inRootPath);
+	CVSStorage(IVFS *io_VFS, const std::string &inRootPath);
 	virtual ~CVSStorage();
 
 	virtual Status OpenTable(const std::string &inTableName, OpenMode inMode);

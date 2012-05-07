@@ -1,5 +1,5 @@
-#ifndef PANDASQL_VFS_H
-#define PANDASQL_VFS_H
+#ifndef PANDASQL_IVFS_H
+#define PANDASQL_IVFS_H
 
 #include "Utils/Status.h"
 
@@ -10,12 +10,12 @@ namespace PandaSQL
 
 class File;
 
-class VFS
+class IVFS
 {
 public:
 
-	VFS();
-	virtual ~VFS() = 0 {}
+	IVFS();
+	virtual ~IVFS() = 0 {}
 
 	//Always pass in the relative path according to inRootPath
 	virtual Status OpenFile(const std::string &inPath, bool create_if_missing, File **file) = 0;
@@ -25,10 +25,10 @@ public:
 
 private:
 	
-	VFS(const VFS &rhs);
-	VFS& operator=(const VFS &rhs);
+	IVFS(const IVFS &rhs);
+	IVFS& operator=(const IVFS &rhs);
 };
 
 }	// PandaSQL
 
-#endif	// PANDASQL_VFS_H
+#endif	// PANDASQL_IVFS_H

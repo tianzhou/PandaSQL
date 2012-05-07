@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "DB.h"
-#include "VFS/VFS.h"
+#include "VFS/IVFS.h"
 #include "VFS/WinVFS.h"
 #include "VFS/File.h"
 
@@ -14,7 +14,7 @@
 namespace PandaSQL
 {
 
-static VFS* create_vfs()
+static IVFS* create_vfs()
 {
 	//Only have windows for now
 	return new WinVFS();

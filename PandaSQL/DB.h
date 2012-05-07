@@ -10,7 +10,7 @@
 namespace PandaSQL
 {
 
-class VFS;
+class IVFS;
 class File;
 
 class DB
@@ -38,7 +38,7 @@ public:
 	Status InsertData(const std::string &tableName, const Table::ColumnRefList &columnList, const Table::ColumnValueList &columnValueList);
 
 	const std::string& GetDBPath() const { return mDBPath; }
-	VFS* GetVFS() { return mpVFS; }
+	IVFS* GetVFS() { return mpVFS; }
 
 private:
 	DB(const DB &rhs);
@@ -47,7 +47,7 @@ private:
 	Status GetTableByName(const std::string &name, Table **o_table) const;
 
 	std::string mDBPath;
-	VFS	*mpVFS;
+	IVFS	*mpVFS;
 	File *mpMainFile;
 	File *mpTableFile;
 	std::vector<File*> mDataFileList;

@@ -3,13 +3,13 @@
 #include "CVSStorage.h"
 #include "Storage/ITuple.h"
 
-#include "VFS/VFS.h"
+#include "VFS/IVFS.h"
 #include "VFS/File.h"
 
 namespace PandaSQL
 {
 
-CVSStorage::CVSStorage(VFS *io_VFS, const std::string &inRootPath)
+CVSStorage::CVSStorage(IVFS *io_VFS, const std::string &inRootPath)
 :IStorage(inRootPath, io_VFS)
 ,mpDataFile(NULL)
 ,mDataFileMode(IStorage::kNone)

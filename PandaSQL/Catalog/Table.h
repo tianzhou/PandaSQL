@@ -1,7 +1,7 @@
 #ifndef PANDASQL_TABLE_H
 #define PANDASQL_TABLE_H
 
-#include "VFS/VFS.h"
+#include "VFS/IVFS.h"
 
 #include "Storage/IStorage.h"
 
@@ -51,7 +51,7 @@ public:
 	typedef std::vector<std::string> ColumnRefList;
 	typedef std::vector<Expr> ColumnValueList;
 
-	Table(const std::string &inDBRootPath, IStorage::StorageType inType, VFS *io_VFS);
+	Table(const std::string &inDBRootPath, IStorage::StorageType inType, IVFS *io_VFS);
 	~Table();
 	
 	void SetName(const std::string &inName) { mName = inName; }
@@ -69,7 +69,7 @@ private:
 	std::string mName;
 	ColumnDefList mColumnList;
 
-	VFS *mpVFS;
+	IVFS *mpVFS;
 	IStorage *mpDataHost;
 };
 

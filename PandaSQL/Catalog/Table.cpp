@@ -2,14 +2,14 @@
 
 #include "Table.h"
 
-#include "VFS/VFS.h"
+#include "VFS/IVFS.h"
 
 #include "Storage/TupleImpl.h"
 
 namespace PandaSQL
 {
 
-Table::Table(const std::string &inDBRootPath, IStorage::StorageType inType, VFS *io_VFS)
+Table::Table(const std::string &inDBRootPath, IStorage::StorageType inType, IVFS *io_VFS)
 :
 mpVFS(io_VFS)
 ,mpDataHost(NULL)

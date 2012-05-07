@@ -1,11 +1,11 @@
 #include "stdafx.h"
 
-#include "VFS.h"
+#include "IVFS.h"
 
 namespace PandaSQL
 {
 
-VFS::VFS()
+IVFS::IVFS()
 {
 }
 

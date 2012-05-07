@@ -7,7 +7,7 @@
 namespace PandaSQL
 {
 
-class VFS;
+class IVFS;
 class ITuple;
 
 /*
@@ -32,7 +32,7 @@ public:
 		kWrite				= 0x00000004,
 	};
 
-	static IStorage *CreateStorage(const std::string &inDBRootPath, StorageType inType, VFS *io_VFS);
+	static IStorage *CreateStorage(const std::string &inDBRootPath, StorageType inType, IVFS *io_VFS);
 
 	virtual ~IStorage() = 0 {}
 
@@ -40,10 +40,10 @@ public:
 	virtual Status InsertRow(const ITuple &inTuple) = 0;
 
 protected:
-	IStorage(const std::string &inRootPath, VFS *io_VFS);
+	IStorage(const std::string &inRootPath, IVFS *io_VFS);
 
 	const std::string &mRootPath;
-	VFS *mpVFS;
+	IVFS *mpVFS;
 
 private:
 	IStorage(const IStorage &rhs);

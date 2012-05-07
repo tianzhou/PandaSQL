@@ -1,7 +1,7 @@
 #ifndef PANDASQL_WINVFS_H
 #define PANDASQL_WINVFS_H
 
-#include "VFS.h"
+#include "IVFS.h"
 
 #include "Utils/Status.h"
 
@@ -10,7 +10,7 @@ namespace PandaSQL
 
 class File;
 
-class WinVFS : public VFS
+class WinVFS : public IVFS
 {
 public:
 

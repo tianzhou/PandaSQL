@@ -660,11 +660,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\VFS\VFS.cpp"
+					RelativePath=".\VFS\IVFS.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\VFS\VFS.h"
+					RelativePath=".\VFS\IVFS.h"
 					>
 				</File>
 				<File
