@@ -32,12 +32,13 @@ public:
 	Status Close();
 	Status CreateTable(const std::string &inCreateStmt);
 
-	//Take the ownership of pTable;
-	Status AddTable(Table *pTable);
+	//Load pTable to DB, Take the ownership of pTable;
+	Status LoadTable(Table *pTable);
 
 	Status InsertData(const std::string &tableName, const Table::ColumnRefList &columnList, const Table::ColumnValueList &columnValueList);
 
-	VFS& GetVFS() { return *mpVFS; }
+	const std::string& GetDBPath() const { return mDBPath; }
+	VFS* GetVFS() { return mpVFS; }
 
 private:
 	DB(const DB &rhs);
@@ -45,6 +46,7 @@ private:
 
 	Status GetTableByName(const std::string &name, Table **o_table) const;
 
+	std::string mDBPath;
 	VFS	*mpVFS;
 	File *mpMainFile;
 	File *mpTableFile;

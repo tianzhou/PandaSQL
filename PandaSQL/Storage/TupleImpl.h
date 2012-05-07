@@ -24,9 +24,9 @@ public:
 	TupleImpl();
 	virtual ~TupleImpl();
 
-	virtual uint32_t Count();
-	virtual DataType GetTypeOfField(uint32_t index);
-	virtual void GetDataOfField(uint32_t index, std::string *o_data);
+	virtual uint32_t Count() const;
+	virtual DataType GetTypeOfField(uint32_t index) const;
+	virtual void GetDataOfField(uint32_t index, std::string *o_data) const;
 
 	virtual void AppendFieldData(DataType inType, const std::string &inData);
 	virtual void SetFieldData(uint32_t index, DataType inType, const std::string &inData);

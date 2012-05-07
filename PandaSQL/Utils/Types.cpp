@@ -4,4 +4,6 @@
 namespace PandaSQL
 {
 
+std::string kNewLineSymbol = "\r\n";
+
 }	// PandaSQL

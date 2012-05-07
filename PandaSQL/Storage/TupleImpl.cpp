@@ -24,19 +24,19 @@ TupleImpl::~TupleImpl()
 {
 }
 
-uint32_t TupleImpl::Count()
+uint32_t TupleImpl::Count() const
 {
 	return mValueList.size();
 }
 
-DataType TupleImpl::GetTypeOfField(uint32_t index)
+DataType TupleImpl::GetTypeOfField(uint32_t index) const
 {
 	PDASSERT(index < this->Count());
 
 	return mValueList[index].type;
 }
 
-void TupleImpl::GetDataOfField(uint32_t index, std::string *o_data)
+void TupleImpl::GetDataOfField(uint32_t index, std::string *o_data) const
 {
 	PDASSERT(index < this->Count());
 

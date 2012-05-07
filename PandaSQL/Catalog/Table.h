@@ -1,6 +1,9 @@
 #ifndef PANDASQL_TABLE_H
 #define PANDASQL_TABLE_H
 
+#include "VFS/VFS.h"
+
+#include "Storage/IStorage.h"
 
 #include "Utils/Types.h"
 #include "Utils/Status.h"
@@ -9,8 +12,6 @@
 
 namespace PandaSQL
 {
-
-class IStorage;
 
 enum ConstraintType
 {
@@ -50,13 +51,14 @@ public:
 	typedef std::vector<std::string> ColumnRefList;
 	typedef std::vector<Expr> ColumnValueList;
 
-	Table();
+	Table(const std::string &inDBRootPath, IStorage::StorageType inType, VFS *io_VFS);
 	~Table();
 	
 	void SetName(const std::string &inName) { mName = inName; }
 	std::string GetName() const { return mName; }
 	void AddColumnDef(const ColumnDef &inColumDef);
 
+	Status Open(IStorage::OpenMode openMode);
 	Status InsertRow(const ColumnRefList &columnList, const ColumnValueList &columnValueList);
 
 private:
@@ -67,6 +69,7 @@ private:
 	std::string mName;
 	ColumnDefList mColumnList;
 
+	VFS *mpVFS;
 	IStorage *mpDataHost;
 };
 

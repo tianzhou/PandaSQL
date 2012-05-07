@@ -1,16 +1,20 @@
 #include "stdafx.h"
 
 #include "Table.h"
-#include "Storage/IStorage.h"
+
+#include "VFS/VFS.h"
+
 #include "Storage/TupleImpl.h"
 
 namespace PandaSQL
 {
 
-Table::Table()
-:mpDataHost(NULL)
+Table::Table(const std::string &inDBRootPath, IStorage::StorageType inType, VFS *io_VFS)
+:
+mpVFS(io_VFS)
+,mpDataHost(NULL)
 {
-	mpDataHost = IStorage::CreateStorage(IStorage::kCVS);
+	mpDataHost = IStorage::CreateStorage(inDBRootPath, inType, mpVFS);
 }
 
 Table::~Table()
@@ -21,6 +25,11 @@ Table::~Table()
 void Table::AddColumnDef(const ColumnDef &inColumDef)
 {
 	mColumnList.push_back(inColumDef);
+}
+
+Status Table::Open(IStorage::OpenMode openMode)
+{
+	return mpDataHost->OpenTable(this->GetName(), openMode);
 }
 
 Status Table::InsertRow(const ColumnRefList &columnList, const ColumnValueList &columnValueList)

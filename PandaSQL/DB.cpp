@@ -9,6 +9,8 @@
 
 #include "Catalog/Table.h"
 
+#include "Storage/IStorage.h"
+
 namespace PandaSQL
 {
 
@@ -42,6 +44,8 @@ DB::~DB()
 Status DB::Open(const std::string &inDBPath, const Options &inOptions)
 {
 	Status result;
+
+	mDBPath = inDBPath;
 
 	if (!mpVFS->IsFileExist(inDBPath))
 	{
@@ -109,12 +113,18 @@ Status DB::CreateTable(const std::string &inCreateStmt)
 	return result;
 }
 
-Status DB::AddTable(Table *pTable)
+Status DB::LoadTable(Table *pTable)
 {
 	Status result;
 
-	mTableList.push_back(pTable);
+	IStorage::OpenMode mode = IStorage::OpenMode(IStorage::kCreateIfMissing | IStorage::kRead | IStorage::kWrite);
+	result = pTable->Open(mode);
 
+	if (result.OK())
+	{
+		mTableList.push_back(pTable);
+	}
+	
 	return result;
 }
 

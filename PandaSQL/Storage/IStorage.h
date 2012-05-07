@@ -7,7 +7,13 @@
 namespace PandaSQL
 {
 
+class VFS;
 class ITuple;
+
+/*
+	Each table contains an IStorage pointer as its data host.
+	Different table can have different host.
+*/
 
 class IStorage
 {
@@ -18,15 +24,26 @@ public:
 		kCVS
 	};
 
-	static IStorage *CreateStorage(StorageType inType);
+	enum OpenMode
+	{
+		kNone				= 0,	
+		kCreateIfMissing	= 0x00000001,
+		kRead				= 0x00000002,
+		kWrite				= 0x00000004,
+	};
+
+	static IStorage *CreateStorage(const std::string &inDBRootPath, StorageType inType, VFS *io_VFS);
 
 	virtual ~IStorage() = 0 {}
 
-	virtual Status OpenTable(const std::string &inTableName) = 0;
+	virtual Status OpenTable(const std::string &inTableName, OpenMode inMode) = 0;
 	virtual Status InsertRow(const ITuple &inTuple) = 0;
 
 protected:
-	IStorage();
+	IStorage(const std::string &inRootPath, VFS *io_VFS);
+
+	const std::string &mRootPath;
+	VFS *mpVFS;
 
 private:
 	IStorage(const IStorage &rhs);

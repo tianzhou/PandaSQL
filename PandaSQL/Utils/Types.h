@@ -34,6 +34,8 @@ enum DataType
 	kText = 1,
 };
 
+extern std::string kNewLineSymbol; 
+
 }	// namespace PandaSQL
 
 #endif	// PANDASQL_TYPES_H

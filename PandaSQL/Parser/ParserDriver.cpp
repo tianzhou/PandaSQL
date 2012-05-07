@@ -6,6 +6,8 @@
 #include "Parser/SQLParser.h"
 #include "Parser/SQLSemanticAnalyzer.h"
 
+#include "Storage/IStorage.h"
+
 #include "Utils/Status.h"
 
 #include <fstream>
@@ -28,6 +30,17 @@ mpDB(io_pDB)
 
 Statement::~Statement()
 {
+}
+
+void Statement::Clear()
+{
+	mOrigStmtText = std::string();
+	mStmtType = kStmtUnknown;
+	mSelectColumnRefs.clear();
+	mTableRefs.clear();
+	mSetExprList.clear();
+	mColumnDefs.clear();
+	mIndexRef = std::string();
 }
 
 void Statement::SetOriginalStmtText(const std::string inStmtText)
@@ -90,7 +103,7 @@ Status Statement::Execute(bool loadTable)
 		{
 			if (loadTable)
 			{
-				Table *theTable = new Table();
+				Table *theTable = new Table(mpDB->GetDBPath(), IStorage::kCVS, mpDB->GetVFS());
 				theTable->SetName(mTableRefs[0]);
 
 				Table::ColumnDefList::const_iterator iter = mColumnDefs.begin();
@@ -100,7 +113,7 @@ Status Statement::Execute(bool loadTable)
 					theTable->AddColumnDef(*iter);
 				}
 
-				result = mpDB->AddTable(theTable);
+				result = mpDB->LoadTable(theTable);
 			}
 			else
 			{
@@ -154,6 +167,8 @@ Status ParserDriver::LoadFromFile(File *inFile)
 
 	do
 	{
+		this->GetStatement().Clear();
+
 		result = inFile->ReadToDelimiter(offset, 512, ";", true, buf, &o_bytesRead);
 
 		if (o_bytesRead > 0)

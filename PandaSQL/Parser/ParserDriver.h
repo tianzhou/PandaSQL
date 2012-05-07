@@ -38,6 +38,8 @@ public:
 
 	static const std::string kNoTable;
 
+	void Clear();
+
 	void SetOriginalStmtText(const std::string inStmtText);
 
 	void SetStatementType(StatementType inStmtType) { mStmtType = inStmtType; }

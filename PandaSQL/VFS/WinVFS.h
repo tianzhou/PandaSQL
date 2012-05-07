@@ -24,6 +24,8 @@ public:
 private:
 	WinVFS(const WinVFS &rhs);
 	WinVFS& operator=(const WinVFS &rhs);
+
+	std::string mRootPath;
 };
 
 }	// PandaSQL

@@ -14,9 +14,9 @@ public:
 	ITuple();
 	virtual ~ITuple() = 0 {}
 
-	virtual uint32_t Count() = 0;
-	virtual DataType GetTypeOfField(uint32_t index) = 0;
-	virtual void GetDataOfField(uint32_t index, std::string *o_data) = 0;
+	virtual uint32_t Count() const = 0;
+	virtual DataType GetTypeOfField(uint32_t index) const = 0;
+	virtual void GetDataOfField(uint32_t index, std::string *o_data) const = 0;
 
 	virtual void AppendFieldData(DataType inType, const std::string &inData) = 0;
 	virtual void SetFieldData(uint32_t index, DataType inType, const std::string &inData) = 0;

@@ -6,14 +6,14 @@
 namespace PandaSQL
 {
 
-IStorage *IStorage::CreateStorage(StorageType inType)
+IStorage *IStorage::CreateStorage(const std::string &inDBRootPath, StorageType inType, VFS *io_VFS)
 {
 	IStorage *result;
 
 	switch (inType)
 	{
 	case kCVS:
-		result = new CVSStorage();
+		result = new CVSStorage(io_VFS, inDBRootPath);
 		break;
 	default:
 		break;
@@ -22,7 +22,9 @@ IStorage *IStorage::CreateStorage(StorageType inType)
 	return result;
 }
 
-IStorage::IStorage()
+IStorage::IStorage(const std::string &inRootPath, VFS *io_VFS)
+:mRootPath(inRootPath)
+,mpVFS(io_VFS)
 {
 }
 

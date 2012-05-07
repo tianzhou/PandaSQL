@@ -3,6 +3,8 @@
 
 #include "Utils/Status.h"
 
+#include <string>
+
 namespace PandaSQL
 {
 
@@ -14,6 +16,8 @@ public:
 
 	VFS();
 	virtual ~VFS() = 0 {}
+
+	//Always pass in the relative path according to inRootPath
 	virtual Status OpenFile(const std::string &inPath, bool create_if_missing, File **file) = 0;
 	virtual Status CloseFile(File *file) = 0;
 	virtual Status CreateDir(const std::string &inPath) = 0;
