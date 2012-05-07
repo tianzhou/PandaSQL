@@ -9,6 +9,8 @@ namespace PandaSQL
 
 class IVFS;
 class ITuple;
+class Iterator;
+class Predicate;
 
 /*
 	Each table contains an IStorage pointer as its data host.
@@ -36,8 +38,15 @@ public:
 
 	virtual ~IStorage() = 0 {}
 
+	virtual Iterator *CreateScanIterator() = 0;
+	virtual Iterator *CreateIndexIterator() = 0; 
+
+	virtual void ReleaseScanIterator(Iterator *iter) = 0;
+	virtual void ReleaseIndexIterator(Iterator *iter) = 0; 
+
 	virtual Status OpenTable(const std::string &inTableName, OpenMode inMode) = 0;
-	virtual Status InsertRow(const ITuple &inTuple) = 0;
+	virtual Status InsertRecord(const ITuple &inTuple) = 0;
+	virtual Status FindFirstRecordWithPredicate(const Predicate *inPredicate, Iterator **o_iterator) = 0;
 
 protected:
 	IStorage(const std::string &inRootPath, IVFS *io_VFS);

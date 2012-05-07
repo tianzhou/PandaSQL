@@ -237,6 +237,8 @@ from_clause
 }
 	:	^(TOK_FROM_CLAUSE table_ref[tableRef])
 		{
+			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+			pDriver->GetStatement().AddTableRef(tableRef);
 		} 	
 	;
 	

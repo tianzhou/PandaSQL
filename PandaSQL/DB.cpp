@@ -138,7 +138,23 @@ Status DB::InsertData(const std::string &tableName, const Table::ColumnRefList &
 
 	if (result.OK())
 	{
-		result = theTable->InsertRow(columnList, columnValueList);
+		result = theTable->InsertRecord(columnList, columnValueList);
+	}
+
+	return result;
+}
+
+Status DB::SelectData(const std::string &tableName, const Table::ColumnRefList &columnList)
+{
+	Status result;
+
+	Table *theTable = NULL;
+	
+	result = DB::GetTableByName(tableName, &theTable);
+
+	if (result.OK())
+	{
+		result = theTable->SelectRecords(columnList);
 	}
 
 	return result;

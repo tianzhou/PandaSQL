@@ -1,6 +1,8 @@
 #include "stdafx.h"
 
 #include "CVSStorage.h"
+#include "CVSScanIterator.h"
+#include "HeapStore.h"
 #include "Storage/ITuple.h"
 
 #include "VFS/IVFS.h"
@@ -13,12 +15,43 @@ CVSStorage::CVSStorage(IVFS *io_VFS, const std::string &inRootPath)
 :IStorage(inRootPath, io_VFS)
 ,mpDataFile(NULL)
 ,mDataFileMode(IStorage::kNone)
+,mpHeapStore(NULL)
+,mpScanIterator(NULL)
 {
 }
 
 CVSStorage::~CVSStorage()
 {
+	this->ReleaseScanIterator(mpScanIterator);
+	delete mpHeapStore;
 	mpVFS->CloseFile(mpDataFile);
+}
+
+Iterator *CVSStorage::CreateScanIterator()
+{
+	Iterator *result = NULL;
+
+	if (mpDataFile)
+	{
+		result = new CVSScanIterator(mpDataFile);
+	}
+
+	return result;
+}
+
+Iterator *CVSStorage::CreateIndexIterator()
+{
+	return NULL;
+}
+
+void CVSStorage::ReleaseScanIterator(Iterator *iter)
+{
+	delete iter;
+}
+
+void CVSStorage::ReleaseIndexIterator(Iterator *iter)
+{
+	delete iter;
 }
 
 Status CVSStorage::OpenTable(const std::string &inTableName, OpenMode inMode)
@@ -37,12 +70,18 @@ Status CVSStorage::OpenTable(const std::string &inTableName, OpenMode inMode)
 	{
 		mpDataFile = tableDataFile;
 		mDataFileMode = inMode;
+
+		//The data file is in heap format. Thus we use heap store to manipulate it
+		mpHeapStore = new HeapStore(tableDataFile);
+
+		mpScanIterator = this->CreateScanIterator();
+		PDASSERT(mpScanIterator);
 	}
 
 	return result;
 }
 
-Status CVSStorage::InsertRow(const ITuple &inTuple)
+Status CVSStorage::InsertRecord(const ITuple &inTuple)
 {
 	PDASSERT(mpDataFile);
 
@@ -65,7 +104,14 @@ Status CVSStorage::InsertRow(const ITuple &inTuple)
 
 	rowData += kNewLineSymbol;
 
-	result = mpDataFile->WriteAppend(rowData.length(), rowData.c_str(), NULL);
+	result = mpHeapStore->InsertRecord(rowData.length(), rowData.c_str());
+
+	return result;
+}
+
+Status CVSStorage::FindFirstRecordWithPredicate(const Predicate *inPredicate, Iterator **o_iterator)
+{
+	Status result;
 
 	return result;
 }

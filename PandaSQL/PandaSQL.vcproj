@@ -708,11 +708,27 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Storage\Iterator.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Storage\Iterator.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Storage\ITuple.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\Storage\ITuple.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Storage\Predicate.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Storage\Predicate.h"
 					>
 				</File>
 				<File
@@ -731,11 +747,27 @@
 					Name="CVS"
 					>
 					<File
+						RelativePath=".\Storage\CVS\CVSScanIterator.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Storage\CVS\CVSScanIterator.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Storage\CVS\CVSStorage.cpp"
 						>
 					</File>
 					<File
 						RelativePath=".\Storage\CVS\CVSStorage.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Storage\CVS\HeapStore.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Storage\CVS\HeapStore.h"
 						>
 					</File>
 				</Filter>
@@ -762,11 +794,15 @@
 			>
 		</Filter>
 		<File
-			RelativePath=".\input"
+			RelativePath=".\insert.txt"
 			>
 		</File>
 		<File
 			RelativePath=".\ReadMe.txt"
+			>
+		</File>
+		<File
+			RelativePath=".\select.txt"
 			>
 		</File>
 	</Files>

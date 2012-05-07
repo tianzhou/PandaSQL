@@ -36,6 +36,7 @@ public:
 	Status LoadTable(Table *pTable);
 
 	Status InsertData(const std::string &tableName, const Table::ColumnRefList &columnList, const Table::ColumnValueList &columnValueList);
+	Status SelectData(const std::string &tableName, const Table::ColumnRefList &columnList);
 
 	const std::string& GetDBPath() const { return mDBPath; }
 	IVFS* GetVFS() { return mpVFS; }

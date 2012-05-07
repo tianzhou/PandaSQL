@@ -41,9 +41,11 @@ struct Expr
 	std::string text;
 };
 
+class Iterator;
 
 class Table
 {
+
 public:
 
 	typedef std::vector<std::string> TableRefList;
@@ -59,18 +61,22 @@ public:
 	void AddColumnDef(const ColumnDef &inColumDef);
 
 	Status Open(IStorage::OpenMode openMode);
-	Status InsertRow(const ColumnRefList &columnList, const ColumnValueList &columnValueList);
+	Status InsertRecord(const ColumnRefList &columnList, const ColumnValueList &columnValueList);
+	Status SelectRecords(const ColumnRefList &columnList);
 
 private:
 	
 	Table(const Table &rhs);
 	Table& operator=(const Table &rhs);
 
+	Iterator* GetScanIterator();
+
 	std::string mName;
 	ColumnDefList mColumnList;
 
 	IVFS *mpVFS;
 	IStorage *mpDataHost;
+	Iterator *mpScanIterator; //Always use GetScanIterator to access it.
 };
 
 }	// PandaSQL

@@ -5,6 +5,7 @@
 #include "VFS/IVFS.h"
 
 #include "Storage/TupleImpl.h"
+#include "Storage/Iterator.h"
 
 namespace PandaSQL
 {
@@ -13,6 +14,7 @@ Table::Table(const std::string &inDBRootPath, IStorage::StorageType inType, IVFS
 :
 mpVFS(io_VFS)
 ,mpDataHost(NULL)
+,mpScanIterator(NULL)
 {
 	mpDataHost = IStorage::CreateStorage(inDBRootPath, inType, mpVFS);
 }
@@ -32,7 +34,7 @@ Status Table::Open(IStorage::OpenMode openMode)
 	return mpDataHost->OpenTable(this->GetName(), openMode);
 }
 
-Status Table::InsertRow(const ColumnRefList &columnList, const ColumnValueList &columnValueList)
+Status Table::InsertRecord(const ColumnRefList &columnList, const ColumnValueList &columnValueList)
 {
 	Status result;
 
@@ -62,9 +64,34 @@ Status Table::InsertRow(const ColumnRefList &columnList, const ColumnValueList &
 		oneTuple.AppendFieldData(theType, iter->text);
 	}
 
-	mpDataHost->InsertRow(oneTuple);
+	mpDataHost->InsertRecord(oneTuple);
 
 	return result;
+}
+
+Status Table::SelectRecords(const ColumnRefList &columnList)
+{
+	Status result;
+
+	//TODO
+	Iterator *iter = NULL;
+	result = mpDataHost->FindFirstRecordWithPredicate(NULL, &iter);
+
+	return result;
+}
+
+//private
+Iterator* Table::GetScanIterator()
+{
+	if (!mpScanIterator
+		&& mpDataHost)
+	{
+		mpScanIterator = mpDataHost->CreateScanIterator();
+	}
+
+	PDASSERT(mpScanIterator);
+
+	return mpScanIterator;
 }
 
 }	// PandaSQL
