@@ -7,6 +7,8 @@
 #include "Storage/TupleImpl.h"
 #include "Storage/Iterator.h"
 
+#include <iostream>
+
 namespace PandaSQL
 {
 
@@ -76,6 +78,18 @@ Status Table::SelectRecords(const ColumnRefList &columnList)
 	//TODO
 	Iterator *iter = NULL;
 	result = mpDataHost->FindFirstRecordWithPredicate(NULL, &iter);
+
+	if (result.OK())
+	{
+		std::string o_data;
+
+		while (iter->Next().OK())
+		{
+			iter->GetValue(&o_data);
+			std::cout << o_data << std::endl;
+		}
+		
+	}
 
 	return result;
 }

@@ -17,12 +17,12 @@ public:
 	virtual ~CVSScanIterator();
 
 	virtual bool Valid() const;
-	virtual Status SeekToFirst();
-	virtual Status SeekToLast();
-	virtual Status SeekToKey(const std::string &inKey);
+	virtual Status SeekBeforeFirst();
+	virtual Status SeekAfterLast();
+	//virtual Status SeekToKey(const std::string &inKey);
 	virtual Status Next();
 	virtual Status Prev();
-	virtual Status GetKey(std::string *o_key) const;
+	//virtual Status GetKey(std::string *o_key) const;
 	virtual Status GetValue(std::string *o_value) const;
 
 protected:
@@ -37,7 +37,6 @@ protected:
 	struct PosInfo
 	{
 		IterPosMark mark;
-		std::string key;
 		uint32_t offset; //Offset relative to mark&key
 	};
 
@@ -48,6 +47,8 @@ protected:
 
 	PosInfo mFilePos;
 	bool mPosValid;
+
+	std::string mCurentData;
 };
 
 }	// PandaSQL

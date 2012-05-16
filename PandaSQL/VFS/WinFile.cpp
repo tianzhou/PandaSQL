@@ -79,6 +79,13 @@ Status WinFile::ReadToDelimiter(File::Offset offset, File::Size amount, const ch
 			{
 				*o_bytesRead += strlen(delimiter);
 			}
+
+			//We want the next read starts after the separator
+			if (result.IsEOF()
+				&&*o_bytesRead < bytesRead)
+			{
+				result = Status::kOK;
+			}
 		}
 	}
 
@@ -157,5 +164,6 @@ Status WinFile::Flush()
 
 	return result;
 }
+
 
 }	// FileSystem

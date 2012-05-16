@@ -113,6 +113,8 @@ Status CVSStorage::FindFirstRecordWithPredicate(const Predicate *inPredicate, It
 {
 	Status result;
 
+	*o_iterator = this->CreateScanIterator();
+
 	return result;
 }
 
