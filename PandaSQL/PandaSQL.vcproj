@@ -742,6 +742,26 @@
 				<Filter
 					Name="Buffer"
 					>
+					<File
+						RelativePath=".\Storage\Buffer\BufMgr.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Storage\Buffer\BufMgr.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Storage\Buffer\Frame.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Storage\Buffer\Page.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Storage\Buffer\Page.h"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="CVS"
