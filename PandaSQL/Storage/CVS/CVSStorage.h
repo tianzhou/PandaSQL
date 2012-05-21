@@ -10,6 +10,7 @@ namespace PandaSQL
 
 class File;
 class HeapStore;
+class PageProxy;
 
 class CVSStorage : public IStorage
 {
@@ -39,6 +40,7 @@ private:
 	OpenMode mDataFileMode;
 
 	HeapStore *mpHeapStore;
+	PageProxy *mpPageProxy;
 
 	Iterator *mpScanIterator;
 };

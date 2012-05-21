@@ -4,6 +4,7 @@
 #include "CVSScanIterator.h"
 #include "HeapStore.h"
 #include "Storage/ITuple.h"
+#include "Storage/Buffer/PageProxy.h"
 
 #include "VFS/IVFS.h"
 #include "VFS/File.h"
@@ -11,11 +12,14 @@
 namespace PandaSQL
 {
 
+static const uint32_t kCVSPageSize = 4096; 
+
 CVSStorage::CVSStorage(IVFS *io_VFS, const std::string &inRootPath)
 :IStorage(inRootPath, io_VFS)
 ,mpDataFile(NULL)
 ,mDataFileMode(IStorage::kNone)
 ,mpHeapStore(NULL)
+,mpPageProxy(NULL)
 ,mpScanIterator(NULL)
 {
 }
@@ -23,8 +27,15 @@ CVSStorage::CVSStorage(IVFS *io_VFS, const std::string &inRootPath)
 CVSStorage::~CVSStorage()
 {
 	this->ReleaseScanIterator(mpScanIterator);
+
 	delete mpHeapStore;
+	mpHeapStore = NULL;
+
+	delete mpPageProxy;
+	mpPageProxy = NULL;
+
 	mpVFS->CloseFile(mpDataFile);
+	mpDataFile = NULL;
 }
 
 Iterator *CVSStorage::CreateScanIterator()
@@ -71,8 +82,10 @@ Status CVSStorage::OpenTable(const std::string &inTableName, OpenMode inMode)
 		mpDataFile = tableDataFile;
 		mDataFileMode = inMode;
 
+		mpPageProxy = new PageProxy(kCVSPageSize, mpDataFile);
+
 		//The data file is in heap format. Thus we use heap store to manipulate it
-		mpHeapStore = new HeapStore(tableDataFile);
+		mpHeapStore = new HeapStore(mpPageProxy);
 
 		mpScanIterator = this->CreateScanIterator();
 		PDASSERT(mpScanIterator);
@@ -83,7 +96,7 @@ Status CVSStorage::OpenTable(const std::string &inTableName, OpenMode inMode)
 
 Status CVSStorage::InsertRecord(const ITuple &inTuple)
 {
-	PDASSERT(mpDataFile);
+	PDASSERT(mpHeapStore);
 
 	Status result;
 

@@ -8,6 +8,8 @@ namespace PandaSQL
 {
 
 class Page;
+class File;
+class BufMgr;
 
 class BufHashTable
 {
@@ -29,12 +31,23 @@ private:
 	uint32_t mPageNum;
 };
 
+class BufDesc
+{
+private:
+	friend class BufMgr;
+	BufDesc();
+	~BufDesc();
+
+	uint32_t mPageNum;
+	uint8_t mBufNum;
+};
+
 class BufMgr
 {
 
 public:
 
-	BufMgr();
+	BufMgr(uint32_t inPageSize, uint32_t inBufCount, File *io_file);
 	~BufMgr();
 
 	Status PinPage(uint32_t pageNum, Page **o_page);
@@ -42,6 +55,8 @@ public:
 
 private:
 
+	BufDesc *mpBufs;
+	uint32_t mBufCount;
 };
 
 }	// PandaSQL

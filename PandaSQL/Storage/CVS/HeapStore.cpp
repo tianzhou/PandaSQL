@@ -1,12 +1,13 @@
 #include "stdafx.h"
 
 #include "HeapStore.h"
+#include "Storage/Buffer/PageProxy.h"
 
 namespace PandaSQL
 {
 
-HeapStore::HeapStore(File *io_hostedFile)
-:mpHostedFile(io_hostedFile)
+HeapStore::HeapStore(PageProxy *io_pageProxy)
+:mpPageProxy(io_pageProxy)
 {
 }
 
@@ -18,7 +19,7 @@ Status HeapStore::InsertRecord(File::Size length, const void *data)
 {
 	Status result;
 
-	result = mpHostedFile->WriteAppend(length, data, NULL);
+	//result = mpHostedFile->WriteAppend(length, data, NULL);
 
 	return result;
 }

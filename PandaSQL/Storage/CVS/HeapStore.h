@@ -6,11 +6,13 @@
 namespace PandaSQL
 {
 
+class PageProxy;
+
 class HeapStore
 {
 public:
 
-	HeapStore(File *io_hostedFile);
+	HeapStore(PageProxy *io_pageProxy);
 	~HeapStore();
 
 	Status InsertRecord(File::Size length, const void *data);
@@ -20,7 +22,7 @@ protected:
 	HeapStore(const HeapStore &rhs);
 	HeapStore& operator=(const HeapStore &rhs);
 
-	File *mpHostedFile;
+	PageProxy *mpPageProxy;
 };
 
 }	// PandaSQL

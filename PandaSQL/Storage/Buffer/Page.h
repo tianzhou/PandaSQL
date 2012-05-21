@@ -7,7 +7,7 @@
 namespace PandaSQL
 {
 
-#define PAGE_SIZE 8192
+#define INVALID_PAGE_NUM -1
 
 class Page
 {
@@ -16,7 +16,8 @@ public:
 	~Page();
 
 private:
-	char mPageData[PAGE_SIZE];
+	char *mPageData;
+	uint32_t mPageNum;
 
 };
 

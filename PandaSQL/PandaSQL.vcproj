@@ -762,6 +762,14 @@
 						RelativePath=".\Storage\Buffer\Page.h"
 						>
 					</File>
+					<File
+						RelativePath=".\Storage\Buffer\PageProxy.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Storage\Buffer\PageProxy.h"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="CVS"

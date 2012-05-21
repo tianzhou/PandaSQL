@@ -26,14 +26,28 @@ Frame::~Frame()
 {
 }
 
+//**************BufDesc*****************
+
+BufDesc::BufDesc()
+{
+}
+
+BufDesc::~BufDesc()
+{
+}
+
 //**************BufMgr*****************
 
-BufMgr::BufMgr()
+BufMgr::BufMgr(uint32_t inPageSize, uint32_t inBufCount, File *io_file)
+:
+mpBufs(new BufDesc[inBufCount])
+,mBufCount(inBufCount)
 {
 }
 
 BufMgr::~BufMgr()
 {
+	delete []mpBufs;
 }
 
 Status BufMgr::PinPage(uint32_t pageNum, Page **o_page)
