@@ -9,6 +9,7 @@ Page::Page()
 :
 mPageData(NULL)
 ,mPageNum(INVALID_PAGE_NUM)
+,mRefCount(0)
 {
 }
 

@@ -751,10 +751,6 @@
 						>
 					</File>
 					<File
-						RelativePath=".\Storage\Buffer\Frame.h"
-						>
-					</File>
-					<File
 						RelativePath=".\Storage\Buffer\Page.cpp"
 						>
 					</File>

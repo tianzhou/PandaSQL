@@ -10,6 +10,7 @@ namespace PandaSQL
 class Page;
 class File;
 class BufMgr;
+class BufDesc;
 
 class BufHashTable
 {
@@ -17,7 +18,13 @@ public:
 	BufHashTable();
 	~BufHashTable();
 
+	uint32_t Lookup(uint32_t inPageNum);
+	void Remove(uint32_t inBufNum);
+	void Insert(uint32_t inPageNum, uint32_t inBufNum);
+
 private:
+
+
 
 };
 
@@ -31,32 +38,55 @@ private:
 	uint32_t mPageNum;
 };
 
+class Replacer
+{
+public:
+	Replacer(uint32_t inBufCount, BufDesc *io_pBufDescs);
+	~Replacer();
+
+	Status IncreaseUsageCount(uint32_t inBufNum);
+	Status DecreaseUsageCount(uint32_t inBufNum);
+	uint32_t PickVictim();
+
+private:
+	uint32_t mBufCount;
+	BufDesc *mpBufDescs;
+};
+
 class BufDesc
 {
 private:
 	friend class BufMgr;
+	friend class Replacer;
 	BufDesc();
 	~BufDesc();
 
 	uint32_t mPageNum;
-	uint8_t mBufNum;
+	uint32_t mBufNum;
+	uint16_t mRefCount;
+	uint16_t mUsageCount; //Used by Replacer
+	bool mDirty;
 };
 
 class BufMgr
 {
-
 public:
 
-	BufMgr(uint32_t inPageSize, uint32_t inBufCount, File *io_file);
+	BufMgr(uint32_t inBufCount, uint32_t inPageSize, File *io_file);
 	~BufMgr();
 
-	Status PinPage(uint32_t pageNum, Page **o_page);
-	Status UnpinPage(uint32_t pageNum);
+	Status PinPage(uint32_t inPageNum, Page *o_page);
+	Status UnpinPage(uint32_t inPageNum);
 
 private:
+	BufHashTable *mpBufHash;
+	BufDesc *mpBufDescs;
+	Replacer *mpReplacer;
+	char **mpBufData;
 
-	BufDesc *mpBufs;
 	uint32_t mBufCount;
+	uint32_t mPageSize;
+	File *mpFile;
 };
 
 }	// PandaSQL

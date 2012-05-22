@@ -10,7 +10,7 @@ static const uint32_t kBufCount = 256;
 
 PageProxy::PageProxy(uint32_t inPageSize, File *io_pagedFile)
 :
-mpBufMgr(new BufMgr(inPageSize, kBufCount, io_pagedFile))
+mpBufMgr(new BufMgr(kBufCount, inPageSize, io_pagedFile))
 {
 }
 

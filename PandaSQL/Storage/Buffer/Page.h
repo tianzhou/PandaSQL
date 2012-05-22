@@ -15,9 +15,9 @@ public:
 	Page();
 	~Page();
 
-private:
 	char *mPageData;
 	uint32_t mPageNum;
+	uint32_t mRefCount;
 
 };
 
