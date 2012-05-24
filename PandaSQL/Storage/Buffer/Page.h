@@ -7,7 +7,7 @@
 namespace PandaSQL
 {
 
-#define INVALID_PAGE_NUM -1
+#define kInvalidPageNum -1
 
 class Page
 {

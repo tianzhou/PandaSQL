@@ -2,6 +2,7 @@
 
 #include "PageProxy.h"
 #include "BufMgr.h"
+#include "Page.h"
 
 namespace PandaSQL
 {
@@ -35,16 +36,37 @@ PageProxy::~PageProxy()
 //	return mpPagedFile->Flush();
 //}
 
-Status PageProxy::GetPage(uint32_t inPageNum, AccessMode inAccessMode, void *o_pageData)
+Status PageProxy::GetPage(uint32_t inPageNum, AccessFlags inAccessMode, PageData *o_pageData)
+{
+	Status result;
+
+	Page thePage;
+
+	result = mpBufMgr->PinPage(inPageNum, &thePage);
+
+	if (result.OK())
+	{
+		*o_pageData = thePage.mPageData;
+	}
+
+	return result;
+}
+
+Status PageProxy::PutPage(uint32_t inPageNum, bool isDirty, const PageData *inPageData)
 {
 	Status result;
 
 	return result;
 }
 
-Status PageProxy::PutPage(uint32_t inPageNum, bool isDirty, const void *inPageData)
+Status PageProxy::NewPage(PageData *o_pageData)
 {
 	Status result;
+
+	Page thePage;
+	uint32_t pageNum;
+
+	result = mpBufMgr->NewPage(&pageNum, &thePage);
 
 	return result;
 }
@@ -53,7 +75,7 @@ Status PageProxy::GetPageCount(uint32_t *o_pageNum) const
 {
 	Status result;
 
-	*o_pageNum = 10;
+	result = mpBufMgr->GetTotalPages(o_pageNum);
 
 	return result;
 }

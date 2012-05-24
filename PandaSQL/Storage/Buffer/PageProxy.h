@@ -16,6 +16,8 @@ class PageProxy
 {
 public:
 
+	typedef char* PageData;
+
 	PageProxy(uint32_t inPageSize, File *io_pagedFile);
 	~PageProxy();
 
@@ -29,9 +31,13 @@ public:
 		kPageWrite = 0x0002,
 	};
 
-	Status GetPage(uint32_t inPageNum, AccessMode inAccessMode, void *o_pageData);
-	Status PutPage(uint32_t inPageNum, bool isDirty, const void *inPageData);
-	
+	typedef int AccessFlags;
+
+	//Page num is zero based
+	Status GetPage(uint32_t inPageNum, AccessFlags inAccessMode, PageData *o_pageData);
+	Status PutPage(uint32_t inPageNum, bool isDirty, const PageData *inPageData);
+	Status NewPage(PageData *o_pageData);
+
 	Status GetPageCount(uint32_t *o_pageNum) const;
 
 private:

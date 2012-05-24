@@ -3,6 +3,7 @@
 #include "WinFile.h"
 
 #include <io.h>
+#include <sys/stat.h>
 
 namespace PandaSQL
 {
@@ -144,6 +145,32 @@ Status WinFile::WriteAppend(File::Size amount, const void *inBuf, File::Size *o_
 	return result;
 }
 
+Status WinFile::Append(File::Size amount, File::Size *o_bytesWritten)
+{
+	Status result;
+
+	if (fseek(mpFile, 0, SEEK_END) != 0)
+	{
+		result = Status::kIOError;
+	}
+	else
+	{
+		File::Size bytesWritten = fwrite("\0", 1, amount, mpFile);
+
+		if (bytesWritten != amount)
+		{
+			result = Status::kIOError;
+		}
+
+		if (o_bytesWritten)
+		{
+			*o_bytesWritten = bytesWritten;
+		}
+	}
+
+	return result;
+}
+
 Status WinFile::Flush()
 {
 	Status result;
@@ -161,6 +188,24 @@ Status WinFile::Flush()
 		result = Status::kIOError;
 	}
 
+	return result;
+}
+
+Status WinFile::GetSize(File::Size *o_size)
+{
+	Status result;
+	struct stat stbuf;
+
+	int fd = _fileno(mpFile);
+	
+	if (fstat(fd, &stbuf) == -1)
+	{
+		result = Status::kIOError;
+	}
+	else
+	{
+		*o_size = stbuf.st_size;
+	}
 
 	return result;
 }

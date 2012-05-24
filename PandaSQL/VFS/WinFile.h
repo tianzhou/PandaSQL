@@ -20,7 +20,9 @@ public:
 	virtual Status ReadToDelimiter(File::Offset offset, File::Size amount, const char *delimiter, bool includeDelimiter, void *o_buf, File::Size *o_bytesRead);
 	virtual Status Write(File::Offset offset, File::Size amount, const void *inBuf, File::Size *o_bytesWritten);
 	virtual Status WriteAppend(File::Size amount, const void *inBuf, File::Size *o_bytesWritten);
+	virtual Status Append(File::Size amount, File::Size *o_bytesWritten);
 	virtual Status Flush();
+	virtual Status GetSize(File::Size *o_size);
 
 private:
 	WinFile(const WinFile &rhs);

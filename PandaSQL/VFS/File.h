@@ -26,7 +26,9 @@ public:
 	virtual Status ReadToDelimiter(File::Offset offset, File::Size amount, const char *delimiter, bool includeDelimiter, void *o_buf, File::Size *o_bytesRead) = 0;
 	virtual Status Write(File::Offset offset, File::Size amount, const void *inBuf, File::Size *o_bytesWritten) = 0;
 	virtual Status WriteAppend(File::Size amount, const void *inBuf, File::Size *o_bytesWritten) = 0;
+	virtual Status Append(File::Size amount, File::Size *o_bytesWritten) = 0;
 	virtual Status Flush() = 0;
+	virtual Status GetSize(File::Size *o_size) = 0;
 
 private:
 	File(const File &rhs);

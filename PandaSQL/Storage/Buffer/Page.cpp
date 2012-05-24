@@ -8,7 +8,7 @@ namespace PandaSQL
 Page::Page()
 :
 mPageData(NULL)
-,mPageNum(INVALID_PAGE_NUM)
+,mPageNum(kInvalidPageNum)
 ,mRefCount(0)
 {
 }

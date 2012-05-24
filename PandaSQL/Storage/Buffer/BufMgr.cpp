@@ -13,27 +13,125 @@ static const uint32_t kInvalidBufNum = -1;
 
 //**************BufHashTable*****************
 
-BufHashTable::BufHashTable()
+BufHashTable::BufHashTable(uint32_t inTableSize)
+:
+mTableSize(inTableSize)
+,mppHash(new HashEntry*[inTableSize])
 {
+	for (uint32_t i = 0; i < mTableSize; i++)
+	{
+		mppHash[i] = NULL;
+	}
 }
 
 BufHashTable::~BufHashTable()
 {
+	HashEntry *pCurrentEntry = NULL;
+	HashEntry *pOldEntry = NULL;
+	for (uint32_t i = 0; i < mTableSize; i++)
+	{
+		pCurrentEntry = mppHash[i];
+		while (pCurrentEntry)
+		{
+			pOldEntry = pCurrentEntry;
+			pCurrentEntry = pOldEntry->next;
 
+			delete pOldEntry;
+		}
+
+		delete pCurrentEntry;
+	}
+	delete []mppHash;
 }
 
-uint32_t BufHashTable::Lookup(uint32_t inPageNum)
+uint32_t BufHashTable::Hash_Private(uint32_t inValue) const
 {
-	return kInvalidBufNum;
+	return inValue % mTableSize;
 }
 
-void BufHashTable::Remove(uint32_t inBufNum)
+uint32_t BufHashTable::Lookup(uint32_t inPageNum) const
 {
+	uint32_t result = kInvalidBufNum;
+
+	uint32_t hash = this->Hash_Private(inPageNum);
+
+	const HashEntry *pOneEntry = mppHash[hash];
+
+	while (pOneEntry
+			&& pOneEntry->pageNum != inPageNum)
+	{
+		pOneEntry = pOneEntry->next;
+	}
+
+	if (pOneEntry)
+	{
+		result = pOneEntry->bufNum;
+	}
+
+	return result;
+}
+
+void BufHashTable::Remove(uint32_t inPageNum, uint32_t inBufNum)
+{
+	uint32_t hash = this->Hash_Private(inPageNum);
+
+	HashEntry *pOneEntry = mppHash[hash];
+	HashEntry *pLastEntry = NULL;
+
+	while (pOneEntry
+			&& pOneEntry->bufNum != inBufNum)
+	{
+		pLastEntry = pOneEntry;
+		pOneEntry = pOneEntry->next;
+	}
+
+	if (pOneEntry)
+	{
+		//If it's header
+		if (pLastEntry == NULL)
+		{
+			mppHash[hash]->next = pOneEntry->next;
+		}
+		else
+		{
+			pLastEntry->next = pOneEntry->next;
+		}
+
+		delete pOneEntry;
+	}
 }
 	
 void BufHashTable::Insert(uint32_t inPageNum, uint32_t inBufNum)
 {
+	uint32_t hash = this->Hash_Private(inPageNum);
 
+	HashEntry *pOneEntry = mppHash[hash];
+	HashEntry *pLastEntry = NULL;
+
+	while (pOneEntry
+			&& pOneEntry->bufNum != inBufNum)
+	{
+		pLastEntry = pOneEntry;
+		pOneEntry = pOneEntry->next;
+	}
+
+	if (!pOneEntry)
+	{
+		pOneEntry = new HashEntry();
+		pOneEntry->pageNum = inPageNum;
+		pOneEntry->bufNum = inBufNum;
+		pOneEntry->next = NULL;
+
+		//If it's header
+		if (pLastEntry == NULL)
+		{
+			mppHash[hash] = pOneEntry;
+		}
+		else
+		{
+			pLastEntry->next = pOneEntry;
+		}		
+	}
 }
 
 //**************Frame*****************
@@ -127,7 +225,9 @@ uint32_t Replacer::PickVictim()
 
 BufDesc::BufDesc()
 :
-mRefCount(0)
+mPageNum(kInvalidPageNum)
+,mBufNum(kInvalidBufNum)
+,mRefCount(0)
 ,mUsageCount(0)
 ,mDirty(false)
 {
@@ -141,17 +241,17 @@ BufDesc::~BufDesc()
 
 BufMgr::BufMgr(uint32_t inBufCount, uint32_t inPageSize, File *io_file)
 :
-mpBufHash(new BufHashTable())
+mpBufHash(new BufHashTable(inBufCount))
 ,mpBufDescs(new BufDesc[inBufCount])
 ,mpReplacer(new Replacer(inBufCount, mpBufDescs))
-,mpBufData(new char*[inBufCount])
+,mppBufData(new char*[inBufCount])
 ,mBufCount(inBufCount)
 ,mPageSize(inPageSize)
 ,mpFile(io_file)
 {
 	for (uint32_t i = 0; i < mBufCount; i++)
 	{
-		mpBufData[i] = new char[mPageSize];
+		mppBufData[i] = new char[mPageSize];
 	}
 }
 
@@ -159,9 +259,9 @@ BufMgr::~BufMgr()
 {
 	for (uint32_t i = 0; i < mBufCount; i++)
 	{
-		delete []mpBufData[i];
+		delete []mppBufData[i];
 	}
-	delete []mpBufData;
+	delete []mppBufData;
 
 	delete []mpBufDescs;
 	delete mpReplacer;
@@ -181,20 +281,30 @@ Status BufMgr::PinPage(uint32_t inPageNum, Page *o_page)
 		PDASSERT(victimBuf != kInvalidBufNum);
 
 		BufDesc *pBufDesc = &mpBufDescs[victimBuf];
+
+		//TODO: Needs lock
+		//If it's not the empty slot
+		if (pBufDesc->mBufNum != kInvalidBufNum)
+		{
+			mpBufHash->Remove(pBufDesc->mPageNum, pBufDesc->mBufNum);
+		}
 		
 		//TODO: Needs lock
 		if (pBufDesc->mDirty)
 		{
 			File::Size bytesWritten = 0;
-			mpFile->Write(pBufDesc->mPageNum * mPageSize, mPageSize, mpBufData[victimBuf], &bytesWritten);
+			mpFile->Write(pBufDesc->mPageNum * mPageSize, mPageSize, mppBufData[victimBuf], &bytesWritten);
 
 			PDASSERT(bytesWritten == mPageSize);
 		}
 
 		bufNum = victimBuf;
+
+		//TODO: Needs lock
+		mpBufHash->Insert(inPageNum, bufNum);
 			
 		File::Size bytesRead = 0;
-		result = mpFile->Read(inPageNum * mPageSize, mPageSize, mpBufData[bufNum], &bytesRead);
+		result = mpFile->Read(inPageNum * mPageSize, mPageSize, mppBufData[bufNum], &bytesRead);
 		PDASSERT(result.OK());
 		PDASSERT(bytesRead == mPageSize);
 
@@ -208,7 +318,7 @@ Status BufMgr::PinPage(uint32_t inPageNum, Page *o_page)
 		mpBufDescs[bufNum].mRefCount++;
 	}
 
-	o_page->mPageData = mpBufData[bufNum];
+	o_page->mPageData = mppBufData[bufNum];
 	o_page->mPageNum = mpBufDescs[bufNum].mPageNum;
 
 	mpReplacer->IncreaseUsageCount(bufNum);
@@ -228,6 +338,43 @@ Status BufMgr::UnpinPage(uint32_t inPageNum)
 
 	mpBufDescs[bufNum].mRefCount--;
 	mpReplacer->DecreaseUsageCount(bufNum);
+
+	return result;
+}
+
+Status BufMgr::NewPage(uint32_t *o_pageNum, Page *o_page)
+{
+	Status result;
+
+	File::Size bytesWritten;
+	result = mpFile->Append(mPageSize, &bytesWritten);
+
+	if (result.OK())
+	{
+		
+	}
+
+	return result;
+}
+
+Status BufMgr::GetTotalPages(uint32_t *o_pageNum)
+{
+	Status result;
+
+	File::Size size;
+	result = mpFile->GetSize(&size);
+
+	if (result.OK())
+	{
+		*o_pageNum = size / mPageSize;
+
+		if (size % mPageSize != 0)
+		{
+			//Assume file is page aligned
+			PDASSERT(0);
+			result = Status::kIOError;
+		}
+	}
 
 	return result;
 }

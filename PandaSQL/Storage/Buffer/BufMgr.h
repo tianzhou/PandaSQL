@@ -15,17 +15,26 @@ class BufDesc;
 class BufHashTable
 {
 public:
-	BufHashTable();
+	BufHashTable(uint32_t inTableSize);
 	~BufHashTable();
 
-	uint32_t Lookup(uint32_t inPageNum);
-	void Remove(uint32_t inBufNum);
+	uint32_t Lookup(uint32_t inPageNum) const;
+	void Remove(uint32_t inPageNum, uint32_t inBufNum);
 	void Insert(uint32_t inPageNum, uint32_t inBufNum);
 
 private:
 
+	uint32_t Hash_Private(uint32_t inValue) const;
 
+	struct HashEntry
+	{
+		uint32_t pageNum;
+		uint32_t bufNum;
+		HashEntry *next;
+	};
 
+	uint32_t mTableSize;
+	HashEntry **mppHash;
 };
 
 class Frame
@@ -77,12 +86,15 @@ public:
 
 	Status PinPage(uint32_t inPageNum, Page *o_page);
 	Status UnpinPage(uint32_t inPageNum);
+	Status NewPage(uint32_t *o_pageNum, Page *o_page);
+
+	Status GetTotalPages(uint32_t *o_pageNum);
 
 private:
 	BufHashTable *mpBufHash;
 	BufDesc *mpBufDescs;
 	Replacer *mpReplacer;
-	char **mpBufData;
+	char **mppBufData;
 
 	uint32_t mBufCount;
 	uint32_t mPageSize;
