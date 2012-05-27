@@ -85,16 +85,17 @@ public:
 	~BufMgr();
 
 	Status PinPage(uint32_t inPageNum, Page *o_page);
-	Status UnpinPage(uint32_t inPageNum);
-	Status NewPage(uint32_t *o_pageNum, Page *o_page);
+	Status UnpinPage(uint32_t inPageNum, bool inDirty);
+	Status NewPage(uint32_t *o_pageNum);
 
-	Status GetTotalPages(uint32_t *o_pageNum);
+	Status GetTotalPages(uint32_t *o_pageCount);
 
 private:
 	BufHashTable *mpBufHash;
 	BufDesc *mpBufDescs;
 	Replacer *mpReplacer;
 	char **mppBufData;
+	char *mpTempBuf; //size of mPageSize
 
 	uint32_t mBufCount;
 	uint32_t mPageSize;

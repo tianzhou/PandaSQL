@@ -103,7 +103,7 @@ Status DB::CreateTable(const std::string &inCreateStmt)
 	Status result;
 
 	std::string theString = inCreateStmt + '\n';
-	result = mpTableFile->WriteAppend(theString.length(), theString.c_str(), NULL);
+	result = mpTableFile->Append(theString.length(), theString.c_str(), NULL);
 	
 	if (result.OK())
 	{

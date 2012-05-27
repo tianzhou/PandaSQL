@@ -245,6 +245,7 @@ mpBufHash(new BufHashTable(inBufCount))
 ,mpBufDescs(new BufDesc[inBufCount])
 ,mpReplacer(new Replacer(inBufCount, mpBufDescs))
 ,mppBufData(new char*[inBufCount])
+,mpTempBuf(new char[inPageSize])
 ,mBufCount(inBufCount)
 ,mPageSize(inPageSize)
 ,mpFile(io_file)
@@ -257,6 +258,8 @@ mpBufHash(new BufHashTable(inBufCount))
 
 BufMgr::~BufMgr()
 {
+	delete []mpTempBuf;
+
 	for (uint32_t i = 0; i < mBufCount; i++)
 	{
 		delete []mppBufData[i];
@@ -326,7 +329,7 @@ Status BufMgr::PinPage(uint32_t inPageNum, Page *o_page)
 	return result;
 }
 
-Status BufMgr::UnpinPage(uint32_t inPageNum)
+Status BufMgr::UnpinPage(uint32_t inPageNum, bool inDirty)
 {
 	Status result;
 
@@ -336,28 +339,53 @@ Status BufMgr::UnpinPage(uint32_t inPageNum)
 
 	PDASSERT(mpBufDescs[bufNum].mRefCount >= 1);
 
+	mpBufDescs[bufNum].mDirty = inDirty;
 	mpBufDescs[bufNum].mRefCount--;
 	mpReplacer->DecreaseUsageCount(bufNum);
 
-	return result;
-}
-
-Status BufMgr::NewPage(uint32_t *o_pageNum, Page *o_page)
-{
-	Status result;
-
-	File::Size bytesWritten;
-	result = mpFile->Append(mPageSize, &bytesWritten);
-
-	if (result.OK())
+	//TODO: Defer write 
+	if (mpBufDescs[bufNum].mRefCount == 0
+		&& mpBufDescs[bufNum].mDirty)
 	{
-		
+		//TODO: Needs lock
+		File::Size bytesWritten = 0;
+		mpFile->Write(inPageNum * mPageSize, mPageSize, mppBufData[bufNum], &bytesWritten);
+
+		PDASSERT(bytesWritten == mPageSize);
 	}
 
 	return result;
 }
 
-Status BufMgr::GetTotalPages(uint32_t *o_pageNum)
+Status BufMgr::NewPage(uint32_t *o_pageNum)
+{
+	Status result;
+
+	memset(mpTempBuf, 0, mPageSize);
+
+	File::Size bytesWritten;
+	result = mpFile->Append(mPageSize, mpTempBuf, &bytesWritten);
+
+	if (result.OK())
+	{
+		//result = mpFile->Flush();
+
+		//if (result.OK())
+		{
+			uint32_t totalPage;
+			result = this->GetTotalPages(&totalPage);
+
+			PDASSERT(totalPage > 0);
+
+			//o_pageNum is 0 based
+			*o_pageNum = totalPage - 1;
+		}
+	}
+
+	return result;
+}
+
+Status BufMgr::GetTotalPages(uint32_t *o_pageCount)
 {
 	Status result;
 
@@ -366,7 +394,7 @@ Status BufMgr::GetTotalPages(uint32_t *o_pageNum)
 
 	if (result.OK())
 	{
-		*o_pageNum = size / mPageSize;
+		*o_pageCount = size / mPageSize;
 
 		if (size % mPageSize != 0)
 		{

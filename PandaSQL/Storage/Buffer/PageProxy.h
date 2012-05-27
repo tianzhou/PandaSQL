@@ -16,8 +16,6 @@ class PageProxy
 {
 public:
 
-	typedef char* PageData;
-
 	PageProxy(uint32_t inPageSize, File *io_pagedFile);
 	~PageProxy();
 
@@ -34,11 +32,11 @@ public:
 	typedef int AccessFlags;
 
 	//Page num is zero based
-	Status GetPage(uint32_t inPageNum, AccessFlags inAccessMode, PageData *o_pageData);
-	Status PutPage(uint32_t inPageNum, bool isDirty, const PageData *inPageData);
-	Status NewPage(PageData *o_pageData);
+	Status GetPage(uint32_t inPageNum, AccessFlags inAccessMode, char **o_pageData);
+	Status PutPage(uint32_t inPageNum, bool inDirty, const char *inPageData);
+	Status NewPage(uint32_t *o_pageNum);
 
-	Status GetPageCount(uint32_t *o_pageNum) const;
+	Status GetPageCount(uint32_t *o_pageCount) const;
 
 private:
 

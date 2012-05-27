@@ -36,7 +36,7 @@ PageProxy::~PageProxy()
 //	return mpPagedFile->Flush();
 //}
 
-Status PageProxy::GetPage(uint32_t inPageNum, AccessFlags inAccessMode, PageData *o_pageData)
+Status PageProxy::GetPage(uint32_t inPageNum, AccessFlags inAccessMode, char **o_pageData)
 {
 	Status result;
 
@@ -52,30 +52,36 @@ Status PageProxy::GetPage(uint32_t inPageNum, AccessFlags inAccessMode, PageData
 	return result;
 }
 
-Status PageProxy::PutPage(uint32_t inPageNum, bool isDirty, const PageData *inPageData)
+Status PageProxy::PutPage(uint32_t inPageNum, bool inDirty, const char *inPageData)
 {
 	Status result;
+
+	result = mpBufMgr->UnpinPage(inPageNum, inDirty);
 
 	return result;
 }
 
-Status PageProxy::NewPage(PageData *o_pageData)
+Status PageProxy::NewPage(uint32_t *o_pageNum)
 {
 	Status result;
 
-	Page thePage;
 	uint32_t pageNum;
 
-	result = mpBufMgr->NewPage(&pageNum, &thePage);
+	result = mpBufMgr->NewPage(&pageNum);
+
+	if (result.OK())
+	{
+		*o_pageNum = pageNum;
+	}
 
 	return result;
 }
 
-Status PageProxy::GetPageCount(uint32_t *o_pageNum) const
+Status PageProxy::GetPageCount(uint32_t *o_pageCount) const
 {
 	Status result;
 
-	result = mpBufMgr->GetTotalPages(o_pageNum);
+	result = mpBufMgr->GetTotalPages(o_pageCount);
 
 	return result;
 }

@@ -119,7 +119,7 @@ Status WinFile::Write(File::Offset offset, File::Size amount, const void *inBuf,
 	return result;
 }
 
-Status WinFile::WriteAppend(File::Size amount, const void *inBuf, File::Size *o_bytesWritten)
+Status WinFile::Append(File::Size amount, const void *inBuf, File::Size *o_bytesWritten)
 {
 	Status result;
 
@@ -130,32 +130,6 @@ Status WinFile::WriteAppend(File::Size amount, const void *inBuf, File::Size *o_
 	else
 	{
 		File::Size bytesWritten = fwrite(inBuf, 1, amount, mpFile);
-
-		if (bytesWritten != amount)
-		{
-			result = Status::kIOError;
-		}
-
-		if (o_bytesWritten)
-		{
-			*o_bytesWritten = bytesWritten;
-		}
-	}
-
-	return result;
-}
-
-Status WinFile::Append(File::Size amount, File::Size *o_bytesWritten)
-{
-	Status result;
-
-	if (fseek(mpFile, 0, SEEK_END) != 0)
-	{
-		result = Status::kIOError;
-	}
-	else
-	{
-		File::Size bytesWritten = fwrite("\0", 1, amount, mpFile);
 
 		if (bytesWritten != amount)
 		{
