@@ -19,10 +19,12 @@ mpVFS(io_VFS)
 ,mpScanIterator(NULL)
 {
 	mpDataHost = IStorage::CreateStorage(inDBRootPath, inType, mpVFS);
+	//mpScanIterator = mpDataHost->CreateScanIterator();
 }
 
 Table::~Table()
 {
+	delete mpScanIterator;
 	delete mpDataHost;
 }
 
@@ -66,7 +68,16 @@ Status Table::InsertRecord(const ColumnRefList &columnList, const ColumnValueLis
 		oneTuple.AppendFieldData(theType, iter->text);
 	}
 
-	mpDataHost->InsertRecord(oneTuple);
+	Iterator *theIter = mpDataHost->CreateScanIterator();
+
+	result = theIter->SeekAfterLast();
+
+	if (result.OK())
+	{
+		result = theIter->InsertValue(oneTuple);
+	}
+
+	delete theIter;
 
 	return result;
 }
@@ -75,21 +86,25 @@ Status Table::SelectRecords(const ColumnRefList &columnList)
 {
 	Status result;
 
-	//TODO
-	Iterator *iter = NULL;
-	result = mpDataHost->FindFirstRecordWithPredicate(NULL, &iter);
+	Iterator *theIter = mpDataHost->CreateScanIterator();
 
-	if (result.OK())
+	while (theIter->Valid())
 	{
-		std::string o_data;
+		TupleImpl theTuple;
 
-		while (iter->Next().OK())
+		result = theIter->GetValue(&theTuple);
+
+		if (!result.OK())
 		{
-			iter->GetValue(&o_data);
-			std::cout << o_data << std::endl;
+			break;
 		}
-		
+
+		std::cout << theTuple.ToString() << std::endl;
+
+		theIter->Next();
 	}
+
+	delete theIter;
 
 	return result;
 }

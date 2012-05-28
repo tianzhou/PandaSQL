@@ -11,7 +11,8 @@ static const uint32_t kBufCount = 256;
 
 PageProxy::PageProxy(uint32_t inPageSize, File *io_pagedFile)
 :
-mpBufMgr(new BufMgr(kBufCount, inPageSize, io_pagedFile))
+mPageSize(inPageSize)
+,mpBufMgr(new BufMgr(kBufCount, inPageSize, io_pagedFile))
 {
 }
 
@@ -84,6 +85,11 @@ Status PageProxy::GetPageCount(uint32_t *o_pageCount) const
 	result = mpBufMgr->GetTotalPages(o_pageCount);
 
 	return result;
+}
+
+uint32_t PageProxy::GetPageSize() const
+{
+	return mPageSize;
 }
 
 }	// PandaSQL

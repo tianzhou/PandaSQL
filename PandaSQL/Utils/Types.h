@@ -34,7 +34,7 @@ enum DataType
 	kText = 1,
 };
 
-extern std::string kNewLineSymbol; 
+extern char kNewLineSymbol[]; 
 
 }	// namespace PandaSQL
 

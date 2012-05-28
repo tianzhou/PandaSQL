@@ -21,6 +21,8 @@ public:
 	virtual void AppendFieldData(DataType inType, const std::string &inData) = 0;
 	virtual void SetFieldData(uint32_t index, DataType inType, const std::string &inData) = 0;
 
+	virtual std::string ToString() const = 0;
+
 private:
 	ITuple(const ITuple &rhs);
 	ITuple& operator=(const ITuple &rhs);

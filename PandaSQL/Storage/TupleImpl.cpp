@@ -55,4 +55,24 @@ void TupleImpl::SetFieldData(uint32_t index, DataType inType, const std::string 
 	mValueList[index] = FieldInfo(inType, inData);
 }
 
+std::string TupleImpl::ToString() const
+{
+	std::string resultString;
+	std::string oneValue;
+
+	for (uint32_t i = 0; i < this->Count(); i++)
+	{
+		if (i != 0)
+		{
+			resultString += ' ';
+		}
+
+		this->GetDataOfField(i, &oneValue);
+
+		resultString += oneValue;
+	}
+
+	return resultString;
+}
+
 };	// PandaSQL

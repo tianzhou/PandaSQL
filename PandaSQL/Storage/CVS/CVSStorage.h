@@ -26,8 +26,8 @@ public:
 	virtual void ReleaseIndexIterator(Iterator *iter); 
 
 	virtual Status OpenTable(const std::string &inTableName, OpenMode inMode);
-	virtual Status InsertRecord(const ITuple &inTuple);
-	virtual Status FindFirstRecordWithPredicate(const Predicate *inPredicate, Iterator **o_iterator);
+	//virtual Status InsertRecord(const ITuple &inTuple);
+	//virtual Status FindFirstRecordWithPredicate(const Predicate *inPredicate, Iterator **o_iterator);
 
 private:
 

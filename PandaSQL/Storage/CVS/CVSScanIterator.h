@@ -8,45 +8,43 @@
 namespace PandaSQL
 {
 
-class File;
+class PageProxy;
 
 class CVSScanIterator : public Iterator
 {
 public:
-	CVSScanIterator(File *io_file);
+	CVSScanIterator(PageProxy *io_pageProxy);
 	virtual ~CVSScanIterator();
 
 	virtual bool Valid() const;
-	virtual Status SeekBeforeFirst();
+	virtual Status SeekToFirst();
 	virtual Status SeekAfterLast();
 	//virtual Status SeekToKey(const std::string &inKey);
 	virtual Status Next();
 	virtual Status Prev();
-	//virtual Status GetKey(std::string *o_key) const;
-	virtual Status GetValue(std::string *o_value) const;
+	//virtual Status GetKey(std::s tring *o_key) const;
+	virtual Status InsertValue(const ITuple &inTuple);
+	virtual Status UpdateValue(const ITuple &inTuple);
+	virtual Status GetValue(ITuple *o_tuple) const;
 
 protected:
-
-	enum IterPosMark
-	{
-		kBegin,
-		kEnd,
-		kNormal
-	};
 	 
 	struct PosInfo
 	{
-		IterPosMark mark;
-		uint32_t offset; //Offset relative to mark&key
+		uint32_t pageNum;
+		uint32_t offset; //Offset in page
 	};
-
+ 
 	CVSScanIterator(const CVSScanIterator &rhs);
 	CVSScanIterator& operator=(const CVSScanIterator &rhs);
 
-	File *mpFile;
+	Status Next_Inner();
 
-	PosInfo mFilePos;
-	bool mPosValid;
+	PageProxy *mpPageProxy;
+
+	PosInfo mSeekPos;
+	PosInfo mValuePos;
+	bool mPosAfterLast;
 
 	std::string mCurentData;
 };

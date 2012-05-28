@@ -31,6 +31,8 @@ public:
 	virtual void AppendFieldData(DataType inType, const std::string &inData);
 	virtual void SetFieldData(uint32_t index, DataType inType, const std::string &inData);
 
+	virtual std::string ToString() const;
+
 private:
 	TupleImpl(const TupleImpl &rhs);
 	TupleImpl& operator=(const TupleImpl &rhs);

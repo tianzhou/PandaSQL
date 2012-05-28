@@ -37,10 +37,11 @@ public:
 	Status NewPage(uint32_t *o_pageNum);
 
 	Status GetPageCount(uint32_t *o_pageCount) const;
+	uint32_t GetPageSize() const;
 
 private:
 
-	//uint32_t mPageSize;
+	uint32_t mPageSize;
 	BufMgr *mpBufMgr;
 	//File *mpPagedFile;
 	

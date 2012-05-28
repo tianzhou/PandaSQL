@@ -81,7 +81,6 @@ Status HeapStore::InsertRecord(File::Size length, const void *data)
 			}
 		}
 	}
-	//result = mpHostedFile->WriteAppend(length, data, NULL);
 
 	return result;
 }
