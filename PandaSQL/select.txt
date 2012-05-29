@@ -1,1 +1,6 @@
-SELECT id FROM Person;
+SELECT master_id
+FROM Master;
+
+SELECT master_id
+FROM Master, Detail
+WHERE master_id = detail_id;

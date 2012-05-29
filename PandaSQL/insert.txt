@@ -1,3 +1,8 @@
-INSERT INTO Person (id, name) VALUES (1, "Bob");
-INSERT INTO Person (id, name) VALUES (2, "Peter");
-INSERT INTO Person (id, name) VALUES (3, "Mary");
+INSERT INTO Master (master_id, name) VALUES (1, "Bob");
+INSERT INTO Master (master_id, name) VALUES (2, "Peter");
+INSERT INTO Master (master_id, name) VALUES (3, "Mary");
+
+INSERT INTO Detail (detail_id, course) VALUES (2, "Math");
+INSERT INTO Detail (detail_id, course) VALUES (2, "Physics");
+INSERT INTO Detail (detail_id, course) VALUES (3, "History");
+
