@@ -5,7 +5,9 @@
 namespace PandaSQL
 {
 
-Iterator::Iterator()
+Iterator::Iterator(const Predicate *inPredicate)
+:
+mpPredicate(inPredicate)
 {
 }
 

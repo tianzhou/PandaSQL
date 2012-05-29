@@ -19,7 +19,7 @@ public:
 	CVSStorage(IVFS *io_VFS, const std::string &inRootPath);
 	virtual ~CVSStorage();
 
-	virtual Iterator *CreateScanIterator();
+	virtual Iterator *CreateScanIterator(const Predicate *inPredicate = NULL);
 	virtual Iterator *CreateIndexIterator();
 
 	virtual void ReleaseScanIterator(Iterator *iter);

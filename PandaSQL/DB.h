@@ -12,6 +12,7 @@ namespace PandaSQL
 
 class IVFS;
 class File;
+class Predicate;
 
 class DB
 {
@@ -36,6 +37,7 @@ public:
 	Status LoadTable(Table *pTable);
 
 	Status InsertData(const std::string &tableName, const Table::ColumnRefList &columnList, const Table::ColumnValueList &columnValueList);
+	Status DeleteData(const std::string &tableName, const Predicate *inPredicate = NULL);
 	Status SelectData(const std::string &tableName, const Table::ColumnRefList &columnList);
 
 	const std::string& GetDBPath() const { return mDBPath; }

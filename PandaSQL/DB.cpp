@@ -10,6 +10,7 @@
 #include "Catalog/Table.h"
 
 #include "Storage/IStorage.h"
+#include "Storage/Predicate.h"
 
 namespace PandaSQL
 {
@@ -138,7 +139,23 @@ Status DB::InsertData(const std::string &tableName, const Table::ColumnRefList &
 
 	if (result.OK())
 	{
-		result = theTable->InsertRecord(columnList, columnValueList);
+		result = theTable->AddRecord(columnList, columnValueList);
+	}
+
+	return result;
+}
+
+Status DB::DeleteData(const std::string &tableName, const Predicate *inPredicate /* = NULL */)
+{
+	Status result;
+
+	Table *theTable = NULL;
+	
+	result = DB::GetTableByName(tableName, &theTable);
+
+	if (result.OK())
+	{
+		result = theTable->DeleteRecord(inPredicate);
 	}
 
 	return result;

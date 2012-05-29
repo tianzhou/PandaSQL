@@ -6,6 +6,7 @@
 
 #include "Storage/TupleImpl.h"
 #include "Storage/Iterator.h"
+#include "Storage/Predicate.h"
 
 #include <iostream>
 
@@ -38,7 +39,7 @@ Status Table::Open(IStorage::OpenMode openMode)
 	return mpDataHost->OpenTable(this->GetName(), openMode);
 }
 
-Status Table::InsertRecord(const ColumnRefList &columnList, const ColumnValueList &columnValueList)
+Status Table::AddRecord(const ColumnRefList &columnList, const ColumnValueList &columnValueList)
 {
 	Status result;
 
@@ -75,6 +76,33 @@ Status Table::InsertRecord(const ColumnRefList &columnList, const ColumnValueLis
 	if (result.OK())
 	{
 		result = theIter->InsertValue(oneTuple);
+	}
+
+	delete theIter;
+
+	return result;
+}
+
+Status Table::DeleteRecord(const Predicate *inPredicate /* = NULL */)
+{
+	Status result;
+
+	Iterator *theIter = mpDataHost->CreateScanIterator(inPredicate);
+
+	uint32_t i = 0;
+
+	while (theIter->Valid())
+	{
+		result = theIter->DeleteValue();
+
+		if (!result.OK())
+		{
+			break;
+		}
+
+		theIter->Next();
+
+		i++;
 	}
 
 	delete theIter;

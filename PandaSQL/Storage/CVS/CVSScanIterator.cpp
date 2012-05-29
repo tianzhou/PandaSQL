@@ -4,12 +4,17 @@
 #include "Storage/Buffer/PageProxy.h"
 #include "Storage/Buffer/Page.h"
 #include "Storage/ITuple.h"
+#include "Storage/TupleImpl.h"
+#include "Storage/Predicate.h"
 
 namespace PandaSQL
 {
 
-CVSScanIterator::CVSScanIterator(PageProxy *io_pageProxy)
-:mpPageProxy(io_pageProxy)
+static char kDeleteMark[] = " ";
+
+CVSScanIterator::CVSScanIterator(const Predicate *inPredicate, PageProxy *io_pageProxy)
+:Iterator(inPredicate)
+,mpPageProxy(io_pageProxy)
 {
 	this->SeekToFirst();
 }
@@ -33,67 +38,165 @@ Status CVSScanIterator::Next_Inner()
 	}
 	else
 	{
+		bool findValidPos = false;
 		char *pageData = NULL;
-		uint32_t pageCount = kInvalidPageNum;
+		uint32_t pageCount;
+		
+		result = mpPageProxy->GetPageCount(&pageCount);
 
-		do
+		if (result.OK())
 		{
-			result = mpPageProxy->GetPage(mSeekPos.pageNum
-				, PageProxy::kPageRead
-				, &pageData);
+			uint32_t currentPageNum = mSeekPos.pageNum;
 
-			if (!result.OK())
+			if (mSeekPos.pageNum + 1 > pageCount)
 			{
-				break;
+				result = Status::kEOF;
 			}
-
-			std::string theStr(pageData + mSeekPos.offset, mpPageProxy->GetPageSize() - mSeekPos.offset);
-			const char *pch = strstr(theStr.c_str(), kNewLineSymbol);
-
-			if (pch)
-			{
-				mValuePos = mSeekPos;
-
-				mSeekPos.offset += pch - theStr.c_str();
-
-				mSeekPos.offset += strlen(kNewLineSymbol);
-
-				mPosAfterLast = false;
-
-				break;
-			}
-
-			if (pageCount == kInvalidPageNum)
-			{
-				result = mpPageProxy->GetPageCount(&pageCount);
+			else
+			{	
+				result = mpPageProxy->GetPage(currentPageNum
+					, PageProxy::kPageRead
+					, &pageData);
 			}
 
 			if (result.OK())
 			{
-				if (pageCount > mSeekPos.pageNum + 1)
-				{
-					result = mpPageProxy->PutPage(mSeekPos.pageNum
-						, false
-						, pageData);
 
-					if (result.OK())
+				while (result.OK() && !findValidPos)
+				{
+					if (currentPageNum != mSeekPos.pageNum)
 					{
-						//Search for next page
-						mSeekPos.pageNum++;
-						mSeekPos.offset = 0;
+						result = mpPageProxy->GetPage(currentPageNum
+							, PageProxy::kPageRead
+							, &pageData);
+
+						if (result.OK())
+						{
+							currentPageNum = mSeekPos.pageNum;
+							result = mpPageProxy->PutPage(currentPageNum
+								, false
+								, pageData);
+						}
+
+						if (!result.OK())
+						{
+							break;
+						}
+					}
+
+					uint32_t startPos = mSeekPos.offset;
+					bool skipRecord = false;
+
+					if (!memcmp(pageData + startPos, kDeleteMark, sizeof(kDeleteMark)))
+					{
+						//Skip delete mark
+						startPos += sizeof(kDeleteMark);
+						skipRecord = true;
+					}
+
+					std::string theStr(pageData + startPos, mpPageProxy->GetPageSize() - mSeekPos.offset);
+					const char *pch = strstr(theStr.c_str(), kNewLineSymbol);
+
+					if (pch)
+					{
+						mValuePos = mSeekPos;
+
+						if (skipRecord)
+						{
+							mSeekPos.offset += sizeof(kDeleteMark);
+						}
+
+						mSeekPos.offset += pch - theStr.c_str();
+
+						mSeekPos.offset += strlen(kNewLineSymbol);
+
+						if (!skipRecord)
+						{
+							if (mpPredicate)
+							{
+								TupleImpl tuple;
+								//TODO: Hard code
+								char tempStr[4096];
+								size_t length = mSeekPos.offset - mValuePos.offset - strlen(kNewLineSymbol);
+								memcpy(tempStr, theStr.c_str(), length);
+								tempStr[length] = '\0';
+
+								char *nextToken;
+								char *pch = strtok_s(tempStr, ",", &nextToken);
+
+								while (pch != NULL)
+								{
+									tuple.AppendFieldData(kText, pch);
+									pch = strtok_s(NULL, ",", &nextToken);
+								}
+
+								for (uint32_t i = 0; i < mpPredicate->Count(); i++)
+								{
+									uint32_t fieldNum = mpPredicate->GetFieldNumOfItem(i);
+									DataType dataType = mpPredicate->GetDataTypeOfItem(i);
+									Predicate::PredicateType predicateType = mpPredicate->GetPredicateTypeOfItem(i);
+
+									std::string predicateData;
+									mpPredicate->GetDataOfItem(i, &predicateData);
+
+									if (fieldNum < tuple.Count())
+									{
+										std::string fieldData;
+										tuple.GetDataOfField(fieldNum, &fieldData);
+
+										if (predicateType == Predicate::kEqual)
+										{
+											if (fieldData != predicateData)
+											{
+												skipRecord = true;
+											}
+										}
+									}
+
+									if (skipRecord)
+									{
+										break;
+									}
+								}
+							}
+
+							if (!skipRecord)
+							{
+								findValidPos = true;
+							}
+						}
+					}
+
+					if (!findValidPos && !skipRecord)
+					{
+						if (mSeekPos.pageNum + 1 < pageCount)
+						{
+							//Search for next page
+							mSeekPos.pageNum++;
+							mSeekPos.offset = 0;
+						}
+						else
+						{
+							result = Status::kEOF;
+						}
 					}
 				}
-				else
+
+				Status localStatus = mpPageProxy->PutPage(currentPageNum
+					, false
+					, pageData);
+
+				//Override only when error happens
+				if (!localStatus.OK())
 				{
-					result = Status::kEOF;
+					result = localStatus;
 				}
 			}
 
-		}while(result.OK());
-
-		if (result.IsEOF())
-		{
-			this->SeekAfterLast();
+			if (result.IsEOF())
+			{
+				this->SeekAfterLast();
+			}
 		}
 	}
 
@@ -124,6 +227,22 @@ Status CVSScanIterator::SeekAfterLast()
 	mValuePos.pageNum = 0;
 	mValuePos.offset = 0;
 	mPosAfterLast = true;
+
+	return result;
+}
+
+Status CVSScanIterator::SeekToPredicate(const Predicate *inPredicate)
+{
+	Status result;
+
+	if (inPredicate)
+	{
+		
+	}
+	else
+	{
+		result = this->SeekToFirst();
+	}
 
 	return result;
 }
@@ -270,6 +389,37 @@ Status CVSScanIterator::UpdateValue(const ITuple &inTuple)
 	return result;
 }
 
+Status CVSScanIterator::DeleteValue()
+{
+	Status result;
+
+	if (mPosAfterLast)
+	{
+		result = Status::kEOF;
+	}
+	else
+	{
+		PDASSERT(mSeekPos.pageNum == mValuePos.pageNum);
+
+		uint32_t rowEnd = mSeekPos.offset - strlen(kNewLineSymbol);
+
+		PDASSERT(rowEnd > mValuePos.offset);
+
+		char *pageData = NULL;
+
+		result = mpPageProxy->GetPage(mSeekPos.pageNum
+			, PageProxy::kPageRead | PageProxy::kPageWrite
+			, &pageData);
+
+		size_t length = sizeof(kDeleteMark);
+		memcpy(pageData + mValuePos.offset, kDeleteMark, length);
+
+		mpPageProxy->PutPage(mSeekPos.pageNum, true, pageData);
+	}
+
+	return result;
+}
+
 Status CVSScanIterator::GetValue(ITuple *o_tuple) const
 {
 	Status result;
@@ -283,7 +433,9 @@ Status CVSScanIterator::GetValue(ITuple *o_tuple) const
 		//TODO: May expand pages
 		PDASSERT(mSeekPos.pageNum == mValuePos.pageNum);
 
-		PDASSERT(mSeekPos.offset > mValuePos.offset);
+		uint32_t rowEnd = mSeekPos.offset - strlen(kNewLineSymbol);
+
+		PDASSERT(rowEnd > mValuePos.offset);
 
 		char *pageData = NULL;
 
@@ -293,7 +445,7 @@ Status CVSScanIterator::GetValue(ITuple *o_tuple) const
 
 		//TODO: Hard code
 		char tempStr[4096];
-		size_t length = mSeekPos.offset - mValuePos.offset;
+		size_t length = rowEnd - mValuePos.offset;
 		memcpy(tempStr, &pageData[mValuePos.offset], length);
 		tempStr[length] = '\0';
 		

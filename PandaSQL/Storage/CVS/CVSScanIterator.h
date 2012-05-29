@@ -13,18 +13,20 @@ class PageProxy;
 class CVSScanIterator : public Iterator
 {
 public:
-	CVSScanIterator(PageProxy *io_pageProxy);
+	CVSScanIterator(const Predicate *inPredicate, PageProxy *io_pageProxy);
 	virtual ~CVSScanIterator();
 
 	virtual bool Valid() const;
 	virtual Status SeekToFirst();
 	virtual Status SeekAfterLast();
+	virtual Status SeekToPredicate(const Predicate *inPredicate);
 	//virtual Status SeekToKey(const std::string &inKey);
 	virtual Status Next();
 	virtual Status Prev();
 	//virtual Status GetKey(std::s tring *o_key) const;
 	virtual Status InsertValue(const ITuple &inTuple);
 	virtual Status UpdateValue(const ITuple &inTuple);
+	virtual Status DeleteValue();
 	virtual Status GetValue(ITuple *o_tuple) const;
 
 protected:

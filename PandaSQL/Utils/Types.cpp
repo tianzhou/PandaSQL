@@ -4,6 +4,6 @@
 namespace PandaSQL
 {
 
-char kNewLineSymbol[] = "\r\n";
+char *kNewLineSymbol = "\r\n";
 
 }	// PandaSQL

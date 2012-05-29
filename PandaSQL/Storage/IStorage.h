@@ -38,7 +38,7 @@ public:
 
 	virtual ~IStorage() = 0 {}
 
-	virtual Iterator *CreateScanIterator() = 0;
+	virtual Iterator *CreateScanIterator(const Predicate *inPredicate = NULL) = 0;
 	virtual Iterator *CreateIndexIterator() = 0; 
 
 	virtual void ReleaseScanIterator(Iterator *iter) = 0;

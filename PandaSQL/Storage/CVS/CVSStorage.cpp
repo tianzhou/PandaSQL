@@ -38,13 +38,13 @@ CVSStorage::~CVSStorage()
 	mpDataFile = NULL;
 }
 
-Iterator *CVSStorage::CreateScanIterator()
+Iterator *CVSStorage::CreateScanIterator(const Predicate *inPredicate /* = NULL */)
 {
 	Iterator *result = NULL;
 
 	if (mpPageProxy)
 	{
-		result = new CVSScanIterator(mpPageProxy);
+		result = new CVSScanIterator(inPredicate, mpPageProxy);
 	}
 
 	return result;

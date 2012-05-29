@@ -42,6 +42,7 @@ struct Expr
 };
 
 class Iterator;
+class Predicate;
 
 class Table
 {
@@ -61,7 +62,8 @@ public:
 	void AddColumnDef(const ColumnDef &inColumDef);
 
 	Status Open(IStorage::OpenMode openMode);
-	Status InsertRecord(const ColumnRefList &columnList, const ColumnValueList &columnValueList);
+	Status AddRecord(const ColumnRefList &columnList, const ColumnValueList &columnValueList);
+	Status DeleteRecord(const Predicate *inPredicate = NULL);
 	Status SelectRecords(const ColumnRefList &columnList);
 
 private:

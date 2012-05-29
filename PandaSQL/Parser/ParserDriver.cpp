@@ -7,6 +7,7 @@
 #include "Parser/SQLSemanticAnalyzer.h"
 
 #include "Storage/IStorage.h"
+#include "Storage/Predicate.h"
 
 #include "Utils/Status.h"
 
@@ -130,6 +131,13 @@ Status Statement::Execute(bool loadTable)
 	case kStmtSelect:
 		{
 			result = mpDB->SelectData(mTableRefs[0], mSelectColumnRefs);
+			break;
+		}
+	case kStmtDelete:
+		{
+			Predicate thePredicate;
+			thePredicate.AppendPredicateItem(1, kText, "\"Peter\"", Predicate::kEqual);
+			result = mpDB->DeleteData(mTableRefs[0], &thePredicate);
 			break;
 		}
 
