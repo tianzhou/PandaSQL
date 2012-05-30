@@ -460,6 +460,14 @@
 				Name="Utils"
 				>
 				<File
+					RelativePath=".\Utils\Predicate.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Utils\Predicate.h"
+					>
+				</File>
+				<File
 					RelativePath=".\utils\Status.cpp"
 					>
 				</File>
@@ -724,14 +732,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Storage\Predicate.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Storage\Predicate.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Storage\TupleImpl.cpp"
 					>
 				</File>
@@ -827,6 +827,10 @@
 		</File>
 		<File
 			RelativePath=".\select.txt"
+			>
+		</File>
+		<File
+			RelativePath=".\select_where.txt"
 			>
 		</File>
 	</Files>

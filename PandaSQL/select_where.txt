@@ -1,0 +1,5 @@
+SELECT master_id
+FROM Master, Detail
+WHERE master_id = detail_id AND master_id > 2
+OR course = "Math"
+;

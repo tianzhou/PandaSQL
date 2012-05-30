@@ -7,12 +7,13 @@
 #include "Parser/SQLSemanticAnalyzer.h"
 
 #include "Storage/IStorage.h"
-#include "Storage/Predicate.h"
 
+#include "Utils/Predicate.h"
 #include "Utils/Status.h"
 
 #include <fstream>
 #include <sstream>
+#include <iostream>
 
 namespace PandaSQL
 {
@@ -92,6 +93,21 @@ void Statement::AddColumnDef(const ColumnDef &inDef)
 void Statement::SetIndexRef(const std::string &inIndexRef)
 {
 	mIndexRef = inIndexRef;
+}
+
+void Statement::AddOrPredicate()
+{
+	std::cout<<"Add or predicate"<<std::endl;
+}
+
+void Statement::AddAndPredicate()
+{
+	std::cout<<"Add and predicate"<<std::endl;
+}
+
+void Statement::AddOnePredicate()
+{
+	std::cout<<"Add one predicate"<<std::endl;
 }
 
 Status Statement::Execute(bool loadTable)

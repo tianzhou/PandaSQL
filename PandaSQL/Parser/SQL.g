@@ -15,6 +15,7 @@ options
 tokens
 {
 TOK_ALL_COLUMNS;
+TOK_BINARY_OP;
 TOK_COLUMN_REF;
 TOK_CREATE_TABLE_STMT;
 TOK_CREATE_INDEX_STMT;
@@ -24,6 +25,8 @@ TOK_DELETE_STMT;
 TOK_DROP_TABLE;
 TOK_DROP_INDEX;
 TOK_FROM_CLAUSE;
+TOK_PREDICATE_OR_LIST;
+TOK_PREDICATE_AND_LIST;
 TOK_SELECT_CORE;
 TOK_SELECT_LIST;
 TOK_SELECT_STMT;
@@ -35,6 +38,7 @@ TOK_UPDATE_STMT;
 TOK_UPDATE_SET_LIST;
 TOK_UPDATE_SET;
 TOK_TABLE_REF;
+TOK_WHERE;
 }
 
 @parser::includes
@@ -150,7 +154,7 @@ select_list
 	;
 	
 from_clause
-	:	KW_FROM table_ref -> ^(TOK_FROM_CLAUSE table_ref)	
+	:	KW_FROM table_ref (COMMA table_ref)* -> ^(TOK_FROM_CLAUSE table_ref+)	
 	;
 
 update_stmt
@@ -187,9 +191,30 @@ limit_clause
 	;
 	
 where_clause
-	:	KW_WHERE
+	:	KW_WHERE predicate_list -> ^(TOK_WHERE predicate_list)
 	;
 	
+predicate_list
+	:	predicate_or (KW_OR predicate_or)* -> ^(TOK_PREDICATE_OR_LIST predicate_or+)
+	;
+	
+predicate_or
+	:	predicate_and (KW_AND predicate_and)* -> ^(TOK_PREDICATE_AND_LIST predicate_and+)
+	;
+	
+predicate_and
+	:	lexpr=expr binary_op rexpr=expr	-> ^(TOK_BINARY_OP binary_op $lexpr $rexpr)
+	;
+	
+binary_op
+	:	EQUAL
+	|	NEQ
+	|	GREATER
+	|	GEQ
+	|	LESS
+	|	LEQ
+	;
+
 group_by_clause
 	:	KW_GROUP KW_BY
 	;
@@ -326,6 +351,14 @@ KW_DESC
 	: ('D'|'d')('E'|'e')('S'|'s')('C'|'c')
 	;
 	
+KW_OR
+	: ('O'|'o')('R'|'r')
+	;
+	
+KW_AND
+	: ('A'|'a')('N'|'n')('D'|'d')
+	;
+	
 KW_INT
 	: ('I'|'i')('N'|'n')('T'|'t')
 	;
@@ -343,6 +376,16 @@ COMMA : ',' ;
 DOT : '.' ;
 	
 EQUAL : '=' ;
+
+NEQ	  : '!=' ;
+
+GREATER : '>' ;
+
+GEQ   : '>=' ;
+
+LESS  : '<' ;
+
+LEQ   : '<=' ;
 
 SEMI : ';' ;
 

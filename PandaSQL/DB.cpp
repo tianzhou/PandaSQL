@@ -10,7 +10,8 @@
 #include "Catalog/Table.h"
 
 #include "Storage/IStorage.h"
-#include "Storage/Predicate.h"
+
+#include "Utils/Predicate.h"
 
 namespace PandaSQL
 {

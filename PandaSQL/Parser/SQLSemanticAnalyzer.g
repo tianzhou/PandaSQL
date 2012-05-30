@@ -235,17 +235,65 @@ from_clause
 {
 	std::string tableRef;
 }
-	:	^(TOK_FROM_CLAUSE table_ref[tableRef])
+	:	^(TOK_FROM_CLAUSE
+			(table_ref[tableRef]
+			{
+				PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+				pDriver->GetStatement().AddTableRef(tableRef);
+			}
+			)+
+		 )
 		{
-			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-			pDriver->GetStatement().AddTableRef(tableRef);
+
 		} 	
 	;
 	
 where_clause
-	:	KW_WHERE
+	:	^(TOK_WHERE predicate_list)
 		{
 		}
+	;
+	
+predicate_list
+	:	^(TOK_PREDICATE_OR_LIST
+			(predicate_or
+			{
+				PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+				pDriver->GetStatement().AddOrPredicate();
+			})+
+		 )
+	;
+	
+predicate_or
+	:	^(TOK_PREDICATE_AND_LIST
+			(predicate_and
+			{
+				PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+				pDriver->GetStatement().AddAndPredicate();
+			})+
+		 )
+	;
+	
+predicate_and
+@init
+{
+	PandaSQL::Expr leftExpr;
+	PandaSQL::Expr rightExpr;
+}
+	:	^(TOK_BINARY_OP binary_op expr[leftExpr] expr[rightExpr])
+		{
+				PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+				pDriver->GetStatement().AddOnePredicate();
+		}
+	;
+	
+binary_op
+	:	EQUAL
+	|	NEQ
+	|	GREATER
+	|	GEQ
+	|	LESS
+	|	LEQ
 	;
 	
 update_stmt

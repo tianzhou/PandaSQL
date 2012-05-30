@@ -9,6 +9,7 @@
 
 #include "Utils/Status.h"
 #include "Utils/Types.h"
+#include "Utils/Predicate.h"
 
 #include <string>
 #include <vector>
@@ -57,6 +58,7 @@ public:
 	//For update_stmt, affected table[1]
 	//For insert_stmt, affected table[1]
 	//For delete_stmt, affected table[1]
+	//For select_stmt, affected table[1..N]
 	void AddTableRef(const std::string &inTableRef);
 
 	//For update_stmt, applied value[1..N]
@@ -68,6 +70,10 @@ public:
 
 	//For create_index_stmt
 	void SetIndexRef(const std::string &inIndexRef);
+
+	void AddOrPredicate();
+	void AddAndPredicate();
+	void AddOnePredicate();
 
 	Status Execute(bool loadTable);
 	void PrintStatement();
@@ -84,6 +90,8 @@ private:
 	Table::ColumnValueList mSetExprList;
 
 	Table::ColumnDefList mColumnDefs;
+
+	Predicate mPredicate;
 
 	std::string mIndexRef;
 };

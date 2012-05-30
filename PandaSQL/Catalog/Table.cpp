@@ -6,7 +6,8 @@
 
 #include "Storage/TupleImpl.h"
 #include "Storage/Iterator.h"
-#include "Storage/Predicate.h"
+
+#include "Utils/Predicate.h"
 
 #include <iostream>
 

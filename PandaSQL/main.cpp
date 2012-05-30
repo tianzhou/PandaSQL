@@ -51,7 +51,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 #if 1
 		PandaSQL::File *inputFile = NULL;
-		result = db.GetVFS()->OpenFile("./select.txt", false, &inputFile);
+		result = db.GetVFS()->OpenFile("./select_where.txt", false, &inputFile);
 		
 		if (result.OK())
 		{
