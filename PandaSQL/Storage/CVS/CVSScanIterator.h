@@ -24,10 +24,10 @@ public:
 	virtual Status Next();
 	virtual Status Prev();
 	//virtual Status GetKey(std::s tring *o_key) const;
-	virtual Status InsertValue(const ITuple &inTuple);
-	virtual Status UpdateValue(const ITuple &inTuple);
+	virtual Status InsertValue(const Tuple &inTuple);
+	virtual Status UpdateValue(const Tuple &inTuple);
 	virtual Status DeleteValue();
-	virtual Status GetValue(ITuple *o_tuple) const;
+	virtual Status GetValue(Tuple *o_tuple) const;
 
 protected:
 	 

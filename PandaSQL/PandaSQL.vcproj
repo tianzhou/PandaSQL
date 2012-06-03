@@ -732,19 +732,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Storage\ITuple.cpp"
+					RelativePath=".\Storage\Tuple.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Storage\ITuple.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Storage\TupleImpl.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Storage\TupleImpl.h"
+					RelativePath=".\Storage\Tuple.h"
 					>
 				</File>
 				<Filter

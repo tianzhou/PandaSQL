@@ -1,14 +1,15 @@
-#ifndef PANDASQL_TUPLEIMPL_H
-#define PANDASQL_TUPLEIMPL_H
+#ifndef PANDASQL_TUPLE_H
+#define PANDASQL_TUPLE_H
 
-#include "ITuple.h"
+#include "Utils/Status.h"
+#include "Utils/Types.h"
 
 #include <vector>
 
 namespace PandaSQL
 {
 
-class TupleImpl : public ITuple
+class Tuple
 {
 public:
 
@@ -21,8 +22,8 @@ public:
 		FieldInfo(DataType inType, const std::string &inValue);
 	};
 
-	TupleImpl();
-	virtual ~TupleImpl();
+	Tuple();
+	virtual ~Tuple();
 
 	virtual uint32_t Count() const;
 	virtual DataType GetTypeOfField(uint32_t index) const;
@@ -34,12 +35,12 @@ public:
 	virtual std::string ToString() const;
 
 private:
-	TupleImpl(const TupleImpl &rhs);
-	TupleImpl& operator=(const TupleImpl &rhs);
+	Tuple(const Tuple &rhs);
+	Tuple& operator=(const Tuple &rhs);
 
 	std::vector<FieldInfo> mValueList;
 };
 
 }	// PandaSQL
 
-#endif	// PANDASQL_TUPLEIMPL_H
+#endif	// PANDASQL_TUPLE_H

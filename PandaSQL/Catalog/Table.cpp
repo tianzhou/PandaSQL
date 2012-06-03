@@ -4,7 +4,7 @@
 
 #include "VFS/IVFS.h"
 
-#include "Storage/TupleImpl.h"
+#include "Storage/Tuple.h"
 #include "Storage/Iterator.h"
 
 #include "Utils/Predicate.h"
@@ -44,11 +44,11 @@ Status Table::AddRecord(const ColumnRefList &columnList, const ColumnValueList &
 {
 	Status result;
 
-	TupleImpl oneTuple;
+	Tuple oneTuple;
 
 	ColumnValueList::const_iterator iter = columnValueList.begin();
 
-	TupleImpl::FieldInfo oneField;
+	Tuple::FieldInfo oneField;
 
 	DataType theType;
 
@@ -119,7 +119,7 @@ Status Table::SelectRecords(const ColumnRefList &columnList)
 
 	while (theIter->Valid())
 	{
-		TupleImpl theTuple;
+		Tuple theTuple;
 
 		result = theIter->GetValue(&theTuple);
 

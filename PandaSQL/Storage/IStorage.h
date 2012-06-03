@@ -8,7 +8,7 @@ namespace PandaSQL
 {
 
 class IVFS;
-class ITuple;
+class Tuple;
 class Iterator;
 class Predicate;
 
@@ -45,7 +45,7 @@ public:
 	virtual void ReleaseIndexIterator(Iterator *iter) = 0; 
 
 	virtual Status OpenTable(const std::string &inTableName, OpenMode inMode) = 0;
-	//virtual Status InsertRecord(const ITuple &inTuple) = 0;
+	//virtual Status InsertRecord(const Tuple &inTuple) = 0;
 	//virtual Status FindFirstRecordWithPredicate(const Predicate *inPredicate, Iterator **o_iterator) = 0;
 
 protected:

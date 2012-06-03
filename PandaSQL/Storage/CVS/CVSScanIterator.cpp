@@ -3,8 +3,7 @@
 #include "CVSScanIterator.h"
 #include "Storage/Buffer/PageProxy.h"
 #include "Storage/Buffer/Page.h"
-#include "Storage/ITuple.h"
-#include "Storage/TupleImpl.h"
+#include "Storage/Tuple.h"
 
 
 #include "Utils/Predicate.h"
@@ -116,7 +115,7 @@ Status CVSScanIterator::Next_Inner()
 						{
 							if (mpPredicate)
 							{
-								TupleImpl tuple;
+								Tuple tuple;
 								//TODO: Hard code
 								char tempStr[4096];
 								size_t length = mSeekPos.offset - mValuePos.offset - strlen(kNewLineSymbol);
@@ -280,7 +279,7 @@ Status CVSScanIterator::Prev()
 //	return mStatus;
 //}
 
-Status CVSScanIterator::InsertValue(const ITuple &inTuple)
+Status CVSScanIterator::InsertValue(const Tuple &inTuple)
 {
 	Status result;
 
@@ -381,7 +380,7 @@ Status CVSScanIterator::InsertValue(const ITuple &inTuple)
 	return result;
 }
 
-Status CVSScanIterator::UpdateValue(const ITuple &inTuple)
+Status CVSScanIterator::UpdateValue(const Tuple &inTuple)
 {
 	Status result;
 
@@ -422,7 +421,7 @@ Status CVSScanIterator::DeleteValue()
 	return result;
 }
 
-Status CVSScanIterator::GetValue(ITuple *o_tuple) const
+Status CVSScanIterator::GetValue(Tuple *o_tuple) const
 {
 	Status result;
 

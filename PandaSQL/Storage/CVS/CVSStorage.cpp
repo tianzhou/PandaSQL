@@ -3,7 +3,7 @@
 #include "CVSStorage.h"
 #include "CVSScanIterator.h"
 #include "HeapStore.h"
-#include "Storage/ITuple.h"
+#include "Storage/Tuple.h"
 #include "Storage/Buffer/PageProxy.h"
 
 #include "VFS/IVFS.h"
@@ -94,7 +94,7 @@ Status CVSStorage::OpenTable(const std::string &inTableName, OpenMode inMode)
 	return result;
 }
 
-//Status CVSStorage::InsertRecord(const ITuple &inTuple)
+//Status CVSStorage::InsertRecord(const Tuple &inTuple)
 //{
 //	PDASSERT(mpHeapStore);
 //

@@ -6,7 +6,7 @@
 namespace PandaSQL
 {
 
-class ITuple;
+class Tuple;
 class Predicate;
 
 class Iterator
@@ -23,10 +23,10 @@ public:
 	virtual Status Next() = 0;
 	virtual Status Prev() = 0;
 	//virtual Status GetKey(std::string *o_key) const = 0;
-	virtual Status InsertValue(const ITuple &inTuple) = 0;
-	virtual Status UpdateValue(const ITuple &inTuple) = 0;
+	virtual Status InsertValue(const Tuple &inTuple) = 0;
+	virtual Status UpdateValue(const Tuple &inTuple) = 0;
 	virtual Status DeleteValue() = 0;
-	virtual Status GetValue(ITuple *o_tuple) const = 0;
+	virtual Status GetValue(Tuple *o_tuple) const = 0;
 
 	Status GetStatus() const { return mStatus; }
 
