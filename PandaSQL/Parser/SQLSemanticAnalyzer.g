@@ -249,51 +249,91 @@ from_clause
 	;
 	
 where_clause
-	:	^(TOK_WHERE predicate_list)
+@init
+{
+	PandaSQL::Predicate predicate;
+}
+	:	^(TOK_WHERE predicate_list[predicate])
 		{
+			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+			pDriver->GetStatement().SetPredicate(predicate);
 		}
 	;
 	
-predicate_list
+predicate_list[PandaSQL::Predicate &o_andPredicate]
+@init
+{
+	std::vector<PandaSQL::Predicate> predicateList;
+	PandaSQL::Predicate onePredicate;
+}
 	:	^(TOK_PREDICATE_OR_LIST
-			(predicate_or
+			(predicate_or[onePredicate]
 			{
-				PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-				pDriver->GetStatement().AddOrPredicate();
+				predicateList.push_back(onePredicate);
+				onePredicate.Reset();
 			})+
 		 )
+		 {
+			o_andPredicate.SetOrPredicateWithSubpredicates(predicateList);
+		 }
 	;
 	
-predicate_or
+predicate_or[PandaSQL::Predicate &o_andPredicate]
+@init
+{
+	std::vector<PandaSQL::Predicate> predicateList;
+	PandaSQL::PredicateItem predicateItem;
+}
 	:	^(TOK_PREDICATE_AND_LIST
-			(predicate_and
+			(predicate_and[predicateItem]
 			{
-				PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-				pDriver->GetStatement().AddAndPredicate();
+				PandaSQL::Predicate onePredicate;
+				onePredicate.SetSinglePredicateItem(predicateItem);
+				predicateList.push_back(onePredicate);
 			})+
 		 )
+		 {
+			o_andPredicate.SetAndPredicateWithSubpredicates(predicateList);
+		 }
 	;
 	
-predicate_and
+predicate_and[PandaSQL::PredicateItem &o_predicateItem]
 @init
 {
 	PandaSQL::Expr leftExpr;
 	PandaSQL::Expr rightExpr;
 }
-	:	^(TOK_BINARY_OP binary_op expr[leftExpr] expr[rightExpr])
+	:	^(TOK_BINARY_OP op=binary_op expr[leftExpr] expr[rightExpr])
 		{
-				PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-				pDriver->GetStatement().AddOnePredicate();
+			o_predicateItem.SetFormat(leftExpr, rightExpr, op);
 		}
 	;
 	
-binary_op
+binary_op returns [PandaSQL::PredicateItem::PredicateComparisonType comparisonType]
 	:	EQUAL
+		{
+			comparisonType =  PandaSQL::PredicateItem::kEqual;
+		}
 	|	NEQ
+		{
+			comparisonType =  PandaSQL::PredicateItem::kNotEqual;
+		}
 	|	GREATER
+		{
+			comparisonType =  PandaSQL::PredicateItem::kGreater;
+		}
 	|	GEQ
+		{
+			comparisonType =  PandaSQL::PredicateItem::kGreaterEqual;
+		}
 	|	LESS
+		{
+			comparisonType =  PandaSQL::PredicateItem::kLess;
+		}
 	|	LEQ
+		{
+			comparisonType =  PandaSQL::PredicateItem::kLessEqual;
+		}
 	;
 	
 update_stmt

@@ -13,6 +13,8 @@
 
 #include "Utils/Predicate.h"
 
+#include <iostream>
+
 namespace PandaSQL
 {
 
@@ -162,18 +164,28 @@ Status DB::DeleteData(const std::string &tableName, const Predicate *inPredicate
 	return result;
 }
 
-Status DB::SelectData(const std::string &tableName, const Table::ColumnRefList &columnList)
+Status DB::SelectData(const Table::TableRefList &tableList, const Table::ColumnRefList &columnList)
 {
 	Status result;
 
 	Table *theTable = NULL;
-	
-	result = DB::GetTableByName(tableName, &theTable);
 
-	if (result.OK())
+	for (size_t i = 0; i < tableList.size(); i++)
 	{
-		result = theTable->SelectRecords(columnList);
+		result = DB::GetTableByName(tableList[i], &theTable);
+
+		if (result.OK())
+		{
+			std::cout << "****** Select Table:" << tableList[i] << " ******" << std::endl;
+			result = theTable->SelectRecords(columnList);
+		}
+
+		if (!result.OK())
+		{
+			break;
+		}
 	}
+	
 
 	return result;
 }

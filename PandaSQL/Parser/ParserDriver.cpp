@@ -95,19 +95,9 @@ void Statement::SetIndexRef(const std::string &inIndexRef)
 	mIndexRef = inIndexRef;
 }
 
-void Statement::AddOrPredicate()
+void Statement::SetPredicate(const Predicate &inPredicate)
 {
-	std::cout<<"Add or predicate"<<std::endl;
-}
-
-void Statement::AddAndPredicate()
-{
-	std::cout<<"Add and predicate"<<std::endl;
-}
-
-void Statement::AddOnePredicate()
-{
-	std::cout<<"Add one predicate"<<std::endl;
+	mPredicate = inPredicate;
 }
 
 Status Statement::Execute(bool loadTable)
@@ -146,13 +136,19 @@ Status Statement::Execute(bool loadTable)
 		}
 	case kStmtSelect:
 		{
-			result = mpDB->SelectData(mTableRefs[0], mSelectColumnRefs);
+			result = mpDB->SelectData(mTableRefs, mSelectColumnRefs);
 			break;
 		}
 	case kStmtDelete:
 		{
 			Predicate thePredicate;
-			thePredicate.AppendPredicateItem(1, kText, "\"Peter\"", Predicate::kEqual);
+			PredicateItem predicateItem;
+
+			PandaSQL::Expr lExpr = {kExprColumnRef, "name"};
+			PandaSQL::Expr rExpr = {kExprText, "\"Peter\""};
+
+			predicateItem.SetFormat(lExpr, rExpr, PredicateItem::kEqual);
+			thePredicate.SetSinglePredicateItem(predicateItem);
 			result = mpDB->DeleteData(mTableRefs[0], &thePredicate);
 			break;
 		}

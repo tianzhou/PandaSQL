@@ -3,23 +3,29 @@
 #include "Predicate.h"
 #include "Utils/Types.h"
 
+#include <iostream>
+
 namespace PandaSQL
 {
 
-Predicate::PredicateItem::PredicateItem()
+/**************PredicateItem**************/
+
+PredicateItem::PredicateItem()
 {
 }
 
-Predicate::PredicateItem::PredicateItem(uint32_t inFieldNum, DataType inValueType, const std::string &inValue, PredicateType inPredicateType)
-:
-fieldNum(inFieldNum)
-,valueType(inValueType)
-,value(inValue)
-,predicateType(inPredicateType)
+void PredicateItem::SetFormat(const Expr &inLeftExpr, const Expr &inRightExpr, PredicateComparisonType inPredicateType)
 {
+	mLeftExpr = inLeftExpr;
+	mRightExpr = inRightExpr;
+	mComparisonType = inPredicateType;
 }
+
+/**************Predicate**************/
 
 Predicate::Predicate()
+:
+mLogicGateType(kLogicUnknown)
 {
 }
 
@@ -27,49 +33,39 @@ Predicate::~Predicate()
 {
 }
 
-uint32_t Predicate::Count() const
+void Predicate::SetSinglePredicateItem(const PredicateItem &inPredicateItem)
 {
-	return mPredicateList.size();
+	//Make sure it's not assigned before. Otherwise, it's likely a code error
+	PDASSERT(mLogicGateType == kLogicUnknown);
+
+	mLogicGateType = kLogicStandalone;
+	mPredicateItem = inPredicateItem;
 }
 
-uint32_t Predicate::GetFieldNumOfItem(uint32_t index) const
+void Predicate::SetAndPredicateWithSubpredicates(const std::vector<Predicate> inPredicateList)
 {
-	PDASSERT(index < this->Count());
+	//Make sure it's not assigned before. Otherwise, it's likely a code error
+	PDASSERT(mLogicGateType == kLogicUnknown);
 
-	return mPredicateList[index].fieldNum;
+	mLogicGateType = kLogicAnd;
+	mPredicateList = inPredicateList;
 }
 
-DataType Predicate::GetDataTypeOfItem(uint32_t index) const
+void Predicate::SetOrPredicateWithSubpredicates(const std::vector<Predicate> inPredicateList)
 {
-	PDASSERT(index < this->Count());
+	//Make sure it's not assigned before. Otherwise, it's likely a code error
+	PDASSERT(mLogicGateType == kLogicUnknown);
 
-	return mPredicateList[index].valueType;
+	mLogicGateType = kLogicOr;
+	mPredicateList = inPredicateList;
 }
 
-void Predicate::GetDataOfItem(uint32_t index, std::string *o_data) const
+void Predicate::Reset()
 {
-	PDASSERT(index < this->Count());
+	mLogicGateType = kLogicUnknown;
 
-	*o_data = mPredicateList[index].value;
-}
-
-Predicate::PredicateType Predicate::GetPredicateTypeOfItem(uint32_t index) const
-{
-	PDASSERT(index < this->Count());
-
-	return mPredicateList[index].predicateType;
-}
-
-void Predicate::AppendPredicateItem(uint32_t inFieldNum, DataType inValueType, const std::string &inData, PredicateType inPredicateType)
-{
-	mPredicateList.push_back(PredicateItem(inFieldNum, inValueType, inData, inPredicateType));
-}
-
-void Predicate::SetPredicateItem(uint32_t index, uint32_t inFieldNum, DataType inType, const std::string &inData, PredicateType inPredicateType)
-{
-	PDASSERT(index < this->Count());
-
-	mPredicateList[index] = PredicateItem(inFieldNum, inType, inData, inPredicateType);
+	mPredicateItem = PredicateItem();
+	mPredicateList.clear();
 }
 
 };	// PandaSQL

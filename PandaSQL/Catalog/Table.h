@@ -5,6 +5,7 @@
 
 #include "Storage/IStorage.h"
 
+#include "Utils/Expr.h"
 #include "Utils/Types.h"
 #include "Utils/Status.h"
 
@@ -26,19 +27,6 @@ struct ColumnDef
 	std::string columnName;
 	DataType dataType;
 	ConstraintType constraintType;
-};
-
-enum ExprType
-{
-	kExprNumber = 0,
-	kExprText = 1,
-	kExprColumnRef = 2
-};
-
-struct Expr
-{
-	ExprType type;
-	std::string text;
 };
 
 class Iterator;

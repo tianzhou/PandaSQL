@@ -71,9 +71,7 @@ public:
 	//For create_index_stmt
 	void SetIndexRef(const std::string &inIndexRef);
 
-	void AddOrPredicate();
-	void AddAndPredicate();
-	void AddOnePredicate();
+	void SetPredicate(const Predicate &inPredicate);
 
 	Status Execute(bool loadTable);
 	void PrintStatement();

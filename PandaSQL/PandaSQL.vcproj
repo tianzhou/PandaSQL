@@ -460,6 +460,14 @@
 				Name="Utils"
 				>
 				<File
+					RelativePath=".\Utils\Expr.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Utils\Expr.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Utils\Predicate.cpp"
 					>
 				</File>
