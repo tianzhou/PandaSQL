@@ -62,7 +62,7 @@ Status Table::AddRecord(const ColumnRefList &columnList, const ColumnValueList &
 		{
 			theType = kText;
 		}
-		else if (iter->type == kExprColumnRef)
+		else if (iter->type == kExprColumnDef)
 		{
 			PDASSERT(0);
 		}

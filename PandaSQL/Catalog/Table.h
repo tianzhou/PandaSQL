@@ -14,21 +14,6 @@
 namespace PandaSQL
 {
 
-enum ConstraintType
-{
-	kConstraintNone = 0,
-	kConstraintPrimaryKey = 1,
-	kConstraintUnique = 2,
-	kConstraintNotNULL = 3,
-};
-
-struct ColumnDef
-{
-	std::string columnName;
-	DataType dataType;
-	ConstraintType constraintType;
-};
-
 class Iterator;
 class Predicate;
 

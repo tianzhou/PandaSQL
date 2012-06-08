@@ -108,7 +108,11 @@ public:
 	bool IsLoadTable() const { return mLoadTable; }
 
 	static std::string GetColumnRef(const std::string &inTableName, const std::string &inColumnName);
-	static void GetIdentifier(ANTLR3_BASE_TREE *tree, std::string &o_str);
+	static void GetString(ANTLR3_BASE_TREE *tree, std::string *o_str);
+
+	static void GetExprForText(ANTLR3_BASE_TREE *tree, Expr *o_expr);
+	static void GetExprForNumber(ANTLR3_BASE_TREE *tree, Expr *o_expr);
+	static void GetExprForColumnDef(const std::string &columnRef, Expr *o_expr);
 
 privileged:
 

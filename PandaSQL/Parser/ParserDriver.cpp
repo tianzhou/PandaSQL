@@ -10,6 +10,7 @@
 
 #include "Utils/Predicate.h"
 #include "Utils/Status.h"
+#include "Utils/Types.h"
 
 #include <fstream>
 #include <sstream>
@@ -144,8 +145,15 @@ Status Statement::Execute(bool loadTable)
 			Predicate thePredicate;
 			PredicateItem predicateItem;
 
-			PandaSQL::Expr lExpr = {kExprColumnRef, "name"};
-			PandaSQL::Expr rExpr = {kExprText, "\"Peter\""};
+			PandaSQL::Expr lExpr;
+			lExpr.type = kExprColumnDef;
+
+			ColumnDef theDef = {"name", kText, kConstraintNone};
+			lExpr.columnDef = theDef;
+
+			PandaSQL::Expr rExpr;
+			rExpr.type = kExprText;
+			rExpr.text = "\"Peter\"";
 
 			predicateItem.SetFormat(lExpr, rExpr, PredicateItem::kEqual);
 			thePredicate.SetSinglePredicateItem(predicateItem);
@@ -440,13 +448,30 @@ std::string ParserDriver::GetColumnRef(const std::string &inTableName, const std
 	return result;
 }
 
-void ParserDriver::GetIdentifier(ANTLR3_BASE_TREE *tree, std::string &o_str)
+void ParserDriver::GetString(ANTLR3_BASE_TREE *tree, std::string *o_str)
 {
 	ANTLR3_COMMON_TOKEN *token = tree->getToken(tree);
 	ANTLR3_STRING *antlrString = token->getText(token);
 
-	o_str = std::string((const char *)token->start
-		, (const char *)token->stop - (const char *)token->start + 1);
+	*o_str = std::string((const char *)token->start
+			, (const char *)token->stop - (const char *)token->start + 1);
+}
+
+void ParserDriver::GetExprForText(ANTLR3_BASE_TREE *tree, Expr *o_expr)
+{
+	o_expr->type = kExprText;
+	GetString(tree, &o_expr->text);
+}
+
+void ParserDriver::GetExprForNumber(ANTLR3_BASE_TREE *tree, Expr *o_expr)
+{
+	o_expr->type = kExprNumber;
+}
+
+void ParserDriver::GetExprForColumnDef(const std::string &columnRef, Expr *o_expr)
+{
+	o_expr->type = kExprColumnDef;
+	o_expr->columnDef.columnName = columnRef;
 }
 
 }	// namespace PandaSQL
