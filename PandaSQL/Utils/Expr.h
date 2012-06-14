@@ -8,9 +8,10 @@ namespace PandaSQL
 	
 enum ExprType
 {
-	kExprNumber = 0,
-	kExprText = 1,
-	kExprColumnDef = 2
+	kExprUnknown = 0,
+	kExprNumber = 1,
+	kExprText = 2,
+	kExprColumnDef = 3
 };
 
 struct Expr

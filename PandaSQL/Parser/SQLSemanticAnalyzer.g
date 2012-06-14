@@ -75,11 +75,11 @@ column_def
 @init
 {
 	PandaSQL::ColumnDef columnDef;
-	std::string columnRef;
+	PandaSQL::ColumnQualifiedName qualifiedName;
 }
-	:	^(TOK_COLUMN_DEF column_ref[&columnRef] type=type_name constraint=column_constraint)
+	:	^(TOK_COLUMN_DEF column_ref[&qualifiedName] type=type_name constraint=column_constraint)
 		{
-			columnDef.columnName = columnRef;
+			columnDef.qualifiedName = qualifiedName;
 			columnDef.dataType = type;
 			columnDef.constraintType = constraint; 
 			
@@ -123,14 +123,14 @@ create_index_stmt
 {
 	std::string indexRef;
 	std::string tableRef;
-	std::string columnRef;
+	PandaSQL::ColumnQualifiedName qualifiedName;
 }
-	:	^(TOK_CREATE_INDEX_STMT index_ref[&indexRef] table_ref[&tableRef] column_ref[&columnRef])
+	:	^(TOK_CREATE_INDEX_STMT index_ref[&indexRef] table_ref[&tableRef] column_ref[&qualifiedName])
 		{
 			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
 			pDriver->GetStatement().SetIndexRef(indexRef);
 			pDriver->GetStatement().AddTableRef(tableRef);
-			pDriver->GetStatement().AddColumnRef(columnRef);
+			pDriver->GetStatement().AddColumnRef(qualifiedName);
 		}
 	;
 	
@@ -211,17 +211,17 @@ set_qualifier
 select_list
 @init
 {
-	std::string columnRef;
+	PandaSQL::ColumnQualifiedName qualifiedName;
 }
 	:	^(TOK_SELECT_LIST TOK_ALL_COLUMNS)
 		{
 			printf("selectList: *\n");
 		}
 	|	^(TOK_SELECT_LIST 
-			(column_ref[&columnRef]
+			(column_ref[&qualifiedName]
 			{
 				PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-				pDriver->GetStatement().AddColumnRef(columnRef);
+				pDriver->GetStatement().AddColumnRef(qualifiedName);
 			}
 			)+
 		 )
@@ -372,13 +372,13 @@ set_clause_list
 set_clause
 @init
 {
-	std::string columnRef;
+	PandaSQL::ColumnQualifiedName qualifiedName;
 	PandaSQL::Expr theExpr;
 }
-	:	^(TOK_UPDATE_SET column_ref[&columnRef] expr[&theExpr])
+	:	^(TOK_UPDATE_SET column_ref[&qualifiedName] expr[&theExpr])
 		{
 			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-			pDriver->GetStatement().AddColumnRef(columnRef);
+			pDriver->GetStatement().AddColumnRef(qualifiedName);
 			pDriver->GetStatement().AddExprRef(theExpr);
 		}
 	;
@@ -387,14 +387,14 @@ insert_stmt
 @init
 {
 	std::string tableRef;
-	std::string columnRef;
+	PandaSQL::ColumnQualifiedName qualifiedName;
 	PandaSQL::Expr theExpr;
 }
 	:	^(TOK_INSERT_STMT table_ref[&tableRef]
-			(column_ref[&columnRef]
+			(column_ref[&qualifiedName]
 			{
 				PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-				pDriver->GetStatement().AddColumnRef(columnRef);
+				pDriver->GetStatement().AddColumnRef(qualifiedName);
 			})+
 			TOK_INSERT_VALUES
 			(expr[&theExpr]
@@ -438,16 +438,17 @@ group_by_clause
 		}
 	;
 	
-column_ref[std::string *o_columnRef]
+column_ref[PandaSQL::ColumnQualifiedName *o_columnQualifiedName]
 @init
 {
 	std::string columnRef;
-	std::string tableRef = PandaSQL::Statement::kNoTable;
+	std::string tableRef;
 	bool hasTableRef = false;
 }
 	:	^(TOK_COLUMN_REF identifier[&columnRef] identifier[&tableRef]?)
 		{
-			*o_columnRef = PandaSQL::ParserDriver::GetColumnRef(tableRef, columnRef);
+			o_columnQualifiedName->columnName = columnRef;
+			o_columnQualifiedName->tableName = tableRef;
 		}
 	;
 	
@@ -477,7 +478,8 @@ identifier[std::string *o_str]
 expr[PandaSQL::Expr *o_expr]
 @init
 {
-	std::string columnRef;
+	PandaSQL::ColumnQualifiedName qualifiedName;
+	o_expr->type = PandaSQL::kExprUnknown;
 }
 	:	num=NUMBER_LITERAL
 		{
@@ -488,8 +490,8 @@ expr[PandaSQL::Expr *o_expr]
 		{
 			PandaSQL::ParserDriver::GetExprForText($str, o_expr);
 		}
-	|	column_ref[&columnRef]
+	|	column_ref[&qualifiedName]
 		{
-			PandaSQL::ParserDriver::GetExprForColumnDef(columnRef, o_expr);
+			PandaSQL::ParserDriver::GetExprForColumnDef(qualifiedName, o_expr);
 		}
 	;

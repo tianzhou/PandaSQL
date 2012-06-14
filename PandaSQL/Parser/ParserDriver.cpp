@@ -19,9 +19,6 @@
 namespace PandaSQL
 {
 
-const std::string Statement::kNoTable = "*";
-
-
 static const std::string kTableColumnSep = ".";
 
 Statement::Statement(DB *io_pDB)
@@ -71,9 +68,9 @@ void Statement::SetOriginalStmtText(const std::string inStmtText)
 	}
 }
 
-void Statement::AddColumnRef(const std::string &inColumnRef)
+void Statement::AddColumnRef(const ColumnQualifiedName &inQualifiedName)
 {
-	mSelectColumnRefs.push_back(inColumnRef);
+	mSelectColumnRefs.push_back(inQualifiedName);
 }
 
 void Statement::AddTableRef(const std::string &inTableRef)
@@ -99,6 +96,16 @@ void Statement::SetIndexRef(const std::string &inIndexRef)
 void Statement::SetPredicate(const Predicate &inPredicate)
 {
 	mPredicate = inPredicate;
+}
+
+Status Statement::Prepare()
+{
+	Status result;
+
+	result = mPredicate.Prepare(*mpDB, mTableRefs);
+	this->PrintStatement();
+
+	return result;
 }
 
 Status Statement::Execute(bool loadTable)
@@ -148,7 +155,8 @@ Status Statement::Execute(bool loadTable)
 			PandaSQL::Expr lExpr;
 			lExpr.type = kExprColumnDef;
 
-			ColumnDef theDef = {"name", kText, kConstraintNone};
+			ColumnQualifiedName qualifiedName = {"", "name"};
+			ColumnDef theDef = {qualifiedName, kText, kConstraintNone};
 			lExpr.columnDef = theDef;
 
 			PandaSQL::Expr rExpr;
@@ -170,7 +178,7 @@ Status Statement::Execute(bool loadTable)
 
 void Statement::PrintStatement()
 {
-
+	mPredicate.Print(0);
 }
 
 /**************************************************
@@ -419,6 +427,11 @@ Status ParserDriver::ParseQuery(std::string inQueryString)
 	lxr	    ->free  (lxr);	    lxr		= NULL;
 	input   ->close (input);	input	= NULL;
 
+	if (result.OK())
+	{
+		result = mStmt.Prepare();
+	}
+	
 	return result;
 }
 
@@ -432,22 +445,6 @@ Status ParserDriver::Execute()
 	return mStmt.Execute(this->IsLoadTable());
 }
 
-std::string ParserDriver::GetColumnRef(const std::string &inTableName, const std::string &inColumnName)
-{
-	std::string result;
-
-	if (inTableName == Statement::kNoTable)
-	{
-		result = inColumnName;
-	}
-	else
-	{
-		result = inTableName + kTableColumnSep + inColumnName;
-	}
-
-	return result;
-}
-
 void ParserDriver::GetString(ANTLR3_BASE_TREE *tree, std::string *o_str)
 {
 	ANTLR3_COMMON_TOKEN *token = tree->getToken(tree);
@@ -455,6 +452,17 @@ void ParserDriver::GetString(ANTLR3_BASE_TREE *tree, std::string *o_str)
 
 	*o_str = std::string((const char *)token->start
 			, (const char *)token->stop - (const char *)token->start + 1);
+}
+
+void ParserDriver::GetNumber(ANTLR3_BASE_TREE *tree, int32_t *o_num)
+{
+	ANTLR3_COMMON_TOKEN *token = tree->getToken(tree);
+	ANTLR3_STRING *antlrString = token->getText(token);
+
+	std::string tmpStr = std::string((const char *)token->start
+			, (const char *)token->stop - (const char *)token->start + 1);
+	
+	*o_num = atoi(tmpStr.c_str());
 }
 
 void ParserDriver::GetExprForText(ANTLR3_BASE_TREE *tree, Expr *o_expr)
@@ -466,12 +474,13 @@ void ParserDriver::GetExprForText(ANTLR3_BASE_TREE *tree, Expr *o_expr)
 void ParserDriver::GetExprForNumber(ANTLR3_BASE_TREE *tree, Expr *o_expr)
 {
 	o_expr->type = kExprNumber;
+	GetNumber(tree, &o_expr->number);
 }
 
-void ParserDriver::GetExprForColumnDef(const std::string &columnRef, Expr *o_expr)
+void ParserDriver::GetExprForColumnDef(const ColumnQualifiedName &inQualifiedName, Expr *o_expr)
 {
 	o_expr->type = kExprColumnDef;
-	o_expr->columnDef.columnName = columnRef;
+	o_expr->columnDef.qualifiedName = inQualifiedName;
 }
 
 }	// namespace PandaSQL

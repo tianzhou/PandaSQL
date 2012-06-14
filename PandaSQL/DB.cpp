@@ -216,5 +216,26 @@ Status DB::GetTableByName(const std::string &name, Table **o_table) const
 	return result;
 }
 
+Table* DB::GetTableByID(uint32_t inTableID) const
+{
+	Table *result = NULL;
+
+	return result;
+}
+
+uint32_t DB::GetTableIDByName(const std::string &inTableName) const
+{
+	uint32_t result = kUnknownID;
+
+	return result;
+}
+
+//uint32_t DB::GetColumnIDByName(const std::string &inColumnName) const
+//{
+//	uint32_t result = kUnknownID;
+//
+//	return result;
+//}
+
 
 }	// PandaSQL

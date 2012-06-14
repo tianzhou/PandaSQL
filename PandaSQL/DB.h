@@ -2,6 +2,7 @@
 #define PANDASQL_DB_H
 
 #include "Catalog/Table.h"
+#include "Catalog/TableCatalog.h"
 
 #include "Utils/Status.h"
 
@@ -43,11 +44,15 @@ public:
 	const std::string& GetDBPath() const { return mDBPath; }
 	IVFS* GetVFS() { return mpVFS; }
 
+	Table* GetTableByID(uint32_t inTableID) const;
+	uint32_t GetTableIDByName(const std::string &inTableName) const;
+	uint32_t GetColumnIDByName(const std::string &inColumnName) const;
+
+	Status GetTableByName(const std::string &name, Table **o_table) const;
+
 private:
 	DB(const DB &rhs);
 	DB& operator=(const DB &rhs);
-
-	Status GetTableByName(const std::string &name, Table **o_table) const;
 
 	std::string mDBPath;
 	IVFS	*mpVFS;
@@ -55,6 +60,8 @@ private:
 	File *mpTableFile;
 	std::vector<File*> mDataFileList;
 	std::vector<File*> mIndexFileList;
+
+	TableCatalog mTableCatalog;
 
 	TableList mTableList;
 };

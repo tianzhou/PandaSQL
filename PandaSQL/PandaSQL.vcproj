@@ -711,6 +711,14 @@
 					RelativePath=".\Catalog\Table.h"
 					>
 				</File>
+				<File
+					RelativePath=".\Catalog\TableCatalog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Catalog\TableCatalog.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Storage"

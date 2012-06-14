@@ -35,6 +35,29 @@ void Table::AddColumnDef(const ColumnDef &inColumDef)
 	mColumnList.push_back(inColumDef);
 }
 
+Status Table::GetColumnByName(const std::string &name, ColumnDef *o_columnDef) const
+{
+	Status result;
+
+	ColumnDefList::const_iterator iter = mColumnList.begin();
+
+	for(; iter != mColumnList.end(); iter++)
+	{
+		if (name == iter->qualifiedName.columnName)
+		{
+			*o_columnDef = *iter;
+			break;
+		}
+	}
+
+	if (iter == mColumnList.end())
+	{
+		result = Status::kColumnMissing;
+	}
+
+	return result;
+}
+
 Status Table::Open(IStorage::OpenMode openMode)
 {
 	return mpDataHost->OpenTable(this->GetName(), openMode);

@@ -42,14 +42,23 @@ enum ConstraintType
 	kConstraintNotNULL = 3,
 };
 
+struct ColumnQualifiedName
+{
+	std::string tableName;
+	std::string columnName;
+};
+
 struct ColumnDef
 {
-	std::string columnName;
+	ColumnQualifiedName qualifiedName; 
 	DataType dataType;
 	ConstraintType constraintType;
 };
 
 extern char *kNewLineSymbol; 
+
+extern uint32_t kUnknownID;
+extern uint32_t kBeginID;
 
 }	// namespace PandaSQL
 

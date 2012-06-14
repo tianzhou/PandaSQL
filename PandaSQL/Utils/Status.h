@@ -14,6 +14,7 @@ public:
 		kMemoryError = 2,
 		kIOError = 3,
 		kTableMissing = 4,
+		kColumnMissing = 5,
 	};
 
 	Status() : mState(kOK) {}

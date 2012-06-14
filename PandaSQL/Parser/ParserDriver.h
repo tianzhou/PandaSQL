@@ -37,8 +37,6 @@ public:
 		kStmtDropIndex = 8,
 	};
 
-	static const std::string kNoTable;
-
 	void Clear();
 
 	void SetOriginalStmtText(const std::string inStmtText);
@@ -50,7 +48,7 @@ public:
 	//For select_stmt, selected column[1..N]
 	//For insert_stmt, affected column[1..N]
 	//For update_stmt, affected column[1..N]
-	void AddColumnRef(const std::string &inColumnRef);
+	void AddColumnRef(const ColumnQualifiedName &inQualifiedName);
 
 	//For create_table_stmt, created table[1]
 	//For create_index_stmt, affected table[1]
@@ -66,12 +64,15 @@ public:
 	void AddExprRef(const Expr &inExpr);
 
 	//For cerate_table_stmt, column def[1..N]
-	void AddColumnDef(const ColumnDef &inDef);
+	void AddColumnDef(const ColumnDef &inDef); 
 
 	//For create_index_stmt
 	void SetIndexRef(const std::string &inIndexRef);
 
 	void SetPredicate(const Predicate &inPredicate);
+
+	//Rewrite statment. e.g. Translate to fully qualified column name
+	Status Prepare();
 
 	Status Execute(bool loadTable);
 	void PrintStatement();
@@ -107,12 +108,12 @@ public:
 	void SetLoadTable(bool isLoadTable) { mLoadTable = isLoadTable; }
 	bool IsLoadTable() const { return mLoadTable; }
 
-	static std::string GetColumnRef(const std::string &inTableName, const std::string &inColumnName);
 	static void GetString(ANTLR3_BASE_TREE *tree, std::string *o_str);
+	static void GetNumber(ANTLR3_BASE_TREE *tree, int32_t *o_num);
 
 	static void GetExprForText(ANTLR3_BASE_TREE *tree, Expr *o_expr);
 	static void GetExprForNumber(ANTLR3_BASE_TREE *tree, Expr *o_expr);
-	static void GetExprForColumnDef(const std::string &columnRef, Expr *o_expr);
+	static void GetExprForColumnDef(const ColumnQualifiedName &inQualifiedName, Expr *o_expr);
 
 privileged:
 

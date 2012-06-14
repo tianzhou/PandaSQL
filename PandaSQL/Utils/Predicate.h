@@ -1,6 +1,7 @@
 #ifndef PANDASQL_PREDICATE_H
 #define PANDASQL_PREDICATE_H
 
+#include "Catalog/Table.h"
 #include "Utils/Expr.h"
 #include "Utils/Types.h"
 
@@ -8,6 +9,8 @@
 
 namespace PandaSQL
 {
+
+class DB;
 
 class PredicateItem
 {
@@ -26,6 +29,9 @@ public:
 
 	PredicateItem();
 	void SetFormat(const Expr &inLeftExpr, const Expr &inRightExpr, PredicateComparisonType inPredicateType);
+
+	void Print(uint32_t level) const;
+	Status Prepare(const DB &inDB, const Table::TableRefList inTableRefList);
 
 private:
 
@@ -46,6 +52,9 @@ public:
 	void SetAndPredicateWithSubpredicates(const std::vector<Predicate> inPredicateList);
 	void SetOrPredicateWithSubpredicates(const std::vector<Predicate> inPredicateList);
 	void Reset();
+
+	void Print(uint32_t level) const;
+	Status Prepare(const DB &inDB, const Table::TableRefList inTableRefList);
 
 private:
 	enum PredicateLogicGateType
