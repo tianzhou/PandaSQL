@@ -121,10 +121,11 @@ Status Statement::Execute(bool loadTable)
 				Table *theTable = new Table(mpDB->GetDBPath(), IStorage::kCVS, mpDB->GetVFS());
 				theTable->SetName(mTableRefs[0]);
 
-				Table::ColumnDefList::const_iterator iter = mColumnDefs.begin();
+				Table::ColumnDefList::iterator iter = mColumnDefs.begin();
 
 				for (; iter != mColumnDefs.end(); iter++)
 				{
+					iter->qualifiedName.tableName = theTable->GetName();
 					theTable->AddColumnDef(*iter);
 				}
 

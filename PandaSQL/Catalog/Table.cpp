@@ -32,6 +32,8 @@ Table::~Table()
 
 void Table::AddColumnDef(const ColumnDef &inColumDef)
 {
+	PDASSERT(inColumDef.qualifiedName.tableName == this->GetName());
+
 	mColumnList.push_back(inColumDef);
 }
 

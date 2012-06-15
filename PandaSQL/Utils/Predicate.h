@@ -31,7 +31,9 @@ public:
 	void SetFormat(const Expr &inLeftExpr, const Expr &inRightExpr, PredicateComparisonType inPredicateType);
 
 	void Print(uint32_t level) const;
-	Status Prepare(const DB &inDB, const Table::TableRefList inTableRefList);
+
+	//inTableRefList: available table context
+	Status Prepare(const DB &inDB, const Table::TableRefList &inTableRefList);
 
 private:
 
@@ -54,7 +56,7 @@ public:
 	void Reset();
 
 	void Print(uint32_t level) const;
-	Status Prepare(const DB &inDB, const Table::TableRefList inTableRefList);
+	Status Prepare(const DB &inDB, const Table::TableRefList &inTableRefList);
 
 private:
 	enum PredicateLogicGateType

@@ -460,6 +460,14 @@
 				Name="Utils"
 				>
 				<File
+					RelativePath=".\Utils\Common.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Utils\Common.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Utils\Expr.cpp"
 					>
 				</File>
@@ -703,6 +711,14 @@
 			<Filter
 				Name="Catalog"
 				>
+				<File
+					RelativePath=".\Catalog\Column.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Catalog\Column.h"
+					>
+				</File>
 				<File
 					RelativePath=".\Catalog\Table.cpp"
 					>

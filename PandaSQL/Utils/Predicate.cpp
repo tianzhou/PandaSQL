@@ -3,6 +3,7 @@
 #include "Predicate.h"
 #include "DB.h"
 #include "Utils/Types.h"
+#include "Utils/Common.h"
 
 #include <iostream>
 
@@ -93,51 +94,20 @@ void PredicateItem::Print(uint32_t level) const
 	}
 }
 
-Status PredicateItem::Prepare(const DB &inDB, const Table::TableRefList inTableRefList)
+Status PredicateItem::Prepare(const DB &inDB, const Table::TableRefList &inTableRefList)
 {
 	Status result;
 
 	if (mLeftExpr.type == kExprColumnDef)
 	{
-		if (mLeftExpr.columnDef.qualifiedName.tableName.empty())
-		{
-			Table::TableRefList::const_iterator iter = inTableRefList.begin();
-
-			for (; iter != inTableRefList.end(); iter++)
-			{
-				Table *theTable;
-
-				result = inDB.GetTableByName(*iter, &theTable);
-
-				if (result.OK())
-				{
-					Status localStatus = theTable->GetColumnByName(mLeftExpr.columnDef.qualifiedName.columnName, &mLeftExpr.columnDef);
-
-					if (localStatus.OK())
-					{
-						mLeftExpr.columnDef.qualifiedName.tableName = theTable->GetName();
-						break;
-					}
-				}
-			}
-
-			if (iter == inTableRefList.end())
-			{
-				result = Status::kColumnMissing;
-			}
-		}
-		else
-		{
-			Table *theTable;
-			result = inDB.GetTableByName(mLeftExpr.columnDef.qualifiedName.tableName, &theTable);
-		}
+		result = AmendColumnDef(inDB, inTableRefList, &mLeftExpr.columnDef);
 	}
 
 	if (result.OK())
 	{
 		if (mRightExpr.type == kExprColumnDef)
 		{
-			mRightExpr.columnDef.qualifiedName.tableName = "yyy";
+			result = AmendColumnDef(inDB, inTableRefList, &mRightExpr.columnDef);
 		}
 	}
 
@@ -230,7 +200,7 @@ void Predicate::Print(uint32_t level) const
 	}	
 }
 
-Status Predicate::Prepare(const DB &inDB, const Table::TableRefList inTableRefList)
+Status Predicate::Prepare(const DB &inDB, const Table::TableRefList &inTableRefList)
 {
 	Status result;
 

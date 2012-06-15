@@ -1,6 +1,8 @@
 #ifndef PANDASQL_TABLE_H
 #define PANDASQL_TABLE_H
 
+#include "Column.h"
+
 #include "VFS/IVFS.h"
 
 #include "Storage/IStorage.h"

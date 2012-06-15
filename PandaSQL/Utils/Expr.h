@@ -1,6 +1,7 @@
 #ifndef PANDASQL_EXPR_H
 #define PANDASQL_EXPR_H
 
+#include "Catalog/Column.h"
 #include "Utils/Types.h"
 
 namespace PandaSQL

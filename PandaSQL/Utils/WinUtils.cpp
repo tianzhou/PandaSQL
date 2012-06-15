@@ -3,6 +3,9 @@
 
 #include "WinUtils.h"
 
+namespace PandaSQL
+{
+
 std::wstring s2ws(const std::string& inStr)
 {
 	std::wstring result;
@@ -33,3 +36,6 @@ std::wstring s2ws(const std::string& inStr)
 
 	return result;
 }
+
+}	// PandaSQL
+

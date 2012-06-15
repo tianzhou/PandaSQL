@@ -42,19 +42,6 @@ enum ConstraintType
 	kConstraintNotNULL = 3,
 };
 
-struct ColumnQualifiedName
-{
-	std::string tableName;
-	std::string columnName;
-};
-
-struct ColumnDef
-{
-	ColumnQualifiedName qualifiedName; 
-	DataType dataType;
-	ConstraintType constraintType;
-};
-
 extern char *kNewLineSymbol; 
 
 extern uint32_t kUnknownID;
