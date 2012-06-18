@@ -17,9 +17,11 @@ struct ColumnQualifiedName
 
 struct ColumnDef
 {
-	ColumnQualifiedName qualifiedName; 
+	ColumnQualifiedName qualifiedName;
+	uint32_t index;
 	DataType dataType;
 	ConstraintType constraintType;
+	ColumnDef();
 };
 
 }	// PandaSQL

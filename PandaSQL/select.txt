@@ -1,6 +1,5 @@
 SELECT master_id
 FROM Master;
 
-SELECT master_id
-FROM Master, Detail
-WHERE master_id = detail_id;
+SELECT detail_id
+FROM Detail;

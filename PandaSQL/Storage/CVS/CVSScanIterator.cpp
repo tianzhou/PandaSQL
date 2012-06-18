@@ -131,37 +131,10 @@ Status CVSScanIterator::Next_Inner()
 									pch = strtok_s(NULL, ",", &nextToken);
 								}
 
-								//for (uint32_t i = 0; i < mpPredicate->Count(); i++)
-								//{
-								//	uint32_t fieldNum = mpPredicate->GetFieldNumOfItem(i);
-								//	DataType dataType = mpPredicate->GetDataTypeOfItem(i);
-								//	Predicate::PredicateType predicateType = mpPredicate->GetPredicateTypeOfItem(i);
-
-								//	std::string predicateData;
-								//	mpPredicate->GetDataOfItem(i, &predicateData);
-
-								//	if (fieldNum < tuple.Count())
-								//	{
-								//		std::string fieldData;
-								//		tuple.GetDataOfField(fieldNum, &fieldData);
-
-								//		if (predicateType == Predicate::kEqual)
-								//		{
-								//			if (fieldData != predicateData)
-								//			{
-								//				skipRecord = true;
-								//			}
-								//		}
-								//	}
-
-								//	if (skipRecord)
-								//	{
-								//		break;
-								//	}
-								//}
+								skipRecord = !mpPredicate->Eval(tuple);
+								findValidPos = !skipRecord;
 							}
-
-							if (!skipRecord)
+							else
 							{
 								findValidPos = true;
 							}

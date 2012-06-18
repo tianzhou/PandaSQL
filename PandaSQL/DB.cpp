@@ -164,7 +164,7 @@ Status DB::DeleteData(const std::string &tableName, const Predicate *inPredicate
 	return result;
 }
 
-Status DB::SelectData(const Table::TableRefList &tableList, const Table::ColumnRefList &columnList)
+Status DB::SelectData(const Table::TableRefList &tableList, const Table::ColumnRefList &columnList, const Predicate *inPredicate /*= NULL*/)
 {
 	Status result;
 
@@ -177,7 +177,7 @@ Status DB::SelectData(const Table::TableRefList &tableList, const Table::ColumnR
 		if (result.OK())
 		{
 			std::cout << "****** Select Table:" << tableList[i] << " ******" << std::endl;
-			result = theTable->SelectRecords(columnList);
+			result = theTable->SelectRecords(columnList, inPredicate);
 		}
 
 		if (!result.OK())

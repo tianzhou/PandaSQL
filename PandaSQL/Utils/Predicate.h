@@ -11,6 +11,7 @@ namespace PandaSQL
 {
 
 class DB;
+class Tuple;
 
 class PredicateItem
 {
@@ -35,6 +36,8 @@ public:
 	//inTableRefList: available table context
 	Status Prepare(const DB &inDB, const Table::TableRefList &inTableRefList);
 
+	bool Eval(const Tuple &inTuple) const;
+
 private:
 
 	Expr mLeftExpr;
@@ -57,6 +60,8 @@ public:
 
 	void Print(uint32_t level) const;
 	Status Prepare(const DB &inDB, const Table::TableRefList &inTableRefList);
+	
+	bool Eval(const Tuple &inTuple) const;
 
 private:
 	enum PredicateLogicGateType

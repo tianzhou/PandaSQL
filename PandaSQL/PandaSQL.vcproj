@@ -857,6 +857,10 @@
 			RelativePath=".\select_where.txt"
 			>
 		</File>
+		<File
+			RelativePath=".\select_where_join.txt"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

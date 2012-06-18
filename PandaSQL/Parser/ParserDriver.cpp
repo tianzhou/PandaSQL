@@ -145,7 +145,7 @@ Status Statement::Execute(bool loadTable)
 		}
 	case kStmtSelect:
 		{
-			result = mpDB->SelectData(mTableRefs, mSelectColumnRefs);
+			result = mpDB->SelectData(mTableRefs, mSelectColumnRefs, &mPredicate);
 			break;
 		}
 	case kStmtDelete:
@@ -157,7 +157,12 @@ Status Statement::Execute(bool loadTable)
 			lExpr.type = kExprColumnDef;
 
 			ColumnQualifiedName qualifiedName = {"", "name"};
-			ColumnDef theDef = {qualifiedName, kText, kConstraintNone};
+			ColumnDef theDef;
+			theDef.qualifiedName = qualifiedName;
+			theDef.index = kInvalidColumnIndex;
+			theDef.dataType = kText;
+			theDef.constraintType = kConstraintNone;
+			
 			lExpr.columnDef = theDef;
 
 			PandaSQL::Expr rExpr;
@@ -407,7 +412,7 @@ Status ParserDriver::ParseQuery(std::string inQueryString)
 
 			if (!this->IsLoadTable())
 			{
-				printf("Nodes: %s\n", langAST.tree->toStringTree(langAST.tree)->chars);
+				printf("\nNodes: %s\n", langAST.tree->toStringTree(langAST.tree)->chars);
 			}
 
 			// Tree parsers are given a common tree node stream (or your override)

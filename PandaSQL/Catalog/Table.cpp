@@ -43,13 +43,16 @@ Status Table::GetColumnByName(const std::string &name, ColumnDef *o_columnDef) c
 
 	ColumnDefList::const_iterator iter = mColumnList.begin();
 
+	uint32_t index = 0;
 	for(; iter != mColumnList.end(); iter++)
 	{
 		if (name == iter->qualifiedName.columnName)
 		{
 			*o_columnDef = *iter;
+			o_columnDef->index = index;
 			break;
 		}
+		index++;
 	}
 
 	if (iter == mColumnList.end())
@@ -136,11 +139,11 @@ Status Table::DeleteRecord(const Predicate *inPredicate /* = NULL */)
 	return result;
 }
 
-Status Table::SelectRecords(const ColumnRefList &columnList)
+Status Table::SelectRecords(const ColumnRefList &columnList, const Predicate *inPredicate /*= NULL*/)
 {
 	Status result;
 
-	Iterator *theIter = mpDataHost->CreateScanIterator();
+	Iterator *theIter = mpDataHost->CreateScanIterator(inPredicate);
 
 	while (theIter->Valid())
 	{

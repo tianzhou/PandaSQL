@@ -7,6 +7,8 @@
 #include "Catalog/Table.h"
 #include "Catalog/Column.h"
 
+#include <sstream>
+
 namespace PandaSQL
 {
 
@@ -77,5 +79,20 @@ Status AmendColumnDef(const DB &inDB, const TableRefList &inTableRefList, Column
 	return result;
 
 }
+
+void StringToNumber(const std::string &inStr, uint32_t *o_num)
+{
+	*o_num = atoi(inStr.c_str());
+}
+
+void NumberToString(const uint32_t inNum, std::string *o_str)
+{
+	std::stringstream convert;
+
+	convert << inNum;
+
+	*o_str = convert.str();
+}
+
 
 }	// PandaSQL

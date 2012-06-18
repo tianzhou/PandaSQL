@@ -39,7 +39,7 @@ public:
 
 	Status InsertData(const std::string &tableName, const Table::ColumnRefList &columnList, const Table::ColumnValueList &columnValueList);
 	Status DeleteData(const std::string &tableName, const Predicate *inPredicate = NULL);
-	Status SelectData(const Table::TableRefList &tableList, const Table::ColumnRefList &columnList);
+	Status SelectData(const Table::TableRefList &tableList, const Table::ColumnRefList &columnList, const Predicate *inPredicate = NULL);
 
 	const std::string& GetDBPath() const { return mDBPath; }
 	IVFS* GetVFS() { return mpVFS; }

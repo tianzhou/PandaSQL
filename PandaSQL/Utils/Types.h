@@ -30,8 +30,9 @@ typedef unsigned long long uint64_t;
 //DB Types
 enum DataType
 {
-	kInt = 0,
-	kText = 1,
+	kUnknownType = 0,
+	kInt = 1,
+	kText = 2,
 };
 
 enum ConstraintType
@@ -46,6 +47,8 @@ extern char *kNewLineSymbol;
 
 extern uint32_t kUnknownID;
 extern uint32_t kBeginID;
+
+extern uint32_t kInvalidColumnIndex;
 
 }	// namespace PandaSQL
 

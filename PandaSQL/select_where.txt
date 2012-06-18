@@ -1,5 +1,4 @@
 SELECT master_id
-FROM Master, Detail
-WHERE master_id = detail_id
-OR master_id > 2 AND detail_id = 1
+FROM Master
+WHERE master_id = 2 or master_id = 1
 ;

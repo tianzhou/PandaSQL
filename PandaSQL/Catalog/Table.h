@@ -41,7 +41,7 @@ public:
 	Status Open(IStorage::OpenMode openMode);
 	Status AddRecord(const ColumnRefList &columnList, const ColumnValueList &columnValueList);
 	Status DeleteRecord(const Predicate *inPredicate = NULL);
-	Status SelectRecords(const ColumnRefList &columnList);
+	Status SelectRecords(const ColumnRefList &columnList, const Predicate *inPredicate = NULL);
 
 private:
 	
