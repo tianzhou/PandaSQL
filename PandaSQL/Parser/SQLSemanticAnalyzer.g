@@ -130,7 +130,7 @@ create_index_stmt
 			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
 			pDriver->GetStatement().SetIndexRef(indexRef);
 			pDriver->GetStatement().AddTableRef(tableRef);
-			pDriver->GetStatement().AddColumnRef(qualifiedName);
+			pDriver->GetStatement().AddColumnDefWithName(qualifiedName);
 		}
 	;
 	
@@ -221,7 +221,7 @@ select_list
 			(column_ref[&qualifiedName]
 			{
 				PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-				pDriver->GetStatement().AddColumnRef(qualifiedName);
+				pDriver->GetStatement().AddColumnDefWithName(qualifiedName);
 			}
 			)+
 		 )
@@ -378,7 +378,7 @@ set_clause
 	:	^(TOK_UPDATE_SET column_ref[&qualifiedName] expr[&theExpr])
 		{
 			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-			pDriver->GetStatement().AddColumnRef(qualifiedName);
+			pDriver->GetStatement().AddColumnDefWithName(qualifiedName);
 			pDriver->GetStatement().AddExprRef(theExpr);
 		}
 	;
@@ -394,7 +394,7 @@ insert_stmt
 			(column_ref[&qualifiedName]
 			{
 				PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-				pDriver->GetStatement().AddColumnRef(qualifiedName);
+				pDriver->GetStatement().AddColumnDefWithName(qualifiedName);
 			})+
 			TOK_INSERT_VALUES
 			(expr[&theExpr]

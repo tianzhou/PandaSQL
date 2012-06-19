@@ -44,12 +44,6 @@ public:
 	void SetStatementType(StatementType inStmtType) { mStmtType = inStmtType; }
 	StatementType GetStatementType() const { return mStmtType; }
 
-	//For create_index_stmt, indexed column[1]
-	//For select_stmt, selected column[1..N]
-	//For insert_stmt, affected column[1..N]
-	//For update_stmt, affected column[1..N]
-	void AddColumnRef(const ColumnQualifiedName &inQualifiedName);
-
 	//For create_table_stmt, created table[1]
 	//For create_index_stmt, affected table[1]
 	//For drop_table_stmt, affected table[1]
@@ -62,6 +56,12 @@ public:
 	//For update_stmt, applied value[1..N]
 	//For insert_stmt, applied value[1..N]
 	void AddExprRef(const Expr &inExpr);
+
+	//For create_index_stmt, indexed column[1]
+	//For select_stmt, selected column[1..N]
+	//For insert_stmt, affected column[1..N]
+	//For update_stmt, affected column[1..N]
+	void AddColumnDefWithName(const ColumnQualifiedName &inQualifiedName);
 
 	//For cerate_table_stmt, column def[1..N]
 	void AddColumnDef(const ColumnDef &inDef); 
@@ -83,7 +83,6 @@ private:
 	std::string	mOrigStmtText;
 
 	StatementType mStmtType;
-	Table::ColumnRefList mSelectColumnRefs;
 	Table::TableRefList mTableRefs;
 
 	Table::ColumnValueList mSetExprList;

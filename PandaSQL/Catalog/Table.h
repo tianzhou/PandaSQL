@@ -26,7 +26,6 @@ public:
 
 	typedef std::vector<std::string> TableRefList;
 	typedef std::vector<ColumnDef> ColumnDefList;
-	typedef std::vector<ColumnQualifiedName> ColumnRefList;
 	typedef std::vector<Expr> ColumnValueList;
 
 	Table(const std::string &inDBRootPath, IStorage::StorageType inType, IVFS *io_VFS);
@@ -39,9 +38,9 @@ public:
 	Status GetColumnByName(const std::string &name, ColumnDef *o_columnDef) const;
 
 	Status Open(IStorage::OpenMode openMode);
-	Status AddRecord(const ColumnRefList &columnList, const ColumnValueList &columnValueList);
+	Status AddRecord(const ColumnDefList &columnList, const ColumnValueList &columnValueList);
 	Status DeleteRecord(const Predicate *inPredicate = NULL);
-	Status SelectRecords(const ColumnRefList &columnList, const Predicate *inPredicate = NULL);
+	Status SelectRecords(const ColumnDefList &columnList, const Predicate *inPredicate = NULL);
 
 private:
 	

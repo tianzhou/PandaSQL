@@ -68,7 +68,7 @@ Status Table::Open(IStorage::OpenMode openMode)
 	return mpDataHost->OpenTable(this->GetName(), openMode);
 }
 
-Status Table::AddRecord(const ColumnRefList &columnList, const ColumnValueList &columnValueList)
+Status Table::AddRecord(const ColumnDefList &columnList, const ColumnValueList &columnValueList)
 {
 	Status result;
 
@@ -139,7 +139,7 @@ Status Table::DeleteRecord(const Predicate *inPredicate /* = NULL */)
 	return result;
 }
 
-Status Table::SelectRecords(const ColumnRefList &columnList, const Predicate *inPredicate /*= NULL*/)
+Status Table::SelectRecords(const ColumnDefList &columnList, const Predicate *inPredicate /*= NULL*/)
 {
 	Status result;
 

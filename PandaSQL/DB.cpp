@@ -32,7 +32,7 @@ create_if_missing(false)
 
 DB::DB()
 :
-mpVFS(create_vfs())
+mpVFS(NULL)
 ,mpMainFile(NULL)
 ,mpTableFile(NULL)
 {
@@ -50,6 +50,11 @@ Status DB::Open(const std::string &inDBPath, const Options &inOptions)
 	Status result;
 
 	mDBPath = inDBPath;
+
+	if (!mpVFS)
+	{
+		mpVFS = create_vfs();
+	}
 
 	if (!mpVFS->IsFileExist(inDBPath))
 	{
@@ -75,6 +80,11 @@ Status DB::Open(const std::string &inDBPath, const Options &inOptions)
 				result = parser.LoadFromFile(mpTableFile);
 			}
 		}
+	}
+
+	if (!result.OK())
+	{
+		this->Close();
 	}
 
 	return result;
@@ -132,7 +142,7 @@ Status DB::LoadTable(Table *pTable)
 	return result;
 }
 
-Status DB::InsertData(const std::string &tableName, const Table::ColumnRefList &columnList, const Table::ColumnValueList &columnValueList)
+Status DB::InsertData(const std::string &tableName, const Table::ColumnDefList &columnList, const Table::ColumnValueList &columnValueList)
 {
 	Status result;
 
@@ -164,7 +174,7 @@ Status DB::DeleteData(const std::string &tableName, const Predicate *inPredicate
 	return result;
 }
 
-Status DB::SelectData(const Table::TableRefList &tableList, const Table::ColumnRefList &columnList, const Predicate *inPredicate /*= NULL*/)
+Status DB::SelectData(const Table::TableRefList &tableList, const Table::ColumnDefList &columnList, const Predicate *inPredicate /*= NULL*/)
 {
 	Status result;
 

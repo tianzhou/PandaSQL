@@ -11,6 +11,7 @@
 #include "Utils/Predicate.h"
 #include "Utils/Status.h"
 #include "Utils/Types.h"
+#include "Utils/Common.h"
 
 #include <fstream>
 #include <sstream>
@@ -36,7 +37,6 @@ void Statement::Clear()
 {
 	mOrigStmtText = std::string();
 	mStmtType = kStmtUnknown;
-	mSelectColumnRefs.clear();
 	mTableRefs.clear();
 	mSetExprList.clear();
 	mColumnDefs.clear();
@@ -68,11 +68,6 @@ void Statement::SetOriginalStmtText(const std::string inStmtText)
 	}
 }
 
-void Statement::AddColumnRef(const ColumnQualifiedName &inQualifiedName)
-{
-	mSelectColumnRefs.push_back(inQualifiedName);
-}
-
 void Statement::AddTableRef(const std::string &inTableRef)
 {
 	mTableRefs.push_back(inTableRef);
@@ -81,6 +76,13 @@ void Statement::AddTableRef(const std::string &inTableRef)
 void Statement::AddExprRef(const Expr &inExpr)
 {
 	mSetExprList.push_back(inExpr);
+}
+
+void Statement::AddColumnDefWithName(const ColumnQualifiedName &inQualifiedName)
+{
+	ColumnDef theColumnDef;
+	theColumnDef.qualifiedName = inQualifiedName;
+	mColumnDefs.push_back(theColumnDef);
 }
 
 void Statement::AddColumnDef(const ColumnDef &inDef)
@@ -103,7 +105,23 @@ Status Statement::Prepare()
 	Status result;
 
 	result = mPredicate.Prepare(*mpDB, mTableRefs);
+
+	Table::ColumnDefList::iterator iter = mColumnDefs.begin();
+
+	for (; iter != mColumnDefs.end(); iter++)
+	{
+		if (mStmtType != kStmtCreateTable)
+		{
+			result = AmendColumnDef(*mpDB, mTableRefs, &(*iter));
+		}
+	}
+	
 	this->PrintStatement();
+
+	if (!result.OK()
+	{
+		std::cout << "Error:" << result.GetCode() << std::endl;
+	}
 
 	return result;
 }
@@ -140,12 +158,12 @@ Status Statement::Execute(bool loadTable)
 		}
 	case kStmtInsert:
 		{
-			result = mpDB->InsertData(mTableRefs[0], mSelectColumnRefs, mSetExprList);
+			result = mpDB->InsertData(mTableRefs[0], mColumnDefs, mSetExprList);
 			break;
 		}
 	case kStmtSelect:
 		{
-			result = mpDB->SelectData(mTableRefs, mSelectColumnRefs, &mPredicate);
+			result = mpDB->SelectData(mTableRefs, mColumnDefs, &mPredicate);
 			break;
 		}
 	case kStmtDelete:
@@ -185,6 +203,13 @@ Status Statement::Execute(bool loadTable)
 void Statement::PrintStatement()
 {
 	mPredicate.Print(0);
+
+	std::cout << "*********ColumnDef*********" << std::endl;
+
+	for (size_t i = 0; i < mColumnDefs.size(); i++)
+	{
+		std::cout << "Column " << i << ": " << mColumnDefs[i].qualifiedName.tableName << "." << mColumnDefs[i].qualifiedName.columnName << std::endl;
+	}
 }
 
 /**************************************************

@@ -37,9 +37,9 @@ public:
 	//Load pTable to DB, Take the ownership of pTable;
 	Status LoadTable(Table *pTable);
 
-	Status InsertData(const std::string &tableName, const Table::ColumnRefList &columnList, const Table::ColumnValueList &columnValueList);
+	Status InsertData(const std::string &tableName, const Table::ColumnDefList &columnList, const Table::ColumnValueList &columnValueList);
 	Status DeleteData(const std::string &tableName, const Predicate *inPredicate = NULL);
-	Status SelectData(const Table::TableRefList &tableList, const Table::ColumnRefList &columnList, const Predicate *inPredicate = NULL);
+	Status SelectData(const Table::TableRefList &tableList, const Table::ColumnDefList &columnList, const Predicate *inPredicate = NULL);
 
 	const std::string& GetDBPath() const { return mDBPath; }
 	IVFS* GetVFS() { return mpVFS; }
