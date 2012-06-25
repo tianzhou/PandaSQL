@@ -131,7 +131,7 @@ Status CVSScanIterator::Next_Inner()
 									pch = strtok_s(NULL, ",", &nextToken);
 								}
 
-								skipRecord = !mpPredicate->Eval(tuple);
+								skipRecord = !mpPredicate->Eval(&tuple);
 								findValidPos = !skipRecord;
 							}
 							else

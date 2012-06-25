@@ -36,7 +36,7 @@ public:
 	//inTableRefList: available table context
 	Status Prepare(const DB &inDB, const Table::TableRefList &inTableRefList);
 
-	bool Eval(const Tuple &inTuple) const;
+	bool Eval(const Tuple *tuple1 = NULL, const Tuple *tuple2 = NULL) const;
 
 private:
 
@@ -61,7 +61,11 @@ public:
 	void Print(uint32_t level) const;
 	Status Prepare(const DB &inDB, const Table::TableRefList &inTableRefList);
 	
-	bool Eval(const Tuple &inTuple) const;
+
+	//If both side are constant, both tuple1 & tuple2 must be NULL. tuple1 is assigned to the left side while tuple2 is assigned to the right side
+	//If neither side is constant, both tuple1 & tuple2 must be non NULL.
+	//If only one side is constant, tuple1 must be not-NULL while tuple2 must be NULL.
+	bool Eval(const Tuple *tuple1 = NULL, const Tuple *tuple2 = NULL) const;
 
 private:
 	enum PredicateLogicGateType

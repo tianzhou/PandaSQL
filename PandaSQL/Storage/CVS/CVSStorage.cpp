@@ -38,7 +38,7 @@ CVSStorage::~CVSStorage()
 	mpDataFile = NULL;
 }
 
-Iterator *CVSStorage::CreateScanIterator(const Predicate *inPredicate /* = NULL */)
+Iterator* CVSStorage::CreateScanIterator(const Predicate *inPredicate /* = NULL */)
 {
 	Iterator *result = NULL;
 
@@ -50,7 +50,7 @@ Iterator *CVSStorage::CreateScanIterator(const Predicate *inPredicate /* = NULL 
 	return result;
 }
 
-Iterator *CVSStorage::CreateIndexIterator()
+Iterator* CVSStorage::CreateIndexIterator()
 {
 	return NULL;
 }

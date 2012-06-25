@@ -18,15 +18,12 @@ Table::Table(const std::string &inDBRootPath, IStorage::StorageType inType, IVFS
 :
 mpVFS(io_VFS)
 ,mpDataHost(NULL)
-,mpScanIterator(NULL)
 {
 	mpDataHost = IStorage::CreateStorage(inDBRootPath, inType, mpVFS);
-	//mpScanIterator = mpDataHost->CreateScanIterator();
 }
 
 Table::~Table()
 {
-	delete mpScanIterator;
 	delete mpDataHost;
 }
 
@@ -166,18 +163,22 @@ Status Table::SelectRecords(const ColumnDefList &columnList, const Predicate *in
 	return result;
 }
 
-//private
-Iterator* Table::GetScanIterator()
+Iterator* Table::CreateScanIterator(const Predicate *inPredicate /*= NULL*/)
 {
-	if (!mpScanIterator
-		&& mpDataHost)
+	Iterator *result = NULL;
+	if (mpDataHost)
 	{
-		mpScanIterator = mpDataHost->CreateScanIterator();
+		result = mpDataHost->CreateScanIterator(inPredicate);
 	}
 
-	PDASSERT(mpScanIterator);
+	return result;
+}
 
-	return mpScanIterator;
+Iterator* Table::CreateIndexIterator()
+{
+	Iterator *result = NULL;
+
+	return result;
 }
 
 }	// PandaSQL

@@ -42,6 +42,9 @@ public:
 	Status DeleteRecord(const Predicate *inPredicate = NULL);
 	Status SelectRecords(const ColumnDefList &columnList, const Predicate *inPredicate = NULL);
 
+	Iterator* CreateScanIterator(const Predicate *inPredicate = NULL);
+	Iterator* CreateIndexIterator(); 
+
 private:
 	
 	Table(const Table &rhs);
@@ -54,7 +57,6 @@ private:
 
 	IVFS *mpVFS;
 	IStorage *mpDataHost;
-	Iterator *mpScanIterator; //Always use GetScanIterator to access it.
 };
 
 }	// PandaSQL

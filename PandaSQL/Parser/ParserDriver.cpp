@@ -118,7 +118,7 @@ Status Statement::Prepare()
 	
 	this->PrintStatement();
 
-	if (!result.OK()
+	if (!result.OK())
 	{
 		std::cout << "Error:" << result.GetCode() << std::endl;
 	}

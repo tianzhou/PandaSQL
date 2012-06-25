@@ -10,6 +10,8 @@
 #include "Catalog/Table.h"
 
 #include "Storage/IStorage.h"
+#include "Storage/Iterator.h"
+#include "Storage/Tuple.h"
 
 #include "Utils/Predicate.h"
 
@@ -178,24 +180,88 @@ Status DB::SelectData(const Table::TableRefList &tableList, const Table::ColumnD
 {
 	Status result;
 
-	Table *theTable = NULL;
-
-	for (size_t i = 0; i < tableList.size(); i++)
+	if (tableList.size() == 1)
 	{
-		result = DB::GetTableByName(tableList[i], &theTable);
+		Table *theTable = NULL;
+
+		result = DB::GetTableByName(tableList[0], &theTable);
 
 		if (result.OK())
 		{
-			std::cout << "****** Select Table:" << tableList[i] << " ******" << std::endl;
+			std::cout << "****** Select Table:" << tableList[0] << " ******" << std::endl;
 			result = theTable->SelectRecords(columnList, inPredicate);
 		}
+	}
+	else if (tableList.size() == 2)
+	{
+		Table *outerTable = NULL;
+		Table *innerTable = NULL;
 
-		if (!result.OK())
+		result = DB::GetTableByName(tableList[0], &outerTable);
+
+		if (result.OK())
 		{
-			break;
+			result = DB::GetTableByName(tableList[1], &innerTable);
+
+			if (result.OK())
+			{
+				Iterator *outerScan = outerTable->CreateScanIterator();
+
+				PDASSERT(outerScan);
+
+				while (outerScan->Valid())
+				{
+					Tuple outerTuple;
+
+					result = outerScan->GetValue(&outerTuple);
+
+					if (!result.OK())
+					{
+						break;
+					}
+
+					Iterator *innerScan = innerTable->CreateScanIterator();
+
+					PDASSERT(innerScan);
+
+					while (innerScan->Valid())
+					{
+						Tuple innerTuple;
+
+						result = innerScan->GetValue(&innerTuple);
+
+						if (!result.OK())
+						{
+							break;
+						}
+
+						if (!inPredicate
+							|| inPredicate->Eval(&outerTuple, &innerTuple))
+						{
+							std::cout << outerTuple.ToString() << std::endl;
+						}
+
+						innerScan->Next();
+					}
+
+					delete innerScan;
+
+					if (!result.OK())
+					{
+						break;
+					}
+
+					outerScan->Next();
+				}
+
+				delete outerScan;
+			}
 		}
 	}
-	
+	else
+	{
+		PDASSERT(0);
+	}
 
 	return result;
 }

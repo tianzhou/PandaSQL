@@ -1,0 +1,10 @@
+Master:
+1, "Bob"
+2, "Peter"
+3, "Mary"
+
+
+Detail:
+2, "Math"
+2, "Physics"
+3, "History"
