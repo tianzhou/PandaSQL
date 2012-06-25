@@ -3,7 +3,7 @@
 #include "CVSStorage.h"
 #include "CVSScanIterator.h"
 #include "HeapStore.h"
-#include "Storage/Tuple.h"
+#include "Access/Tuple.h"
 #include "Storage/Buffer/PageProxy.h"
 
 #include "VFS/IVFS.h"

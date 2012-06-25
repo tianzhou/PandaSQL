@@ -3,7 +3,7 @@
 #include "CVSScanIterator.h"
 #include "Storage/Buffer/PageProxy.h"
 #include "Storage/Buffer/Page.h"
-#include "Storage/Tuple.h"
+#include "Access/Tuple.h"
 
 
 #include "Utils/Predicate.h"

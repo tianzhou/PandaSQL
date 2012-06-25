@@ -1,7 +1,7 @@
 #ifndef PANDASQL_CVS_SCANITERATOR_H
 #define PANDASQL_CVS_SCANITERATOR_H
 
-#include "Storage/Iterator.h"
+#include "Access/Iterator.h"
 
 #include "Utils/Types.h"
 

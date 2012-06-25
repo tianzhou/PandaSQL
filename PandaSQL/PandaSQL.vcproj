@@ -747,22 +747,6 @@
 					RelativePath=".\Storage\IStorage.h"
 					>
 				</File>
-				<File
-					RelativePath=".\Storage\Iterator.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Storage\Iterator.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Storage\Tuple.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Storage\Tuple.h"
-					>
-				</File>
 				<Filter
 					Name="Buffer"
 					>
@@ -820,6 +804,26 @@
 					</File>
 				</Filter>
 			</Filter>
+			<Filter
+				Name="Access"
+				>
+				<File
+					RelativePath=".\Access\Iterator.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Access\Iterator.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Access\Tuple.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Access\Tuple.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -851,6 +855,10 @@
 		</File>
 		<File
 			RelativePath=".\select.txt"
+			>
+		</File>
+		<File
+			RelativePath=".\select_data.txt"
 			>
 		</File>
 		<File

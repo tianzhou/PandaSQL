@@ -4,8 +4,8 @@
 
 #include "VFS/IVFS.h"
 
-#include "Storage/Tuple.h"
-#include "Storage/Iterator.h"
+#include "Access/Tuple.h"
+#include "Access/Iterator.h"
 
 #include "Utils/Predicate.h"
 

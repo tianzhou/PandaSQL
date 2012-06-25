@@ -10,8 +10,9 @@
 #include "Catalog/Table.h"
 
 #include "Storage/IStorage.h"
-#include "Storage/Iterator.h"
-#include "Storage/Tuple.h"
+
+#include "Access/Iterator.h"
+#include "Access/Tuple.h"
 
 #include "Utils/Predicate.h"
 

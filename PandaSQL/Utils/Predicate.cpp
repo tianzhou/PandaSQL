@@ -2,7 +2,7 @@
 
 #include "Predicate.h"
 #include "DB.h"
-#include "Storage/Tuple.h"
+#include "Access/Tuple.h"
 #include "Utils/Types.h"
 #include "Utils/Common.h"
 
