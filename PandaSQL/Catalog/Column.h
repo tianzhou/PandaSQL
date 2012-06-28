@@ -9,12 +9,6 @@
 namespace PandaSQL
 {
 
-struct ColumnQualifiedName
-{
-	std::string tableName;
-	std::string columnName;
-};
-
 struct ColumnDef
 {
 	ColumnQualifiedName qualifiedName;

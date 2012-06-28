@@ -13,8 +13,8 @@ namespace PandaSQL
 
 static char kDeleteMark[] = " ";
 
-CVSScanIterator::CVSScanIterator(const Predicate *inPredicate, PageProxy *io_pageProxy)
-:Iterator(inPredicate)
+CVSScanIterator::CVSScanIterator(const TuplePredicate *inTuplePredicate, PageProxy *io_pageProxy)
+:Iterator(inTuplePredicate)
 ,mpPageProxy(io_pageProxy)
 {
 	this->SeekToFirst();
@@ -113,9 +113,9 @@ Status CVSScanIterator::Next_Inner()
 
 						if (!skipRecord)
 						{
-							if (mpPredicate)
+							if (mpTuplePredicate)
 							{
-								Tuple tuple;
+								TupleData tuple;
 								//TODO: Hard code
 								char tempStr[4096];
 								size_t length = mSeekPos.offset - mValuePos.offset - strlen(kNewLineSymbol);
@@ -127,11 +127,11 @@ Status CVSScanIterator::Next_Inner()
 
 								while (pch != NULL)
 								{
-									tuple.AppendFieldData(kText, pch);
+									tuple.AppendData(pch);
 									pch = strtok_s(NULL, ",", &nextToken);
 								}
 
-								skipRecord = !mpPredicate->Eval(&tuple);
+								skipRecord = !mpTuplePredicate->Eval(tuple);
 								findValidPos = !skipRecord;
 							}
 							else
@@ -205,11 +205,11 @@ Status CVSScanIterator::SeekAfterLast()
 	return result;
 }
 
-Status CVSScanIterator::SeekToPredicate(const Predicate *inPredicate)
+Status CVSScanIterator::SeekToPredicate(const TuplePredicate *inTuplePredicate)
 {
 	Status result;
 
-	if (inPredicate)
+	if (inTuplePredicate)
 	{
 		
 	}
@@ -252,7 +252,7 @@ Status CVSScanIterator::Prev()
 //	return mStatus;
 //}
 
-Status CVSScanIterator::InsertValue(const Tuple &inTuple)
+Status CVSScanIterator::InsertValue(const TupleData &inTuple)
 {
 	Status result;
 
@@ -267,7 +267,7 @@ Status CVSScanIterator::InsertValue(const Tuple &inTuple)
 			rowData += ",";
 		}
 
-		inTuple.GetDataOfField(i, &o_data);
+		inTuple.GetDataAtIndex(i, &o_data);
 		rowData += o_data;
 	}
 
@@ -353,7 +353,7 @@ Status CVSScanIterator::InsertValue(const Tuple &inTuple)
 	return result;
 }
 
-Status CVSScanIterator::UpdateValue(const Tuple &inTuple)
+Status CVSScanIterator::UpdateValue(const TupleData &inTuple)
 {
 	Status result;
 
@@ -394,7 +394,7 @@ Status CVSScanIterator::DeleteValue()
 	return result;
 }
 
-Status CVSScanIterator::GetValue(Tuple *o_tuple) const
+Status CVSScanIterator::GetValue(TupleData *o_tuple) const
 {
 	Status result;
 
@@ -428,7 +428,7 @@ Status CVSScanIterator::GetValue(Tuple *o_tuple) const
 
 		while (pch != NULL)
 		{
-			o_tuple->AppendFieldData(kText, pch);
+			o_tuple->AppendData(pch);
 			pch = strtok_s(NULL, ",", &nextToken);
 		}
 
