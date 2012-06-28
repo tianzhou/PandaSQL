@@ -10,6 +10,7 @@
 #include "Utils/Status.h"
 #include "Utils/Types.h"
 #include "Utils/Predicate.h"
+#include "Utils/Join.h"
 
 #include <string>
 #include <vector>
@@ -88,6 +89,8 @@ private:
 	Table::ColumnValueList mSetExprList;
 
 	Table::ColumnDefList mColumnDefs;
+
+	JoinList mJoinList;
 
 	Predicate mPredicate;
 

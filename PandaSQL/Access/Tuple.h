@@ -1,6 +1,8 @@
 #ifndef PANDASQL_TUPLE_H
 #define PANDASQL_TUPLE_H
 
+#include "Catalog/Column.h"
+
 #include "Utils/Status.h"
 #include "Utils/Types.h"
 
@@ -9,36 +11,48 @@
 namespace PandaSQL
 {
 
-class Tuple
+//class TupleDesc
+//{
+//
+//public:
+//
+//	TupleDesc(const ColumnQualifiedName &inQualifiedName);
+//	~TupleDesc();
+//
+//	ColumnQualifiedName GetColumnQualifiedName() const { return mQualifiedName; }
+//
+//private:
+//
+//	const ColumnQualifiedName &mQualifiedName;
+//
+//};
+
+class TupleData
 {
 public:
 
-	struct FieldInfo
-	{
-		DataType type;
-		std::string value;
+	TupleData();
+	~TupleData();
 
-		FieldInfo();
-		FieldInfo(DataType inType, const std::string &inValue);
-	};
+	uint32_t Count() const;
+	void GetDataAtIndex(uint32_t index, std::string *o_data) const;
 
-	Tuple();
-	virtual ~Tuple();
+	void AppendData(const std::string &inData);
+	void SetDataAtIndex(uint32_t index, const std::string &inData);
 
-	virtual uint32_t Count() const;
-	virtual DataType GetTypeOfField(uint32_t index) const;
-	virtual void GetDataOfField(uint32_t index, std::string *o_data) const;
-
-	virtual void AppendFieldData(DataType inType, const std::string &inData);
-	virtual void SetFieldData(uint32_t index, DataType inType, const std::string &inData);
-
-	virtual std::string ToString() const;
+	std::string ToString() const;
 
 private:
-	Tuple(const Tuple &rhs);
-	Tuple& operator=(const Tuple &rhs);
+	//TupleData(const TupleData &rhs);
+	//TupleData& operator=(const TupleData &rhs);
 
-	std::vector<FieldInfo> mValueList;
+	std::vector<std::string> mValueList;
+};
+
+struct TupleEntry
+{
+	std::string tableName;
+	TupleData tupleData;
 };
 
 }	// PandaSQL

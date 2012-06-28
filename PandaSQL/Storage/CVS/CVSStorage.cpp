@@ -38,13 +38,13 @@ CVSStorage::~CVSStorage()
 	mpDataFile = NULL;
 }
 
-Iterator* CVSStorage::CreateScanIterator(const Predicate *inPredicate /* = NULL */)
+Iterator* CVSStorage::CreateScanIterator(const TuplePredicate *inTuplePredicate /* = NULL */)
 {
 	Iterator *result = NULL;
 
 	if (mpPageProxy)
 	{
-		result = new CVSScanIterator(inPredicate, mpPageProxy);
+		result = new CVSScanIterator(inTuplePredicate, mpPageProxy);
 	}
 
 	return result;
@@ -94,7 +94,7 @@ Status CVSStorage::OpenTable(const std::string &inTableName, OpenMode inMode)
 	return result;
 }
 
-//Status CVSStorage::InsertRecord(const Tuple &inTuple)
+//Status CVSStorage::InsertRecord(const TupleData &inTuple)
 //{
 //	PDASSERT(mpHeapStore);
 //

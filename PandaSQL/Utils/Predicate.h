@@ -2,6 +2,7 @@
 #define PANDASQL_PREDICATE_H
 
 #include "Catalog/Table.h"
+#include "Access/Tuple.h"
 #include "Utils/Expr.h"
 #include "Utils/Types.h"
 
@@ -11,7 +12,33 @@ namespace PandaSQL
 {
 
 class DB;
-class Tuple;
+
+class TuplePredicate
+{
+public:
+
+	enum ComparisonType
+	{
+		kUnknown,
+		kEqual,
+		kNotEqual,
+		kGreater,
+		kGreaterEqual,
+		kLess,
+		kLessEqual,		
+	};
+
+	TuplePredicate();
+	//void SetFormat(uint32_t index, ComparisonType type, const std::string value);
+	bool Eval(const TupleData &inTupleData) const;
+
+private:
+
+	uint32_t mIndex;
+	ComparisonType mComparisonType;
+	std::string mCompareValue;
+
+};
 
 class PredicateItem
 {
@@ -35,8 +62,8 @@ public:
 
 	//inTableRefList: available table context
 	Status Prepare(const DB &inDB, const Table::TableRefList &inTableRefList);
-
-	bool Eval(const Tuple *tuple1 = NULL, const Tuple *tuple2 = NULL) const;
+	
+	bool Eval(const std::vector<TupleEntry> &inTupleContext) const;
 
 private:
 
@@ -54,18 +81,15 @@ public:
 	~Predicate();
 
 	void SetSinglePredicateItem(const PredicateItem &inPredicateItem);
-	void SetAndPredicateWithSubpredicates(const std::vector<Predicate> inPredicateList);
-	void SetOrPredicateWithSubpredicates(const std::vector<Predicate> inPredicateList);
+	void SetSinglePredicate(const Predicate &inPredicate);
+	void SetAndPredicateWithSubpredicates(const std::vector<Predicate> &inPredicateList);
+	void SetOrPredicateWithSubpredicates(const std::vector<Predicate> &inPredicateList);
 	void Reset();
 
 	void Print(uint32_t level) const;
 	Status Prepare(const DB &inDB, const Table::TableRefList &inTableRefList);
 	
-
-	//If both side are constant, both tuple1 & tuple2 must be NULL. tuple1 is assigned to the left side while tuple2 is assigned to the right side
-	//If neither side is constant, both tuple1 & tuple2 must be non NULL.
-	//If only one side is constant, tuple1 must be not-NULL while tuple2 must be NULL.
-	bool Eval(const Tuple *tuple1 = NULL, const Tuple *tuple2 = NULL) const;
+	bool Eval(const std::vector<TupleEntry> &inTupleContext) const;
 
 private:
 	enum PredicateLogicGateType
@@ -80,6 +104,7 @@ private:
 
 	std::vector<Predicate> mPredicateList;
 	PredicateItem mPredicateItem;
+	Predicate *mSinglePredicate;
 };
 
 }	// PandaSQL

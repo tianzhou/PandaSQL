@@ -11,6 +11,97 @@
 namespace PandaSQL
 {
 
+static Status EvalExprWithTupleContext(const std::vector<TupleEntry> &inTupleContext, const Expr &inExpr, std::string *io_str)
+{
+	Status result;
+
+	PDASSERT(inExpr.type == kExprColumnDef);
+
+	std::vector<TupleEntry>::const_iterator iter = inTupleContext.begin();
+
+	for (; iter != inTupleContext.end(); iter++)
+	{
+		if (iter->tableName == inExpr.columnDef.qualifiedName.tableName)
+		{
+			iter->tupleData.GetDataAtIndex(inExpr.columnDef.index, io_str);
+			break;
+		}
+	}
+
+	if (iter == inTupleContext.end())
+	{
+		result = Status::kInvalidExpression;
+	}
+
+	return result;
+}
+
+/**************ColumnPredicate************/
+
+TuplePredicate::TuplePredicate()
+{
+
+}
+
+//void TuplePredicate::SetFormat(uint32_t index, ComparisonType type, const std::string value)
+//{
+//	mIndex = index;
+//	mComparisonType = type;
+//	mCompareValue = value;
+//}
+
+bool TuplePredicate::Eval(const TupleData &inTupleData) const
+{
+	bool result = false;
+
+	PDASSERT(mIndex < inTupleData.Count());
+
+	std::string tupleValue;
+
+	inTupleData.GetDataAtIndex(mIndex, &tupleValue);
+
+	switch (mComparisonType)
+	{
+	case kEqual:
+		{
+			result = tupleValue == mCompareValue;
+			break;
+		}
+	case kNotEqual:
+		{
+			result = tupleValue != mCompareValue;
+			break;
+		}
+
+	case kGreater:
+		{
+			result = tupleValue > mCompareValue;
+			break;
+		}
+
+	case kGreaterEqual:
+		{
+			result = tupleValue >= mCompareValue;
+			break;
+		}
+	case kLess:
+		{
+			result = tupleValue < mCompareValue;
+			break;
+		}
+	case kLessEqual:
+		{
+			result = tupleValue <= mCompareValue;
+			break;
+		}
+	default:
+		PDASSERT(0);
+		break;
+	}
+
+	return result;
+}
+
 /**************PredicateItem**************/
 
 PredicateItem::PredicateItem()
@@ -115,13 +206,9 @@ Status PredicateItem::Prepare(const DB &inDB, const Table::TableRefList &inTable
 	return result;
 }
 
-bool PredicateItem::Eval(const Tuple *tuple1 /*= NULL*/, const Tuple *tuple2 /*= NULL*/) const
+bool PredicateItem::Eval(const std::vector<TupleEntry> &inTupleContext) const
 {
 	bool result = true;
-
-	////There must be at least one side with constant
-	//PDASSERT(mLeftExpr.type != kExprColumnDef
-	//	|| mRightExpr.type != kExprColumnDef);
 
 	std::string leftStrValue;
 	std::string rightStrValue;
@@ -130,11 +217,15 @@ bool PredicateItem::Eval(const Tuple *tuple1 /*= NULL*/, const Tuple *tuple2 /*=
 
 	DataType compareType;
 
-	//Both side are constant
-	if (mLeftExpr.type != kExprColumnDef
-		&& mRightExpr.type != kExprColumnDef
-		&& !tuple1
-		&& !tuple2)
+	if (mLeftExpr.type == kExprColumnDef)
+	{
+		compareType = mLeftExpr.columnDef.dataType;
+	}
+	else if (mRightExpr.type == kExprColumnDef)
+	{
+		compareType = mRightExpr.columnDef.dataType;
+	}
+	else
 	{
 		switch (mLeftExpr.type)
 		{
@@ -152,156 +243,66 @@ bool PredicateItem::Eval(const Tuple *tuple1 /*= NULL*/, const Tuple *tuple2 /*=
 			PDASSERT(0);
 			break;
 		}
-
-		if (mLeftExpr.type != mRightExpr.type)
-		{
-			if (mRightExpr.type == kExprText)
-			{
-				rightStrValue = mRightExpr.text;
-				
-				if (compareType == kInt)
-				{
-					StringToNumber(mRightExpr.text.c_str(), &rightNumberValue);
-				}
-				else
-				{
-					PDASSERT(0);
-				}
-			}
-			else if (mRightExpr.type == kExprNumber)
-			{
-				rightNumberValue = mRightExpr.number;
-				
-				if (compareType == kText)
-				{
-					NumberToString(mRightExpr.number, &rightStrValue);
-				}
-				else
-				{
-					PDASSERT(0);
-				}
-			}
-			else 
-			{
-				PDASSERT(0);
-			}
-		}
-		else
-		{
-			if (compareType == kInt)
-			{
-				leftNumberValue = mLeftExpr.number;
-				leftNumberValue = mRightExpr.number;
-			}
-			else if (compareType == kInt)
-			{
-				rightStrValue = mRightExpr.text;
-				rightStrValue = mRightExpr.text;
-			}
-			else
-			{
-				PDASSERT(0);
-			}
-		}
 	}
-	//Both side are non-constant
-	else if (mLeftExpr.type == kExprColumnDef
-		&& mRightExpr.type == kExprColumnDef
-		&& tuple1
-		&& tuple2)
-	{
-		compareType = tuple1->GetTypeOfField(mLeftExpr.columnDef.index);
-		tuple1->GetDataOfField(mLeftExpr.columnDef.index, &leftStrValue);
-	
+
+	if (mLeftExpr.type == kExprColumnDef)
+	{		
+		Status localResult = EvalExprWithTupleContext(inTupleContext, mLeftExpr, &leftStrValue);
+		
+		PDASSERT(localResult.OK());
+
 		if (compareType == kInt)
 		{
 			StringToNumber(leftStrValue, &leftNumberValue);
 		}
+	}
+	else if (mLeftExpr.type == kExprNumber)
+	{
+		leftNumberValue = mLeftExpr.number;
 
-		tuple2->GetDataOfField(mRightExpr.columnDef.index, &rightStrValue);
+		if (compareType == kText)
+		{
+			NumberToString(leftNumberValue, &leftStrValue);
+		}
+	}
+	else if (mLeftExpr.type == kExprText)
+	{
+		leftStrValue = mLeftExpr.text;
+
+		if (compareType == kInt)
+		{
+			StringToNumber(leftStrValue, &leftNumberValue);
+		}
+	}
+
+	if (mRightExpr.type == kExprColumnDef)
+	{	
+		Status localResult = EvalExprWithTupleContext(inTupleContext, mRightExpr, &rightStrValue);
 	
+		PDASSERT(localResult.OK());
+
 		if (compareType == kInt)
 		{
 			StringToNumber(rightStrValue, &rightNumberValue);
 		}
 	}
-	//Only left side are non-constant
-	else if (mLeftExpr.type == kExprColumnDef 
-		&& mRightExpr.type != kExprColumnDef
-		&& tuple1
-		&& !tuple2)
+	else if (mRightExpr.type == kExprNumber)
 	{
-		compareType = tuple1->GetTypeOfField(mLeftExpr.columnDef.index);
-		tuple1->GetDataOfField(mLeftExpr.columnDef.index, &leftStrValue);
-	
-		if (compareType == kInt)
-		{
-			StringToNumber(leftStrValue, &leftNumberValue);
-		}
+		rightNumberValue = mRightExpr.number;
 
-		if (mRightExpr.type == kExprText)
+		if (compareType == kText)
 		{
-			rightStrValue = mRightExpr.text;
-
-			if (compareType == kInt)
-			{
-				StringToNumber(mRightExpr.text, &rightNumberValue);
-			}
-		}
-		else if (mRightExpr.type == kExprNumber)
-		{
-			rightNumberValue = mRightExpr.number;
-
-			if (compareType == kText)
-			{
-				NumberToString(mRightExpr.number, &rightStrValue);
-			}
-		}
-		else
-		{
-			PDASSERT(0);
+			NumberToString(rightNumberValue, &rightStrValue);
 		}
 	}
-	//Only right side are non-constant
-	else if (mLeftExpr.type != kExprColumnDef 
-		&& mRightExpr.type == kExprColumnDef
-		&& tuple1
-		&& !tuple2)
+	else if (mRightExpr.type == kExprText)
 	{
-		compareType = tuple1->GetTypeOfField(mRightExpr.columnDef.index);
-		tuple1->GetDataOfField(mRightExpr.columnDef.index, &rightStrValue);
+		rightStrValue = mRightExpr.text;
 
 		if (compareType == kInt)
 		{
 			StringToNumber(rightStrValue, &rightNumberValue);
 		}
-
-		if (mLeftExpr.type == kExprText)
-		{
-			leftStrValue = mLeftExpr.text;
-
-			if (compareType == kInt)
-			{
-				StringToNumber(mLeftExpr.text, &leftNumberValue);
-			}
-		}
-		else if (mLeftExpr.type == kExprNumber)
-		{
-			leftNumberValue = mLeftExpr.number;
-
-			if (compareType == kText)
-			{
-				NumberToString(mLeftExpr.number, &leftStrValue);
-			}
-		}
-		else
-		{
-			PDASSERT(0);
-		}
-	}
-	else
-	{
-		PDASSERT(0);
 	}
 
 	switch (compareType)
@@ -395,9 +396,9 @@ bool PredicateItem::Eval(const Tuple *tuple1 /*= NULL*/, const Tuple *tuple2 /*=
 		PDASSERT(0);
 		break;
 	}
-
 	return result;
 }
+
 
 /**************Predicate**************/
 
@@ -420,7 +421,17 @@ void Predicate::SetSinglePredicateItem(const PredicateItem &inPredicateItem)
 	mPredicateItem = inPredicateItem;
 }
 
-void Predicate::SetAndPredicateWithSubpredicates(const std::vector<Predicate> inPredicateList)
+void Predicate::SetSinglePredicate(const Predicate &inPredicate)
+{
+	//Make sure it's not assigned before. Otherwise, it's likely a code error
+	PDASSERT(mLogicGateType == kLogicUnknown);
+
+	mLogicGateType = kLogicStandalone;
+
+	mSinglePredicate = new Predicate(inPredicate);
+}
+
+void Predicate::SetAndPredicateWithSubpredicates(const std::vector<Predicate> &inPredicateList)
 {
 	//Make sure it's not assigned before. Otherwise, it's likely a code error
 	PDASSERT(mLogicGateType == kLogicUnknown);
@@ -429,7 +440,7 @@ void Predicate::SetAndPredicateWithSubpredicates(const std::vector<Predicate> in
 	mPredicateList = inPredicateList;
 }
 
-void Predicate::SetOrPredicateWithSubpredicates(const std::vector<Predicate> inPredicateList)
+void Predicate::SetOrPredicateWithSubpredicates(const std::vector<Predicate> &inPredicateList)
 {
 	//Make sure it's not assigned before. Otherwise, it's likely a code error
 	PDASSERT(mLogicGateType == kLogicUnknown);
@@ -512,7 +523,7 @@ Status Predicate::Prepare(const DB &inDB, const Table::TableRefList &inTableRefL
 	return result;
 }
 
-bool Predicate::Eval(const Tuple *tuple1 /*= NULL*/, const Tuple *tuple2 /*= NULL*/) const
+bool Predicate::Eval(const std::vector<TupleEntry> &inTupleContext) const
 {
 	bool result = true;
 
@@ -523,7 +534,7 @@ bool Predicate::Eval(const Tuple *tuple1 /*= NULL*/, const Tuple *tuple2 /*= NUL
 
 		for (; iter != mPredicateList.end(); iter++)
 		{
-			result = iter->Eval(tuple1, tuple2);
+			result = iter->Eval(inTupleContext);
 
 			if ((result && mLogicGateType == kLogicOr)
 				|| (!result && mLogicGateType == kLogicAnd))
@@ -534,7 +545,7 @@ bool Predicate::Eval(const Tuple *tuple1 /*= NULL*/, const Tuple *tuple2 /*= NUL
 	}
 	else if (mLogicGateType == kLogicStandalone)
 	{
-		result = mPredicateItem.Eval(tuple1, tuple2);
+		result = mPredicateItem.Eval(inTupleContext);
 	}
 
 	return result;

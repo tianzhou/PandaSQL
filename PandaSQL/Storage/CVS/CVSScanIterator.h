@@ -13,21 +13,21 @@ class PageProxy;
 class CVSScanIterator : public Iterator
 {
 public:
-	CVSScanIterator(const Predicate *inPredicate, PageProxy *io_pageProxy);
+	CVSScanIterator(const TuplePredicate *inPredicate, PageProxy *io_pageProxy);
 	virtual ~CVSScanIterator();
 
 	virtual bool Valid() const;
 	virtual Status SeekToFirst();
 	virtual Status SeekAfterLast();
-	virtual Status SeekToPredicate(const Predicate *inPredicate);
+	virtual Status SeekToPredicate(const TuplePredicate *inPredicate);
 	//virtual Status SeekToKey(const std::string &inKey);
 	virtual Status Next();
 	virtual Status Prev();
 	//virtual Status GetKey(std::s tring *o_key) const;
-	virtual Status InsertValue(const Tuple &inTuple);
-	virtual Status UpdateValue(const Tuple &inTuple);
+	virtual Status InsertValue(const TupleData &inTuple);
+	virtual Status UpdateValue(const TupleData &inTuple);
 	virtual Status DeleteValue();
-	virtual Status GetValue(Tuple *o_tuple) const;
+	virtual Status GetValue(TupleData *o_tuple) const;
 
 protected:
 	 
@@ -47,8 +47,6 @@ protected:
 	PosInfo mSeekPos;
 	PosInfo mValuePos;
 	bool mPosAfterLast;
-
-	std::string mCurentData;
 };
 
 }	// PandaSQL

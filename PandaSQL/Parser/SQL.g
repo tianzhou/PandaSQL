@@ -44,6 +44,7 @@ TOK_WHERE;
 @parser::includes
 {
 
+#include "stdafx.h"
 #include "Parser/ParserDriver.h"
 
 }
@@ -203,7 +204,8 @@ predicate_or
 	;
 	
 predicate_and
-	:	lexpr=expr binary_op rexpr=expr	-> ^(TOK_BINARY_OP binary_op $lexpr $rexpr)
+	:	LPAREN! predicate_list RPAREN!
+	|	lexpr=expr binary_op rexpr=expr	-> ^(TOK_BINARY_OP binary_op $lexpr $rexpr)
 	;
 	
 binary_op

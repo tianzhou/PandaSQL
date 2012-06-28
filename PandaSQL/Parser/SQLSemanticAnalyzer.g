@@ -10,6 +10,7 @@ options
 @treeparser::header
 {
 
+#include "stdafx.h"
 #include "Parser/ParserDriver.h"
 #include "Catalog/Table.h"
 
@@ -260,7 +261,7 @@ where_clause
 		}
 	;
 	
-predicate_list[PandaSQL::Predicate &o_andPredicate]
+predicate_list[PandaSQL::Predicate &o_Predicate]
 @init
 {
 	std::vector<PandaSQL::Predicate> predicateList;
@@ -274,38 +275,40 @@ predicate_list[PandaSQL::Predicate &o_andPredicate]
 			})+
 		 )
 		 {
-			o_andPredicate.SetOrPredicateWithSubpredicates(predicateList);
+			o_Predicate.SetOrPredicateWithSubpredicates(predicateList);
 		 }
 	;
 	
-predicate_or[PandaSQL::Predicate &o_andPredicate]
+predicate_or[PandaSQL::Predicate &o_Predicate]
 @init
 {
 	std::vector<PandaSQL::Predicate> predicateList;
-	PandaSQL::PredicateItem predicateItem;
+	PandaSQL::Predicate subPredicate;
 }
 	:	^(TOK_PREDICATE_AND_LIST
-			(predicate_and[predicateItem]
+			(predicate_and[subPredicate]
 			{
-				PandaSQL::Predicate onePredicate;
-				onePredicate.SetSinglePredicateItem(predicateItem);
-				predicateList.push_back(onePredicate);
+				predicateList.push_back(subPredicate);
 			})+
 		 )
 		 {
-			o_andPredicate.SetAndPredicateWithSubpredicates(predicateList);
+			o_Predicate.SetAndPredicateWithSubpredicates(predicateList);
 		 }
 	;
 	
-predicate_and[PandaSQL::PredicateItem &o_predicateItem]
+predicate_and[PandaSQL::Predicate &o_predicate]
 @init
 {
 	PandaSQL::Expr leftExpr;
 	PandaSQL::Expr rightExpr;
+	o_predicate = PandaSQL::Predicate();
 }
-	:	^(TOK_BINARY_OP op=binary_op expr[&leftExpr] expr[&rightExpr])
+	:	predicate_list[o_predicate]
+	|	^(TOK_BINARY_OP op=binary_op expr[&leftExpr] expr[&rightExpr])
 		{
-			o_predicateItem.SetFormat(leftExpr, rightExpr, op);
+			PandaSQL::PredicateItem predicateItem;
+			predicateItem.SetFormat(leftExpr, rightExpr, op);
+			o_predicate.SetSinglePredicateItem(predicateItem);
 		}
 	;
 	

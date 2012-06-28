@@ -161,7 +161,7 @@ Status DB::InsertData(const std::string &tableName, const Table::ColumnDefList &
 	return result;
 }
 
-Status DB::DeleteData(const std::string &tableName, const Predicate *inPredicate /* = NULL */)
+Status DB::DeleteData(const std::string &tableName, const TuplePredicate *inTuplePredicate /* = NULL */)
 {
 	Status result;
 
@@ -171,13 +171,13 @@ Status DB::DeleteData(const std::string &tableName, const Predicate *inPredicate
 
 	if (result.OK())
 	{
-		result = theTable->DeleteRecord(inPredicate);
+		result = theTable->DeleteRecord(inTuplePredicate);
 	}
 
 	return result;
 }
 
-Status DB::SelectData(const Table::TableRefList &tableList, const Table::ColumnDefList &columnList, const Predicate *inPredicate /*= NULL*/)
+Status DB::SelectData(const Table::TableRefList &tableList, const JoinList &joinList, const Table::ColumnDefList &columnList, const TuplePredicate *inTuplePredicate /*= NULL*/)
 {
 	Status result;
 
@@ -190,7 +190,7 @@ Status DB::SelectData(const Table::TableRefList &tableList, const Table::ColumnD
 		if (result.OK())
 		{
 			std::cout << "****** Select Table:" << tableList[0] << " ******" << std::endl;
-			result = theTable->SelectRecords(columnList, inPredicate);
+			result = theTable->SelectRecords(columnList, inTuplePredicate);
 		}
 	}
 	else if (tableList.size() == 2)
@@ -198,11 +198,11 @@ Status DB::SelectData(const Table::TableRefList &tableList, const Table::ColumnD
 		Table *outerTable = NULL;
 		Table *innerTable = NULL;
 
-		result = DB::GetTableByName(tableList[0], &outerTable);
+		result = DB::GetTableByName(joinList[0].tableName, &outerTable);
 
 		if (result.OK())
 		{
-			result = DB::GetTableByName(tableList[1], &innerTable);
+			result = DB::GetTableByName(joinList[1].tableName, &innerTable);
 
 			if (result.OK())
 			{
@@ -212,7 +212,7 @@ Status DB::SelectData(const Table::TableRefList &tableList, const Table::ColumnD
 
 				while (outerScan->Valid())
 				{
-					Tuple outerTuple;
+					TupleData outerTuple;
 
 					result = outerScan->GetValue(&outerTuple);
 
@@ -221,13 +221,17 @@ Status DB::SelectData(const Table::TableRefList &tableList, const Table::ColumnD
 						break;
 					}
 
+					std::vector<TupleEntry> tupleContext;
+					TupleEntry outerTupleEntry = {outerTable->GetName(), outerTuple};
+					tupleContext.push_back(outerTupleEntry);
+
 					Iterator *innerScan = innerTable->CreateScanIterator();
 
 					PDASSERT(innerScan);
 
 					while (innerScan->Valid())
 					{
-						Tuple innerTuple;
+						TupleData innerTuple;
 
 						result = innerScan->GetValue(&innerTuple);
 
@@ -236,11 +240,11 @@ Status DB::SelectData(const Table::TableRefList &tableList, const Table::ColumnD
 							break;
 						}
 
-						if (!inPredicate
-							|| inPredicate->Eval(&outerTuple, &innerTuple))
-						{
-							std::cout << outerTuple.ToString() << std::endl;
-						}
+						//if (!inTuplePredicate
+						//	|| inTuplePredicate->Eval(tupleContext))
+						//{
+						//	std::cout << outerTuple.ToString() << std::endl;
+						//}
 
 						innerScan->Next();
 					}

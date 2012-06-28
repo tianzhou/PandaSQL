@@ -108,9 +108,9 @@ Status Statement::Prepare()
 
 	Table::ColumnDefList::iterator iter = mColumnDefs.begin();
 
-	for (; iter != mColumnDefs.end(); iter++)
+	if (mStmtType != kStmtCreateTable)
 	{
-		if (mStmtType != kStmtCreateTable)
+		for (; iter != mColumnDefs.end(); iter++)
 		{
 			result = AmendColumnDef(*mpDB, mTableRefs, &(*iter));
 		}
@@ -163,7 +163,13 @@ Status Statement::Execute(bool loadTable)
 		}
 	case kStmtSelect:
 		{
-			result = mpDB->SelectData(mTableRefs, mColumnDefs, &mPredicate);
+			ColumnQualifiedName join1 = {"Master", "master_id"};
+			ColumnQualifiedName join2 = {"Detail", "detail_id"};
+			mJoinList.push_back(join1);
+			mJoinList.push_back(join2);
+
+			TuplePredicate tuplePredicate;
+			//result = mpDB->SelectData(mTableRefs, mJoinList, mColumnDefs, &mPredicate);
 			break;
 		}
 	case kStmtDelete:
@@ -189,7 +195,7 @@ Status Statement::Execute(bool loadTable)
 
 			predicateItem.SetFormat(lExpr, rExpr, PredicateItem::kEqual);
 			thePredicate.SetSinglePredicateItem(predicateItem);
-			result = mpDB->DeleteData(mTableRefs[0], &thePredicate);
+			//result = mpDB->DeleteData(mTableRefs[0], &thePredicate);
 			break;
 		}
 

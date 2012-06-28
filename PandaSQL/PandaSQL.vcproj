@@ -476,6 +476,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Utils\Join.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Utils\Join.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Utils\Predicate.cpp"
 					>
 				</File>

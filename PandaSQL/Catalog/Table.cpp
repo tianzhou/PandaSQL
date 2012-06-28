@@ -7,6 +7,7 @@
 #include "Access/Tuple.h"
 #include "Access/Iterator.h"
 
+#include "Utils/Common.h"
 #include "Utils/Predicate.h"
 
 #include <iostream>
@@ -69,30 +70,28 @@ Status Table::AddRecord(const ColumnDefList &columnList, const ColumnValueList &
 {
 	Status result;
 
-	Tuple oneTuple;
+	TupleData oneTuple;
 
 	ColumnValueList::const_iterator iter = columnValueList.begin();
 
-	Tuple::FieldInfo oneField;
-
-	DataType theType;
+	std::string theValue;
 
 	for (; iter != columnValueList.end(); iter++)
 	{
 		if (iter->type == kExprNumber)
 		{
-			theType = kInt;
+			NumberToString(iter->number, &theValue);
 		}
 		else if (iter->type == kExprText)
 		{
-			theType = kText;
+			theValue = iter->text;
 		}
 		else if (iter->type == kExprColumnDef)
 		{
 			PDASSERT(0);
 		}
 
-		oneTuple.AppendFieldData(theType, iter->text);
+		oneTuple.AppendData(theValue);
 	}
 
 	Iterator *theIter = mpDataHost->CreateScanIterator();
@@ -109,11 +108,11 @@ Status Table::AddRecord(const ColumnDefList &columnList, const ColumnValueList &
 	return result;
 }
 
-Status Table::DeleteRecord(const Predicate *inPredicate /* = NULL */)
+Status Table::DeleteRecord(const TuplePredicate *inTuplePredicate /* = NULL */)
 {
 	Status result;
 
-	Iterator *theIter = mpDataHost->CreateScanIterator(inPredicate);
+	Iterator *theIter = mpDataHost->CreateScanIterator(inTuplePredicate);
 
 	uint32_t i = 0;
 
@@ -136,15 +135,15 @@ Status Table::DeleteRecord(const Predicate *inPredicate /* = NULL */)
 	return result;
 }
 
-Status Table::SelectRecords(const ColumnDefList &columnList, const Predicate *inPredicate /*= NULL*/)
+Status Table::SelectRecords(const ColumnDefList &columnList, const TuplePredicate *inTuplePredicate /*= NULL*/)
 {
 	Status result;
 
-	Iterator *theIter = mpDataHost->CreateScanIterator(inPredicate);
+	Iterator *theIter = mpDataHost->CreateScanIterator(inTuplePredicate);
 
 	while (theIter->Valid())
 	{
-		Tuple theTuple;
+		TupleData theTuple;
 
 		result = theIter->GetValue(&theTuple);
 
@@ -163,12 +162,12 @@ Status Table::SelectRecords(const ColumnDefList &columnList, const Predicate *in
 	return result;
 }
 
-Iterator* Table::CreateScanIterator(const Predicate *inPredicate /*= NULL*/)
+Iterator* Table::CreateScanIterator(const TuplePredicate *inTuplePredicate /*= NULL*/)
 {
 	Iterator *result = NULL;
 	if (mpDataHost)
 	{
-		result = mpDataHost->CreateScanIterator(inPredicate);
+		result = mpDataHost->CreateScanIterator(inTuplePredicate);
 	}
 
 	return result;

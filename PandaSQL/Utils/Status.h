@@ -15,6 +15,7 @@ public:
 		kIOError = 3,
 		kTableMissing = 4,
 		kColumnMissing = 5,
+		kInvalidExpression = 6,
 	};
 
 	Status() : mState(kOK) {}

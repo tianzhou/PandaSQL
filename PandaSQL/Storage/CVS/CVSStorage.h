@@ -19,14 +19,14 @@ public:
 	CVSStorage(IVFS *io_VFS, const std::string &inRootPath);
 	virtual ~CVSStorage();
 
-	virtual Iterator* CreateScanIterator(const Predicate *inPredicate = NULL);
+	virtual Iterator* CreateScanIterator(const TuplePredicate *inTuplePredicate = NULL);
 	virtual Iterator* CreateIndexIterator();
 
 	virtual void ReleaseScanIterator(Iterator *iter);
 	virtual void ReleaseIndexIterator(Iterator *iter); 
 
 	virtual Status OpenTable(const std::string &inTableName, OpenMode inMode);
-	//virtual Status InsertRecord(const Tuple &inTuple);
+	//virtual Status InsertRecord(const TupleData &inTuple);
 	//virtual Status FindFirstRecordWithPredicate(const Predicate *inPredicate, Iterator **o_iterator);
 
 private:
