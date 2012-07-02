@@ -81,7 +81,6 @@ public:
 	~Predicate();
 
 	void SetSinglePredicateItem(const PredicateItem &inPredicateItem);
-	void SetSinglePredicate(const Predicate &inPredicate);
 	void SetAndPredicateWithSubpredicates(const std::vector<Predicate> &inPredicateList);
 	void SetOrPredicateWithSubpredicates(const std::vector<Predicate> &inPredicateList);
 	void Reset();
@@ -92,6 +91,9 @@ public:
 	bool Eval(const std::vector<TupleEntry> &inTupleContext) const;
 
 private:
+
+	void TransformToCNF(); 
+
 	enum PredicateLogicGateType
 	{
 		kLogicUnknown,
@@ -100,11 +102,12 @@ private:
 		kLogicOr,
 	};
 
+privileged:
+
 	PredicateLogicGateType mLogicGateType;
 
 	std::vector<Predicate> mPredicateList;
 	PredicateItem mPredicateItem;
-	Predicate *mSinglePredicate;
 };
 
 }	// PandaSQL

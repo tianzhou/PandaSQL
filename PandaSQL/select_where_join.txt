@@ -1,4 +1,4 @@
 SELECT master_id
 FROM Master, Detail
-WHERE name = 2 and (master_id = 4 or master_id = 3)
+WHERE name = 2 and (master_id = 4 and master_id = 5 or master_id = 3) or name = 4
 ;

@@ -421,16 +421,6 @@ void Predicate::SetSinglePredicateItem(const PredicateItem &inPredicateItem)
 	mPredicateItem = inPredicateItem;
 }
 
-void Predicate::SetSinglePredicate(const Predicate &inPredicate)
-{
-	//Make sure it's not assigned before. Otherwise, it's likely a code error
-	PDASSERT(mLogicGateType == kLogicUnknown);
-
-	mLogicGateType = kLogicStandalone;
-
-	mSinglePredicate = new Predicate(inPredicate);
-}
-
 void Predicate::SetAndPredicateWithSubpredicates(const std::vector<Predicate> &inPredicateList)
 {
 	//Make sure it's not assigned before. Otherwise, it's likely a code error
@@ -549,6 +539,41 @@ bool Predicate::Eval(const std::vector<TupleEntry> &inTupleContext) const
 	}
 
 	return result;
+}
+
+void Predicate::TransformToCNF()
+{
+	if (mLogicGateType == kLogicAnd
+		|| mLogicGateType == kLogicOr)
+	{
+		std::vector<Predicate>::iterator iter = mPredicateList.begin();
+
+		for (; iter != mPredicateList.end(); iter++)
+		{
+			iter->TransformToCNF();
+		}
+
+		if (mLogicGateType == kLogicOr)
+		{
+			PDASSERT(mPredicateList.size() >= 2);
+
+			std::vector<Predicate>::iterator leftIter = mPredicateList.begin();
+			std::vector<Predicate>::iterator rightIter = leftIter++;
+			std::vector<Predicate> newPredicateList;
+
+			while (rightIter != mPredicateList.end())
+			{
+				//.......
+
+				leftIter = rightIter;
+				rightIter++;
+			}
+			
+			this->Reset();
+
+			this->SetAndPredicateWithSubpredicates(newPredicateList);
+		}
+	}
 }
 
 };	// PandaSQL
