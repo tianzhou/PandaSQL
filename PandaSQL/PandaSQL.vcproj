@@ -832,6 +832,18 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Optimizer"
+				>
+				<File
+					RelativePath=".\Optimizer\Node.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Optimizer\Node.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"

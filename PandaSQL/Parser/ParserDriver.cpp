@@ -105,6 +105,7 @@ Status Statement::Prepare()
 	Status result;
 
 	result = mPredicate.Prepare(*mpDB, mTableRefs);
+	mPredicate.TransformToCNF();
 
 	Table::ColumnDefList::iterator iter = mColumnDefs.begin();
 

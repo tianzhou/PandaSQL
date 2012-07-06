@@ -425,18 +425,34 @@ void Predicate::SetAndPredicateWithSubpredicates(const std::vector<Predicate> &i
 {
 	//Make sure it's not assigned before. Otherwise, it's likely a code error
 	PDASSERT(mLogicGateType == kLogicUnknown);
+	PDASSERT(inPredicateList.size() > 0);
 
-	mLogicGateType = kLogicAnd;
-	mPredicateList = inPredicateList;
+	if (inPredicateList.size() == 1)
+	{
+		*this = inPredicateList[0];
+	}
+	else
+	{
+		mLogicGateType = kLogicAnd;
+		mPredicateList = inPredicateList;
+	}
 }
 
 void Predicate::SetOrPredicateWithSubpredicates(const std::vector<Predicate> &inPredicateList)
 {
 	//Make sure it's not assigned before. Otherwise, it's likely a code error
 	PDASSERT(mLogicGateType == kLogicUnknown);
+	PDASSERT(inPredicateList.size() > 0);
 
-	mLogicGateType = kLogicOr;
-	mPredicateList = inPredicateList;
+	if (inPredicateList.size() == 1)
+	{
+		*this = inPredicateList[0];
+	}
+	else
+	{
+		mLogicGateType = kLogicOr;
+		mPredicateList = inPredicateList;
+	}
 }
 
 void Predicate::Reset()
@@ -548,9 +564,10 @@ void Predicate::TransformToCNF()
 	{
 		std::vector<Predicate>::iterator iter = mPredicateList.begin();
 
-		for (; iter != mPredicateList.end(); iter++)
+		while (iter != mPredicateList.end())
 		{
 			iter->TransformToCNF();
+			iter++;
 		}
 
 		if (mLogicGateType == kLogicOr)
@@ -558,12 +575,65 @@ void Predicate::TransformToCNF()
 			PDASSERT(mPredicateList.size() >= 2);
 
 			std::vector<Predicate>::iterator leftIter = mPredicateList.begin();
-			std::vector<Predicate>::iterator rightIter = leftIter++;
+			std::vector<Predicate>::iterator rightIter = leftIter+1;
 			std::vector<Predicate> newPredicateList;
 
 			while (rightIter != mPredicateList.end())
 			{
 				//.......
+
+				PDASSERT(leftIter->mLogicGateType == kLogicStandalone
+					|| leftIter->mLogicGateType == kLogicAnd);
+
+				PDASSERT(rightIter->mLogicGateType == kLogicStandalone
+					|| rightIter->mLogicGateType == kLogicAnd);
+
+				std::vector<Predicate> leftPredicateList;
+				std::vector<Predicate> rightPredicateList;
+
+				if (leftIter->mLogicGateType == kLogicStandalone)
+				{
+					leftPredicateList.push_back(*leftIter);
+				}
+				else
+				{
+					leftPredicateList = leftIter->mPredicateList;
+				}
+
+				if (rightIter->mLogicGateType == kLogicStandalone)
+				{
+					rightPredicateList.push_back(*rightIter);
+				}
+				else
+				{
+					rightPredicateList = rightIter->mPredicateList;
+				}
+
+
+				std::vector<Predicate>::iterator subLeftIter = leftPredicateList.begin();
+				
+				for (;subLeftIter != leftPredicateList.end();subLeftIter++)
+				{
+					std::vector<Predicate>::iterator subRightIter = rightPredicateList.begin();
+					std::vector<Predicate> onePredicateList;
+					
+					//Push the left item
+					onePredicateList.push_back(*subLeftIter);
+
+					for (;subRightIter != rightPredicateList.end();subRightIter++)
+					{
+						//Push the right item
+						onePredicateList.push_back(*subRightIter);
+						
+						Predicate onePredicate;
+						onePredicate.SetOrPredicateWithSubpredicates(onePredicateList);
+						
+						newPredicateList.push_back(onePredicate);
+						
+						//Pop the right item
+						onePredicateList.pop_back();
+					}		
+				}
 
 				leftIter = rightIter;
 				rightIter++;

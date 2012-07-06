@@ -87,12 +87,11 @@ public:
 
 	void Print(uint32_t level) const;
 	Status Prepare(const DB &inDB, const Table::TableRefList &inTableRefList);
-	
+	void TransformToCNF(); 
+
 	bool Eval(const std::vector<TupleEntry> &inTupleContext) const;
 
 private:
-
-	void TransformToCNF(); 
 
 	enum PredicateLogicGateType
 	{
