@@ -75,7 +75,7 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="9"
 				Optimization="0"
-				AdditionalIncludeDirectories="3rdParty\antlr\include;."
+				AdditionalIncludeDirectories=".;3rdParty\antlr\include;3rdParty\berkeleydb\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -99,9 +99,9 @@
 			<Tool
 				Name="VCLinkerTool"
 				ExecutionBucket="13"
-				AdditionalDependencies="antlr3c.lib"
+				AdditionalDependencies="antlr3c_dll.lib libdb53_dll.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="3rdParty\antlr\lib\$(PlatformName)"
+				AdditionalLibraryDirectories="&quot;3rdParty\antlr\lib\$(PlatformName)&quot;;&quot;3rdParty\berkeleydb\lib\$(PlatformName)&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -130,6 +130,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="xcopy /y &quot;3rdParty\antlr\lib\$(PlatformName)\*.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;xcopy /y &quot;3rdParty\berkeleydb\lib\$(PlatformName)\*.dll&quot; &quot;$(OutDir)&quot;"
 				ExecutionBucket="19"
 			/>
 		</Configuration>
@@ -171,7 +172,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="3rdParty\antlr\include;."
+				AdditionalIncludeDirectories=".;3rdParty\antlr\include;3rdParty\berkeleydb\include"
 				PreprocessorDefinitions="x64;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -191,9 +192,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="antlr3c.lib"
+				AdditionalDependencies="antlr3c_dll.lib libdb53_dll.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="3rdParty\antlr\lib\$(PlatformName)"
+				AdditionalLibraryDirectories="&quot;3rdParty\antlr\lib\$(PlatformName)&quot;;&quot;3rdParty\berkeleydb\lib\$(PlatformName)&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="17"
@@ -218,6 +219,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="xcopy /y &quot;3rdParty\antlr\lib\$(PlatformName)\*.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;xcopy /y &quot;3rdParty\berkeleydb\lib\$(PlatformName)\*.dll&quot; &quot;$(OutDir)&quot;"
 			/>
 		</Configuration>
 		<Configuration
@@ -259,7 +261,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="3rdParty\antlr\include;."
+				AdditionalIncludeDirectories=".;3rdParty\antlr\include;3rdParty\berkeleydb\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -278,9 +280,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="antlr3c.lib"
+				AdditionalDependencies="antlr3c_dll.lib libdb53_dll.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="3rdParty\antlr\lib\$(PlatformName)"
+				AdditionalLibraryDirectories="&quot;3rdParty\antlr\lib\$(PlatformName)&quot;;&quot;3rdParty\berkeleydb\lib\$(PlatformName)&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -307,6 +309,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="xcopy /y &quot;3rdParty\antlr\lib\$(PlatformName)\*.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;xcopy /y &quot;3rdParty\berkeleydb\lib\$(PlatformName)\*.dll&quot; &quot;$(OutDir)&quot;"
 			/>
 		</Configuration>
 		<Configuration
@@ -349,7 +352,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="3rdParty\antlr\include;."
+				AdditionalIncludeDirectories=".;3rdParty\antlr\include;3rdParty\berkeleydb\include"
 				PreprocessorDefinitions="x64;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -368,9 +371,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="antlr3c.lib"
+				AdditionalDependencies="antlr3c_dll.lib libdb53_dll.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="3rdParty\antlr\lib\$(PlatformName)"
+				AdditionalLibraryDirectories="&quot;3rdParty\antlr\lib\$(PlatformName)&quot;;&quot;3rdParty\berkeleydb\lib\$(PlatformName)&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -397,6 +400,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="xcopy /y &quot;3rdParty\antlr\lib\$(PlatformName)\*.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;xcopy /y &quot;3rdParty\berkeleydb\lib\$(PlatformName)\*.dll&quot; &quot;$(OutDir)&quot;"
 			/>
 		</Configuration>
 	</Configurations>
