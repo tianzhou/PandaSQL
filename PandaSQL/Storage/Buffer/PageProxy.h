@@ -3,6 +3,8 @@
 
 //#include "VFS/File.h"
 
+#include "Storage/StorageTypes.h"
+
 #include "Utils/Types.h"
 #include "Utils/Status.h"
 
@@ -32,11 +34,11 @@ public:
 	typedef int AccessFlags;
 
 	//Page num is zero based
-	Status GetPage(uint32_t inPageNum, AccessFlags inAccessMode, char **o_pageData);
-	Status PutPage(uint32_t inPageNum, bool inDirty, const char *inPageData);
-	Status NewPage(uint32_t *o_pageNum);
+	Status GetPage(PageNum inPageNum, AccessFlags inAccessMode, char **o_pageData);
+	Status PutPage(PageNum inPageNum, bool inDirty, const char *inPageData);
+	Status NewPage(PageNum *o_pageNum);
 
-	Status GetPageCount(uint32_t *o_pageCount) const;
+	Status GetPageCount(PageNum *o_pageCount) const;
 	uint32_t GetPageSize() const;
 
 private:

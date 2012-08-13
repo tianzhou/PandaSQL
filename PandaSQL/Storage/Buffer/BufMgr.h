@@ -1,6 +1,8 @@
 #ifndef PANDASQL_BUFMGR_H
 #define PANDASQL_BUFMGR_H
 
+#include "Storage/StorageTypes.h"
+
 #include "Utils/Types.h"
 #include "Utils/Status.h"
 
@@ -18,17 +20,17 @@ public:
 	BufHashTable(uint32_t inTableSize);
 	~BufHashTable();
 
-	uint32_t Lookup(uint32_t inPageNum) const;
-	void Remove(uint32_t inPageNum, uint32_t inBufNum);
-	void Insert(uint32_t inPageNum, uint32_t inBufNum);
+	uint32_t Lookup(PageNum inPageNum) const;
+	void Remove(PageNum inPageNum, uint32_t inBufNum);
+	void Insert(PageNum inPageNum, uint32_t inBufNum);
 
 private:
 
-	uint32_t Hash_Private(uint32_t inValue) const;
+	uint32_t Hash_Private(PageNum inValue) const;
 
 	struct HashEntry
 	{
-		uint32_t pageNum;
+		PageNum pageNum;
 		uint32_t bufNum;
 		HashEntry *next;
 	};
@@ -44,7 +46,7 @@ public:
 	~Frame();
 
 private:
-	uint32_t mPageNum;
+	PageNum mPageNum;
 };
 
 class Replacer
@@ -70,7 +72,7 @@ private:
 	BufDesc();
 	~BufDesc();
 
-	uint32_t mPageNum;
+	PageNum mPageNum;
 	uint32_t mBufNum;
 	uint16_t mRefCount;
 	uint16_t mUsageCount; //Used by Replacer
@@ -84,11 +86,11 @@ public:
 	BufMgr(uint32_t inBufCount, uint32_t inPageSize, File *io_file);
 	~BufMgr();
 
-	Status PinPage(uint32_t inPageNum, Page *o_page);
-	Status UnpinPage(uint32_t inPageNum, bool inDirty);
-	Status NewPage(uint32_t *o_pageNum);
+	Status PinPage(PageNum inPageNum, Page *o_page);
+	Status UnpinPage(PageNum inPageNum, bool inDirty);
+	Status NewPage(PageNum *o_pageNum);
 
-	Status GetTotalPages(uint32_t *o_pageCount);
+	Status GetTotalPages(PageNum *o_pageCount);
 
 private:
 	BufHashTable *mpBufHash;

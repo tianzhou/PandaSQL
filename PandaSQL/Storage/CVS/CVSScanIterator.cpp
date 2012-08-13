@@ -41,13 +41,13 @@ Status CVSScanIterator::Next_Inner()
 	{
 		bool findValidPos = false;
 		char *pageData = NULL;
-		uint32_t pageCount;
+		PageNum pageCount;
 		
 		result = mpPageProxy->GetPageCount(&pageCount);
 
 		if (result.OK())
 		{
-			uint32_t currentPageNum = mSeekPos.pageNum;
+			PageNum currentPageNum = mSeekPos.pageNum;
 
 			if (mSeekPos.pageNum + 1 > pageCount)
 			{
@@ -107,9 +107,9 @@ Status CVSScanIterator::Next_Inner()
 							mSeekPos.offset += sizeof(kDeleteMark);
 						}
 
-						mSeekPos.offset += pch - theStr.c_str();
+						mSeekPos.offset += (uint32_t)(pch - theStr.c_str());
 
-						mSeekPos.offset += strlen(kNewLineSymbol);
+						mSeekPos.offset += (uint32_t)(strlen(kNewLineSymbol));
 
 						if (!skipRecord)
 						{
@@ -275,8 +275,8 @@ Status CVSScanIterator::InsertValue(const TupleData &inTuple)
 
 	PDASSERT(rowData.length() <= mpPageProxy->GetPageSize());
 
-	uint32_t pageNum;
-	uint32_t pageCount;
+	PageNum pageNum;
+	PageNum pageCount;
 
 	if (mPosAfterLast)
 	{
@@ -375,7 +375,7 @@ Status CVSScanIterator::DeleteValue()
 	{
 		PDASSERT(mSeekPos.pageNum == mValuePos.pageNum);
 
-		uint32_t rowEnd = mSeekPos.offset - strlen(kNewLineSymbol);
+		uint32_t rowEnd = mSeekPos.offset - (uint32_t)(strlen(kNewLineSymbol));
 
 		PDASSERT(rowEnd > mValuePos.offset);
 
@@ -407,7 +407,7 @@ Status CVSScanIterator::GetValue(TupleData *o_tuple) const
 		//TODO: May expand pages
 		PDASSERT(mSeekPos.pageNum == mValuePos.pageNum);
 
-		uint32_t rowEnd = mSeekPos.offset - strlen(kNewLineSymbol);
+		uint32_t rowEnd = mSeekPos.offset - (uint32_t)(strlen(kNewLineSymbol));
 
 		PDASSERT(rowEnd > mValuePos.offset);
 

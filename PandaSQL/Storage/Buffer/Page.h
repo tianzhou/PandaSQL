@@ -1,6 +1,8 @@
 #ifndef PANDASQL_PAGE_H
 #define PANDASQL_PAGE_H
 
+#include "Storage/StorageTypes.h"
+
 #include "Utils/Types.h"
 #include "Utils/Status.h"
 
@@ -16,7 +18,7 @@ public:
 	~Page();
 
 	char *mPageData;
-	uint32_t mPageNum;
+	PageNum mPageNum;
 	uint32_t mRefCount;
 
 };

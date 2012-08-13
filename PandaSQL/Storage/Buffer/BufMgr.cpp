@@ -44,12 +44,12 @@ BufHashTable::~BufHashTable()
 	delete []mppHash;
 }
 
-uint32_t BufHashTable::Hash_Private(uint32_t inValue) const
+uint32_t BufHashTable::Hash_Private(PageNum inValue) const
 {
 	return inValue % mTableSize;
 }
 
-uint32_t BufHashTable::Lookup(uint32_t inPageNum) const
+uint32_t BufHashTable::Lookup(PageNum inPageNum) const
 {
 	uint32_t result = kInvalidBufNum;
 
@@ -71,7 +71,7 @@ uint32_t BufHashTable::Lookup(uint32_t inPageNum) const
 	return result;
 }
 
-void BufHashTable::Remove(uint32_t inPageNum, uint32_t inBufNum)
+void BufHashTable::Remove(PageNum inPageNum, uint32_t inBufNum)
 {
 	uint32_t hash = this->Hash_Private(inPageNum);
 
@@ -101,7 +101,7 @@ void BufHashTable::Remove(uint32_t inPageNum, uint32_t inBufNum)
 	}
 }
 	
-void BufHashTable::Insert(uint32_t inPageNum, uint32_t inBufNum)
+void BufHashTable::Insert(PageNum inPageNum, uint32_t inBufNum)
 {
 	uint32_t hash = this->Hash_Private(inPageNum);
 
@@ -271,7 +271,7 @@ BufMgr::~BufMgr()
 	delete mpBufHash;
 }
 
-Status BufMgr::PinPage(uint32_t inPageNum, Page *o_page)
+Status BufMgr::PinPage(PageNum inPageNum, Page *o_page)
 {
 	Status result;
 
@@ -329,7 +329,7 @@ Status BufMgr::PinPage(uint32_t inPageNum, Page *o_page)
 	return result;
 }
 
-Status BufMgr::UnpinPage(uint32_t inPageNum, bool inDirty)
+Status BufMgr::UnpinPage(PageNum inPageNum, bool inDirty)
 {
 	Status result;
 
@@ -357,7 +357,7 @@ Status BufMgr::UnpinPage(uint32_t inPageNum, bool inDirty)
 	return result;
 }
 
-Status BufMgr::NewPage(uint32_t *o_pageNum)
+Status BufMgr::NewPage(PageNum *o_pageNum)
 {
 	Status result;
 
@@ -372,7 +372,7 @@ Status BufMgr::NewPage(uint32_t *o_pageNum)
 
 		//if (result.OK())
 		{
-			uint32_t totalPage;
+			PageNum totalPage;
 			result = this->GetTotalPages(&totalPage);
 
 			PDASSERT(totalPage > 0);
@@ -385,7 +385,7 @@ Status BufMgr::NewPage(uint32_t *o_pageNum)
 	return result;
 }
 
-Status BufMgr::GetTotalPages(uint32_t *o_pageCount)
+Status BufMgr::GetTotalPages(PageNum *o_pageCount)
 {
 	Status result;
 

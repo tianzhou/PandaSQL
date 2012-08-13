@@ -1,6 +1,8 @@
 #ifndef PANDASQL_CVS_SCANITERATOR_H
 #define PANDASQL_CVS_SCANITERATOR_H
 
+#include "Storage/StorageTypes.h"
+
 #include "Access/Iterator.h"
 
 #include "Utils/Types.h"
@@ -33,7 +35,7 @@ protected:
 	 
 	struct PosInfo
 	{
-		uint32_t pageNum;
+		PageNum pageNum;
 		uint32_t offset; //Offset in page
 	};
  

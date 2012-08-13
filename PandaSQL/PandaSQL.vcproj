@@ -759,6 +759,10 @@
 					RelativePath=".\Storage\IStorage.h"
 					>
 				</File>
+				<File
+					RelativePath=".\Storage\StorageTypes.h"
+					>
+				</File>
 				<Filter
 					Name="Buffer"
 					>

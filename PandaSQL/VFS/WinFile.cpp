@@ -25,7 +25,7 @@ Status WinFile::Read(File::Offset offset, File::Size amount, void *o_buf, File::
 {
 	Status result;
 
-	if (fseek(mpFile, offset, SEEK_SET) != 0)
+	if (_fseeki64(mpFile, offset, SEEK_SET) != 0)
 	{
 		result = Status::kIOError;
 	}
@@ -97,7 +97,7 @@ Status WinFile::Write(File::Offset offset, File::Size amount, const void *inBuf,
 {
 	Status result;
 
-	if (fseek(mpFile, offset, SEEK_SET) != 0)
+	if (_fseeki64(mpFile, offset, SEEK_SET) != 0)
 	{
 		result = Status::kIOError;
 	}
@@ -168,11 +168,20 @@ Status WinFile::Flush()
 Status WinFile::GetSize(File::Size *o_size)
 {
 	Status result;
-	struct stat stbuf;
+
+#ifdef PANDASQL_64
+	struct __stat64 stbuf;
+#else
+	struct _stat32 stbuf;
+#endif
 
 	int fd = _fileno(mpFile);
-	
-	if (fstat(fd, &stbuf) == -1)
+
+#ifdef PANDASQL_64
+	if (_fstat64(fd, &stbuf) == -1)
+#else
+	if (_fstat32(fd, &stbuf) == -1)
+#endif
 	{
 		result = Status::kIOError;
 	}

@@ -23,8 +23,8 @@ Status HeapStore::InsertRecord(File::Size length, const void *data)
 
 	Status result;
 
-	uint32_t pageCount;
-	uint32_t pageNum;
+	PageNum pageCount;
+	PageNum pageNum;
 	result = mpPageProxy->GetPageCount(&pageCount);
 
 	if (result.OK())

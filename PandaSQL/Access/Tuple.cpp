@@ -29,7 +29,7 @@ TupleData::~TupleData()
 
 uint32_t TupleData::Count() const
 {
-	return mValueList.size();
+	return (uint32_t)mValueList.size();
 }
 
 void TupleData::GetDataAtIndex(uint32_t index, std::string *o_data) const
