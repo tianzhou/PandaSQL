@@ -15,13 +15,14 @@ namespace PandaSQL
 class IVFS;
 class File;
 class TuplePredicate;
+class IDBBackend;
 
 class DB
 {
 public:
 
 	typedef std::vector<Table*> TableList;
-	
+
 	struct Options
 	{
 		bool create_if_missing;
@@ -29,21 +30,20 @@ public:
 		Options();
 	};
 
-	DB();
+	static IVFS* CreateVFS();
+
+	DB(StorageType inStorageType);
 	~DB();
 	Status Open(const std::string &inDBPath, const Options &inOptions);
 	Status Close();
-	Status CreateTable(const std::string &inCreateStmt);
+	Status CreateTable(const Table &inTable);
 
-	//Load pTable to DB, Take the ownership of pTable;
-	Status LoadTable(Table *pTable);
+	//Load io_pTable to DB, Take the ownership of pTable;
+	Status LoadTable(Table *io_pTable);
 
 	Status InsertData(const std::string &tableName, const Table::ColumnDefList &columnList, const Table::ColumnValueList &columnValueList);
 	Status DeleteData(const std::string &tableName, const TuplePredicate *inTuplePredicate = NULL);
 	Status SelectData(const Table::TableRefList &tableList, const JoinList &joinList, const Table::ColumnDefList &columnList, const TuplePredicate *inTuplePredicate = NULL);
-
-	const std::string& GetDBPath() const { return mDBPath; }
-	IVFS* GetVFS() { return mpVFS; }
 
 	Table* GetTableByID(uint32_t inTableID) const;
 	uint32_t GetTableIDByName(const std::string &inTableName) const;
@@ -55,16 +55,14 @@ private:
 	DB(const DB &rhs);
 	DB& operator=(const DB &rhs);
 
-	std::string mDBPath;
-	IVFS	*mpVFS;
-	File *mpMainFile;
-	File *mpTableFile;
-	std::vector<File*> mDataFileList;
-	std::vector<File*> mIndexFileList;
+	StorageType mStorageType;
+	IDBBackend *mpBackend;
 
 	TableCatalog mTableCatalog;
 
 	TableList mTableList;
+
+	bool mIsOpen;
 };
 
 }	// PandaSQL

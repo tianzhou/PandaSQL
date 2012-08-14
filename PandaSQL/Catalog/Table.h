@@ -3,8 +3,6 @@
 
 #include "Column.h"
 
-#include "VFS/IVFS.h"
-
 #include "Storage/IStorage.h"
 
 #include "Utils/Expr.h"
@@ -28,7 +26,7 @@ public:
 	typedef std::vector<ColumnDef> ColumnDefList;
 	typedef std::vector<Expr> ColumnValueList;
 
-	Table(const std::string &inDBRootPath, IStorage::StorageType inType, IVFS *io_VFS);
+	Table();
 	~Table();
 	
 	void SetName(const std::string &inName) { mName = inName; }
@@ -55,7 +53,6 @@ private:
 	std::string mName;
 	ColumnDefList mColumnList;
 
-	IVFS *mpVFS;
 	IStorage *mpDataHost;
 };
 

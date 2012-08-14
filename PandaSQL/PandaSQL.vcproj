@@ -130,7 +130,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy /y &quot;3rdParty\antlr\lib\$(PlatformName)\*.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;xcopy /y &quot;3rdParty\berkeleydb\lib\$(PlatformName)\*.dll&quot; &quot;$(OutDir)&quot;"
+				CommandLine="xcopy /y &quot;3rdParty\antlr\lib\$(PlatformName)\*.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;xcopy /y &quot;3rdParty\berkeleydb\lib\$(PlatformName)\*.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;"
 				ExecutionBucket="19"
 			/>
 		</Configuration>
@@ -219,7 +219,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy /y &quot;3rdParty\antlr\lib\$(PlatformName)\*.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;xcopy /y &quot;3rdParty\berkeleydb\lib\$(PlatformName)\*.dll&quot; &quot;$(OutDir)&quot;"
+				CommandLine="xcopy /y &quot;3rdParty\antlr\lib\$(PlatformName)\*.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;xcopy /y &quot;3rdParty\berkeleydb\lib\$(PlatformName)\*.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -309,7 +309,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy /y &quot;3rdParty\antlr\lib\$(PlatformName)\*.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;xcopy /y &quot;3rdParty\berkeleydb\lib\$(PlatformName)\*.dll&quot; &quot;$(OutDir)&quot;"
+				CommandLine="xcopy /y &quot;3rdParty\antlr\lib\$(PlatformName)\*.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;xcopy /y &quot;3rdParty\berkeleydb\lib\$(PlatformName)\*.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -400,7 +400,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy /y &quot;3rdParty\antlr\lib\$(PlatformName)\*.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;xcopy /y &quot;3rdParty\berkeleydb\lib\$(PlatformName)\*.dll&quot; &quot;$(OutDir)&quot;"
+				CommandLine="xcopy /y &quot;3rdParty\antlr\lib\$(PlatformName)\*.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;xcopy /y &quot;3rdParty\berkeleydb\lib\$(PlatformName)\*.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -752,6 +752,14 @@
 				Name="Storage"
 				>
 				<File
+					RelativePath=".\Storage\IDBBackend.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Storage\IDBBackend.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Storage\IStorage.cpp"
 					>
 				</File>
@@ -816,6 +824,26 @@
 					</File>
 					<File
 						RelativePath=".\Storage\CVS\HeapStore.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="BerkeleyDB"
+					>
+					<File
+						RelativePath=".\Storage\BerkeleyDB\BDBBackend.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Storage\BerkeleyDB\BDBBackend.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Storage\BerkeleyDB\BDBStorage.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Storage\BerkeleyDB\BDBStorage.h"
 						>
 					</File>
 				</Filter>

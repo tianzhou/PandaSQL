@@ -1,24 +1,17 @@
-#ifndef PANDASQL_CVSSTORAGE_H
-#define PANDASQL_CVSSTORAGE_H
+#ifndef PANDASQL_BDBSTORAGE_H
+#define PANDASQL_BDBSTORAGE_H
 
 #include "Storage/IStorage.h"
-
-#include <map>
 
 namespace PandaSQL
 {
 
-class IVFS;
-class File;
-class HeapStore;
-class PageProxy;
-
-class CVSStorage : public IStorage
+class BDBStorage : public IStorage
 {
 public:
 
-	CVSStorage(IVFS *io_VFS, const std::string &inRootPath);
-	virtual ~CVSStorage();
+	BDBStorage(const std::string &inRootPath);
+	virtual ~BDBStorage();
 
 	virtual Iterator* CreateScanIterator(const TuplePredicate *inTuplePredicate = NULL);
 	virtual Iterator* CreateIndexIterator();
@@ -32,21 +25,14 @@ public:
 
 private:
 
-	CVSStorage(const CVSStorage &rhs);
-	CVSStorage& operator=(const CVSStorage &rhs);
+	BDBStorage(const BDBStorage &rhs);
+	BDBStorage& operator=(const BDBStorage &rhs);
 
-	std::string DataFilePathFromTableName(const std::string &tableName);
-
-	IVFS *mpVFS;
-	File *mpDataFile;
 	OpenMode mDataFileMode;
-
-	HeapStore *mpHeapStore;
-	PageProxy *mpPageProxy;
 
 	Iterator *mpScanIterator;
 };
 
 }	// PandaSQL
 
-#endif	// PANDASQL_CVSSTORAGE_H
+#endif	// PANDASQL_BDBSTORAGE_H

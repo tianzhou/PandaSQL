@@ -49,6 +49,12 @@ struct ColumnQualifiedName
 	std::string columnName;
 };
 
+enum StorageType
+{
+	kCVS,
+	kBDB
+};
+
 extern char *kNewLineSymbol; 
 
 extern uint32_t kUnknownID;

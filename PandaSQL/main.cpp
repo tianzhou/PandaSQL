@@ -15,7 +15,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	std::string inQueryString;
 	PandaSQL::Status result;
 
-	PandaSQL::DB db;
+	PandaSQL::IVFS *pVFS = PandaSQL::DB::CreateVFS();
+
+	PandaSQL::DB db(PandaSQL::kBDB);
 	PandaSQL::DB::Options openOptions;
 	openOptions.create_if_missing = true;
 	result = db.Open("C:\\Users\\Tianzhou\\Desktop\\PD_Data\\testDB", openOptions);
@@ -51,7 +53,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 #if 1
 		PandaSQL::File *inputFile = NULL;
-		result = db.GetVFS()->OpenFile("./select_where_join.txt", false, &inputFile);
+		result = pVFS->OpenFile("./select_where_join.txt", false, &inputFile);
 		
 		if (result.OK())
 		{

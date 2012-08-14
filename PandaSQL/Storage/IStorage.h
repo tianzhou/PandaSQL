@@ -7,7 +7,6 @@
 namespace PandaSQL
 {
 
-class IVFS;
 class TupleData;
 class TuplePredicate;
 class Iterator;
@@ -21,11 +20,6 @@ class IStorage
 {
 public:
 
-	enum StorageType
-	{
-		kCVS
-	};
-
 	enum OpenMode
 	{
 		kNone				= 0,	
@@ -34,7 +28,7 @@ public:
 		kWrite				= 0x00000004,
 	};
 
-	static IStorage *CreateStorage(const std::string &inDBRootPath, StorageType inType, IVFS *io_VFS);
+	static IStorage *CreateStorage(const std::string &inDBRootPath, StorageType inType);
 
 	virtual ~IStorage() = 0 {}
 
@@ -49,10 +43,9 @@ public:
 	//virtual Status FindFirstRecordWithPredicate(const Predicate *inPredicate, Iterator **o_iterator) = 0;
 
 protected:
-	IStorage(const std::string &inRootPath, IVFS *io_VFS);
+	IStorage(const std::string &inRootPath);
 
 	const std::string &mRootPath;
-	IVFS *mpVFS;
 
 private:
 	IStorage(const IStorage &rhs);

@@ -15,7 +15,8 @@ namespace PandaSQL
 static const uint32_t kCVSPageSize = 4096;
 
 CVSStorage::CVSStorage(IVFS *io_VFS, const std::string &inRootPath)
-:IStorage(inRootPath, io_VFS)
+:IStorage(inRootPath)
+,mpVFS(io_VFS)
 ,mpDataFile(NULL)
 ,mDataFileMode(IStorage::kNone)
 ,mpHeapStore(NULL)

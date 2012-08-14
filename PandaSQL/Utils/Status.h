@@ -16,6 +16,7 @@ public:
 		kTableMissing = 4,
 		kColumnMissing = 5,
 		kInvalidExpression = 6,
+		kInvalidCommand = 7
 	};
 
 	Status() : mState(kOK) {}

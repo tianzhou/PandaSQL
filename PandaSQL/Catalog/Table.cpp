@@ -2,8 +2,6 @@
 
 #include "Table.h"
 
-#include "VFS/IVFS.h"
-
 #include "Access/Tuple.h"
 #include "Access/Iterator.h"
 
@@ -15,12 +13,18 @@
 namespace PandaSQL
 {
 
-Table::Table(const std::string &inDBRootPath, IStorage::StorageType inType, IVFS *io_VFS)
+Table::Table()
 :
-mpVFS(io_VFS)
-,mpDataHost(NULL)
+mpDataHost(NULL)
 {
-	mpDataHost = IStorage::CreateStorage(inDBRootPath, inType, mpVFS);
+	//if (inType == IStorage::kCVS)
+	//{
+	//	mpDataHost = IStorage::CreateStorage(inDBRootPath, inType, mpVFS);
+	//}
+	//else if (inType == IStorage::kBDB)
+	//{
+	//	mpDataHost = IStorage::CreateStorage(inDBRootPath, inType, mpVFS);
+	//}
 }
 
 Table::~Table()

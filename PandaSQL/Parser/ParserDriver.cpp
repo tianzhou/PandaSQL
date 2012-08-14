@@ -135,24 +135,24 @@ Status Statement::Execute(bool loadTable)
 	{
 	case kStmtCreateTable:
 		{
+			Table *pTable = new Table();
+			pTable->SetName(mTableRefs[0]);
+
+			Table::ColumnDefList::iterator iter = mColumnDefs.begin();
+
+			for (; iter != mColumnDefs.end(); iter++)
+			{
+				iter->qualifiedName.tableName = pTable->GetName();
+				pTable->AddColumnDef(*iter);
+			}
+
 			if (loadTable)
 			{
-				Table *theTable = new Table(mpDB->GetDBPath(), IStorage::kCVS, mpDB->GetVFS());
-				theTable->SetName(mTableRefs[0]);
-
-				Table::ColumnDefList::iterator iter = mColumnDefs.begin();
-
-				for (; iter != mColumnDefs.end(); iter++)
-				{
-					iter->qualifiedName.tableName = theTable->GetName();
-					theTable->AddColumnDef(*iter);
-				}
-
-				result = mpDB->LoadTable(theTable);
+				result = mpDB->LoadTable(pTable);
 			}
 			else
 			{
-				result = mpDB->CreateTable(mOrigStmtText);
+				result = mpDB->CreateTable(*pTable);
 			}
 
 			break;

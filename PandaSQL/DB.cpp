@@ -1,9 +1,7 @@
 #include "stdafx.h"
 
 #include "DB.h"
-#include "VFS/IVFS.h"
-#include "VFS/WinVFS.h"
-#include "VFS/File.h"
+#include "Storage/IDBBackend.h"
 
 #include "Parser/ParserDriver.h"
 
@@ -14,6 +12,8 @@
 #include "Access/Iterator.h"
 #include "Access/Tuple.h"
 
+#include "VFS/WinVFS.h"
+
 #include "Utils/Predicate.h"
 
 #include <iostream>
@@ -21,7 +21,8 @@
 namespace PandaSQL
 {
 
-static IVFS* create_vfs()
+//static
+IVFS* DB::CreateVFS()
 {
 	//Only have windows for now
 	return new WinVFS();
@@ -33,61 +34,34 @@ create_if_missing(false)
 {
 }
 
-DB::DB()
+DB::DB(StorageType inStorageType)
 :
-mpVFS(NULL)
-,mpMainFile(NULL)
-,mpTableFile(NULL)
+mStorageType(inStorageType)
+,mpBackend(NULL)
+,mIsOpen(false)
 {
 }
 
 DB::~DB()
 {
-	PDASSERT(!mpVFS);
-	PDASSERT(!mpMainFile);
-	PDASSERT(!mpTableFile);
+	PDASSERT(!mpBackend);
 }
 
 Status DB::Open(const std::string &inDBPath, const Options &inOptions)
 {
 	Status result;
 
-	mDBPath = inDBPath;
-
-	if (!mpVFS)
+	if (mIsOpen)
 	{
-		mpVFS = create_vfs();
+		result = Status::kInvalidCommand;
 	}
-
-	if (!mpVFS->IsFileExist(inDBPath))
+	else
 	{
-		result = mpVFS->CreateDir(inDBPath);	
-	}
+		PDASSERT(!mpBackend);
 
-	bool create_if_missing = inOptions.create_if_missing;
-
-	if (result.OK())
-	{
-		std::string mainFilePath = inDBPath + "\\testDB.pdm";
-		result = mpVFS->OpenFile(mainFilePath, create_if_missing, &mpMainFile);
-
-		if (result.OK())
-		{
-			std::string tableFilePath = inDBPath + "\\testDB.pdt";
-			result = mpVFS->OpenFile(tableFilePath, create_if_missing, &mpTableFile);
-
-			if (result.OK())
-			{
-				ParserDriver parser(this);
-				parser.SetLoadTable(true);
-				result = parser.LoadFromFile(mpTableFile);
-			}
-		}
-	}
-
-	if (!result.OK())
-	{
-		this->Close();
+		mpBackend = IDBBackend::CreateBackend(inDBPath, mStorageType);
+	
+		mIsOpen = true;
 	}
 
 	return result;
@@ -95,7 +69,12 @@ Status DB::Open(const std::string &inDBPath, const Options &inOptions)
 
 Status DB::Close()
 {
+	PDASSERT(mIsOpen);
+
 	Status result;
+
+	delete mpBackend;
+	mpBackend = NULL;
 
 	TableList::iterator iter = mTableList.begin();
 
@@ -104,42 +83,26 @@ Status DB::Close()
 		delete *iter;
 	}
 
-	mpVFS->CloseFile(mpMainFile);
-	mpMainFile = NULL;
-	mpVFS->CloseFile(mpTableFile);
-	mpTableFile = NULL;
-
-	delete mpVFS;
-	mpVFS = NULL;
-
 	return result;
 }
 
-Status DB::CreateTable(const std::string &inCreateStmt)
+Status DB::CreateTable(const Table &inTable)
 {
 	Status result;
 
-	std::string theString = inCreateStmt + '\n';
-	result = mpTableFile->Append(theString.length(), theString.c_str(), NULL);
-	
-	if (result.OK())
-	{
-		result = mpTableFile->Flush();
-	}
-
 	return result;
 }
 
-Status DB::LoadTable(Table *pTable)
+Status DB::LoadTable(Table *io_pTable)
 {
 	Status result;
 
 	IStorage::OpenMode mode = IStorage::OpenMode(IStorage::kCreateIfMissing | IStorage::kRead | IStorage::kWrite);
-	result = pTable->Open(mode);
+	result = io_pTable->Open(mode);
 
 	if (result.OK())
 	{
-		mTableList.push_back(pTable);
+		mTableList.push_back(io_pTable);
 	}
 	
 	return result;
@@ -311,12 +274,12 @@ uint32_t DB::GetTableIDByName(const std::string &inTableName) const
 	return result;
 }
 
-//uint32_t DB::GetColumnIDByName(const std::string &inColumnName) const
-//{
-//	uint32_t result = kUnknownID;
-//
-//	return result;
-//}
+uint32_t DB::GetColumnIDByName(const std::string &inColumnName) const
+{
+	uint32_t result = kUnknownID;
+
+	return result;
+}
 
 
 }	// PandaSQL
