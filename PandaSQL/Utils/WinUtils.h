@@ -1,6 +1,8 @@
 #ifndef PANDASQL_WINUTILS_H
 #define PANDASQL_WINUTILS_H
 
+#include <string>
+
 namespace PandaSQL
 {
 

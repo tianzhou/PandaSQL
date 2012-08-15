@@ -1,6 +1,8 @@
 #ifndef PANDASQL_TYPES_H
 #define PANDASQL_TYPES_H
 
+#include <string>
+
 namespace PandaSQL
 {
 

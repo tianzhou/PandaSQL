@@ -61,6 +61,8 @@ Status DB::Open(const std::string &inDBPath, const Options &inOptions)
 
 		mpBackend = IDBBackend::CreateBackend(inDBPath, mStorageType);
 	
+		result = mpBackend->Open();
+
 		mIsOpen = true;
 	}
 
@@ -73,37 +75,30 @@ Status DB::Close()
 
 	Status result;
 
+	result = mpBackend->Close();
+
+	PDASSERT(result.OK());
+
 	delete mpBackend;
 	mpBackend = NULL;
 
-	TableList::iterator iter = mTableList.begin();
+	return result;
+}
 
-	for (; iter != mTableList.end(); iter++)
-	{
-		delete *iter;
-	}
+Status DB::CreateTable(const std::string &tableName, const Table::ColumnDefList &columnList)
+{
+	Status result;
+
+	result = mpBackend->CreateTable(tableName, columnList);
 
 	return result;
 }
 
-Status DB::CreateTable(const Table &inTable)
+Status DB::OpenTable(const std::string &tableName)
 {
 	Status result;
 
-	return result;
-}
-
-Status DB::LoadTable(Table *io_pTable)
-{
-	Status result;
-
-	IStorage::OpenMode mode = IStorage::OpenMode(IStorage::kCreateIfMissing | IStorage::kRead | IStorage::kWrite);
-	result = io_pTable->Open(mode);
-
-	if (result.OK())
-	{
-		mTableList.push_back(io_pTable);
-	}
+	result = mpBackend->OpenTable(tableName);
 	
 	return result;
 }
@@ -112,14 +107,7 @@ Status DB::InsertData(const std::string &tableName, const Table::ColumnDefList &
 {
 	Status result;
 
-	Table *theTable = NULL;
-	
-	result = DB::GetTableByName(tableName, &theTable);
-
-	if (result.OK())
-	{
-		result = theTable->AddRecord(columnList, columnValueList);
-	}
+	result = mpBackend->InsertData(tableName, columnList, columnValueList);
 
 	return result;
 }

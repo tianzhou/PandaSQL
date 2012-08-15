@@ -1,0 +1,2 @@
+CREATE TABLE Master (master_id INT PRIMARY KEY, name TEXT NOT NULL);
+CREATE TABLE Detail (detail_id INT PRIMARY KEY, course TEXT NOT NULL);

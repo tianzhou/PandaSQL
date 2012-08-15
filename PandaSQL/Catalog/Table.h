@@ -10,6 +10,7 @@
 #include "Utils/Status.h"
 
 #include <vector>
+#include <string>
 
 namespace PandaSQL
 {

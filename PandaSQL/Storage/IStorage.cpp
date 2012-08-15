@@ -2,6 +2,7 @@
 
 #include "IStorage.h"
 #include "CVS/CVSStorage.h"
+#include "BerkeleyDB/BDBStorage.h"
 
 namespace PandaSQL
 {
@@ -14,6 +15,9 @@ IStorage *IStorage::CreateStorage(const std::string &inDBRootPath, StorageType i
 	{
 	case kCVS:
 		//result = new CVSStorage(io_VFS, inDBRootPath);
+		break;
+	case kBDB:
+		result = new BDBStorage(inDBRootPath);
 		break;
 	default:
 		break;

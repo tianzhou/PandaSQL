@@ -53,11 +53,32 @@ int _tmain(int argc, _TCHAR* argv[])
 
 #if 1
 		PandaSQL::File *inputFile = NULL;
+
+		result = pVFS->OpenFile("./create_db.txt", false, &inputFile);
+		
+		if (result.OK())
+		{
+			result = parserDriver.LoadFromFile(inputFile);
+
+			PDASSERT(result.OK());
+
+			result = pVFS->CloseFile(inputFile);
+
+			PDASSERT(result.OK());
+		}
+
+
 		result = pVFS->OpenFile("./select_where_join.txt", false, &inputFile);
 		
 		if (result.OK())
 		{
-			parserDriver.LoadFromFile(inputFile);
+			result = parserDriver.LoadFromFile(inputFile);
+			
+			PDASSERT(result.OK());
+
+			result = pVFS->CloseFile(inputFile);
+
+			PDASSERT(result.OK());
 		}
 #else
 

@@ -135,24 +135,13 @@ Status Statement::Execute(bool loadTable)
 	{
 	case kStmtCreateTable:
 		{
-			Table *pTable = new Table();
-			pTable->SetName(mTableRefs[0]);
-
-			Table::ColumnDefList::iterator iter = mColumnDefs.begin();
-
-			for (; iter != mColumnDefs.end(); iter++)
-			{
-				iter->qualifiedName.tableName = pTable->GetName();
-				pTable->AddColumnDef(*iter);
-			}
-
 			if (loadTable)
 			{
-				result = mpDB->LoadTable(pTable);
+				result = mpDB->OpenTable(mTableRefs[0]);
 			}
 			else
 			{
-				result = mpDB->CreateTable(*pTable);
+				result = mpDB->CreateTable(mTableRefs[0], mColumnDefs);
 			}
 
 			break;
@@ -333,7 +322,7 @@ Status ParserDriver::ParseQuery(std::string inQueryString)
     // the starting rule (any rule can start first of course). This is a generated type
     // based upon the rule we start with.
     //
-    SQLParser_stmt_return	    langAST;
+    SQLParser_stmt_return	    langAST;   
 
 
     // The tree nodes are managed by a tree adaptor, which doles

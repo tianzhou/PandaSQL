@@ -11,9 +11,9 @@
 #include <tchar.h>
 #include <assert.h>
 #include <Windows.h>
-#include <string>
 
 #define PDASSERT(x) assert(x)
+#define PDDEBUG_OUTPUT(x) OutputDebugStringA(x)
 
 
 // TODO: reference additional headers your program requires here

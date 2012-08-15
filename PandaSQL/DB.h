@@ -36,10 +36,9 @@ public:
 	~DB();
 	Status Open(const std::string &inDBPath, const Options &inOptions);
 	Status Close();
-	Status CreateTable(const Table &inTable);
+	Status CreateTable(const std::string &tableName, const Table::ColumnDefList &columnList);
 
-	//Load io_pTable to DB, Take the ownership of pTable;
-	Status LoadTable(Table *io_pTable);
+	Status OpenTable(const std::string &tableName);
 
 	Status InsertData(const std::string &tableName, const Table::ColumnDefList &columnList, const Table::ColumnValueList &columnValueList);
 	Status DeleteData(const std::string &tableName, const TuplePredicate *inTuplePredicate = NULL);

@@ -902,6 +902,10 @@
 			>
 		</Filter>
 		<File
+			RelativePath=".\create_db.txt"
+			>
+		</File>
+		<File
 			RelativePath=".\insert.txt"
 			>
 		</File>
