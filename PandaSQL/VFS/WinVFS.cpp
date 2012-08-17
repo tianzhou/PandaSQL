@@ -2,6 +2,8 @@
 
 #include "WinVFS.h"
 #include "WinFile.h"
+
+#include "Utils/Debug.h"
 #include "Utils/WinUtils.h"
 
 namespace PandaSQL

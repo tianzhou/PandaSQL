@@ -14,6 +14,8 @@
 
 #include "VFS/WinVFS.h"
 
+#include "Utils/Common.h"
+#include "Utils/Debug.h"
 #include "Utils/Predicate.h"
 
 #include <iostream>
@@ -89,7 +91,22 @@ Status DB::CreateTable(const std::string &tableName, const Table::ColumnDefList 
 {
 	Status result;
 
-	result = mpBackend->CreateTable(tableName, columnList);
+	TableMap::iterator iter = mTableMap.find(tableName);
+
+	PDASSERT(iter == mTableMap.end());
+
+	if (iter == mTableMap.end())
+	{
+		Table *pTable = new Table();
+		
+		mTableMap.insert(TableMapEntry(tableName, pTable));
+
+		result = mpBackend->CreateTable(tableName, columnList);
+	}
+	else
+	{
+		result = Status::kTableAlreadyExists;
+	}
 
 	return result;
 }
@@ -107,7 +124,39 @@ Status DB::InsertData(const std::string &tableName, const Table::ColumnDefList &
 {
 	Status result;
 
-	result = mpBackend->InsertData(tableName, columnList, columnValueList);
+	//Table *pTable = NULL;
+	//result = this->GetTableByName_Private(tableName, &pTable);
+
+	//if (result.OK())
+	//{
+	//	result = mpBackend->InsertData(tableName, columnList, columnValueList);
+	//}
+
+	TupleData oneTuple;
+
+	Table::ColumnValueList::const_iterator iter = columnValueList.begin();
+
+	std::string theValue;
+
+	for (; iter != columnValueList.end(); iter++)
+	{
+		if (iter->type == kExprNumber)
+		{
+			NumberToString(iter->number, &theValue);
+		}
+		else if (iter->type == kExprText)
+		{
+			theValue = iter->text;
+		}
+		else if (iter->type == kExprColumnDef)
+		{
+			PDASSERT(0);
+		}
+
+		oneTuple.AppendData(theValue);
+	}
+
+	result = mpBackend->InsertData(tableName, NULL, oneTuple.ToString());
 
 	return result;
 }
@@ -118,7 +167,7 @@ Status DB::DeleteData(const std::string &tableName, const TuplePredicate *inTupl
 
 	Table *theTable = NULL;
 	
-	result = DB::GetTableByName(tableName, &theTable);
+	//result = DB::GetTableByName(tableName, &theTable);
 
 	if (result.OK())
 	{
@@ -136,7 +185,7 @@ Status DB::SelectData(const Table::TableRefList &tableList, const JoinList &join
 	{
 		Table *theTable = NULL;
 
-		result = DB::GetTableByName(tableList[0], &theTable);
+		result = this->GetTableByName_Private(tableList[0], &theTable);
 
 		if (result.OK())
 		{
@@ -149,11 +198,11 @@ Status DB::SelectData(const Table::TableRefList &tableList, const JoinList &join
 		Table *outerTable = NULL;
 		Table *innerTable = NULL;
 
-		result = DB::GetTableByName(joinList[0].tableName, &outerTable);
+		result = this->GetTableByName_Private(joinList[0].tableName, &outerTable);
 
 		if (result.OK())
 		{
-			result = DB::GetTableByName(joinList[1].tableName, &innerTable);
+			result = this->GetTableByName_Private(joinList[1].tableName, &innerTable);
 
 			if (result.OK())
 			{
@@ -222,26 +271,20 @@ Status DB::SelectData(const Table::TableRefList &tableList, const JoinList &join
 	return result;
 }
 
-//Private
-Status DB::GetTableByName(const std::string &name, Table **o_table) const
+Status DB::GetTableByName_Private(const std::string &name, Table **o_table) const
 {
 	Status result;
 
-	*o_table = NULL;
+	TableMap::const_iterator iter = mTableMap.find(name);
 
-	TableList::const_iterator iter = mTableList.begin();
-
-	for(; iter != mTableList.end(); iter++)
+	if (iter != mTableMap.end())
 	{
-		if (name == (*iter)->GetName())
-		{
-			*o_table = *iter;
-			break;
-		}
+		*o_table = iter->second;
 	}
-
-	if (iter == mTableList.end())
+	else
 	{
+		*o_table = NULL;
+
 		result = Status::kTableMissing;
 	}
 

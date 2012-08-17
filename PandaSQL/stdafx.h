@@ -12,8 +12,4 @@
 #include <assert.h>
 #include <Windows.h>
 
-#define PDASSERT(x) assert(x)
-#define PDDEBUG_OUTPUT(x) OutputDebugStringA(x)
-
-
 // TODO: reference additional headers your program requires here

@@ -3,6 +3,8 @@
 #include "Predicate.h"
 #include "DB.h"
 #include "Access/Tuple.h"
+
+#include "Utils/Debug.h"
 #include "Utils/Types.h"
 #include "Utils/Common.h"
 

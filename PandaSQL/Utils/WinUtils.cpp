@@ -3,6 +3,8 @@
 
 #include "WinUtils.h"
 
+#include "Debug.h"
+
 namespace PandaSQL
 {
 

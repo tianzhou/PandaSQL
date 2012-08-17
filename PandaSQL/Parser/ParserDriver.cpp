@@ -104,18 +104,18 @@ Status Statement::Prepare()
 {
 	Status result;
 
-	result = mPredicate.Prepare(*mpDB, mTableRefs);
-	mPredicate.TransformToCNF();
+	//result = mPredicate.Prepare(*mpDB, mTableRefs);
+	//mPredicate.TransformToCNF();
 
-	Table::ColumnDefList::iterator iter = mColumnDefs.begin();
+	//Table::ColumnDefList::iterator iter = mColumnDefs.begin();
 
-	if (mStmtType != kStmtCreateTable)
-	{
-		for (; iter != mColumnDefs.end(); iter++)
-		{
-			result = AmendColumnDef(*mpDB, mTableRefs, &(*iter));
-		}
-	}
+	//if (mStmtType != kStmtCreateTable)
+	//{
+	//	for (; iter != mColumnDefs.end(); iter++)
+	//	{
+	//		result = AmendColumnDef(*mpDB, mTableRefs, &(*iter));
+	//	}
+	//}
 	
 	this->PrintStatement();
 
@@ -141,6 +141,14 @@ Status Statement::Execute(bool loadTable)
 			}
 			else
 			{
+				//TODO: Do it in prepare
+				Table::ColumnDefList::iterator colIter = mColumnDefs.begin();
+
+				for (; colIter != mColumnDefs.end(); colIter++)
+				{		
+					colIter->qualifiedName.tableName = mTableRefs[0];
+				}
+
 				result = mpDB->CreateTable(mTableRefs[0], mColumnDefs);
 			}
 

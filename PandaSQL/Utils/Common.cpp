@@ -3,6 +3,8 @@
 
 #include "Common.h"
 
+#include "Debug.h"
+
 #include "DB.h"
 #include "Catalog/Table.h"
 #include "Catalog/Column.h"
@@ -26,7 +28,8 @@ Status AmendColumnDef(const DB &inDB, const TableRefList &inTableRefList, Column
 		{
 			Table *theTable;
 
-			result = inDB.GetTableByName(*iter, &theTable);
+			//TODO: Figure out right call
+			//result = inDB.GetTableByName(*iter, &theTable);
 
 			if (result.OK())
 			{
@@ -54,7 +57,8 @@ Status AmendColumnDef(const DB &inDB, const TableRefList &inTableRefList, Column
 			{
 				Table *theTable;
 
-				result = inDB.GetTableByName(*iter, &theTable);
+				//TODO: Figure out right call
+				//result = inDB.GetTableByName(*iter, &theTable);
 
 				if (result.OK())
 				{

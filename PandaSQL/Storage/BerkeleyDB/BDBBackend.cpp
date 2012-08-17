@@ -4,6 +4,8 @@
 
 #include "Catalog/Table.h"
 
+#include "Utils/Debug.h"
+
 namespace PandaSQL
 {
 
@@ -14,15 +16,14 @@ IDBBackend(inRootPath)
 ,mIsOpen(false)
 {
 	int ret;
+
 	/*
 	* Create an environment and initialize it for additional error
 	* reporting.
 	*/
 	if ((ret = db_env_create(&mpDBEnv, 0)) != 0)
 	{
-		char errStr[255];		
-		sprintf_s(errStr, 255, "%s\n", db_strerror(ret));
-		PDDEBUG_OUTPUT(errStr);
+		PDDebugOutput(db_strerror(ret));
 	}
 }
 
@@ -47,9 +48,7 @@ Status BDBBackend::Open()
 
 		if (ret != 0)
 		{
-			char errStr[255];		
-			sprintf_s(errStr, 255, "%s\n", db_strerror(ret));
-			PDDEBUG_OUTPUT(errStr);
+			PDDebugOutput(db_strerror(ret));
 		}
 
 		PDASSERT(ret == 0);
@@ -83,13 +82,6 @@ Status BDBBackend::CreateTable(const std::string &tableName, const Table::Column
 {
 	Status result;
 
-	//Table::ColumnDefList::iterator iter = mColumnDefs.begin();
-
-	//for (; iter != mColumnDefs.end(); iter++)
-	//{
-	//	iter->qualifiedName.tableName = pTable->GetName();
-	//	pTable->AddColumnDef(*iter);
-	//}
 	result = this->OpenTable_Private(tableName, kCreateIfMissing);
 
 	return result;
@@ -104,17 +96,44 @@ Status BDBBackend::OpenTable(const std::string &tableName)
 	return result;
 }
 
-Status BDBBackend::InsertData(const std::string &tableName, const Table::ColumnDefList &columnList, const Table::ColumnValueList &columnValueList)
+Status BDBBackend::InsertData(const std::string &tableName, const std::string *keyStr, const std::string &dataStr)
 {
 	Status result;
 
-	Table *theTable = NULL;
+	DB *pTable = NULL;
 	
-	result = this->GetTableByName_Private(tableName, &theTable);
+	result = this->GetTableByName_Private(tableName, &pTable);
 
 	if (result.OK())
 	{
-		result = theTable->AddRecord(columnList, columnValueList);
+		DBT key;
+		DBT data;
+		int ret;
+
+		db_recno_t recno;
+		
+		memset(&key, 0, sizeof(key));
+		if (keyStr)
+		{		
+			key.data = (void *)keyStr->c_str();
+			key.size = keyStr->length();
+		}
+
+		memset(&data, 0, sizeof(data));
+		data.data = (void *)dataStr.c_str();
+		data.size = dataStr.length();
+
+		ret = pTable->put(pTable, NULL, &key, &data, DB_APPEND);
+
+		if (ret != 0)
+		{
+			PDDebugOutput(db_strerror(ret));
+		}
+		else
+		{
+			recno = *(db_recno_t *)(key.data);
+			printf("new record number is %u\n", recno);
+		}
 	}
 
 	return result;
@@ -134,9 +153,22 @@ Status BDBBackend::SelectData(const Table::TableRefList &tableList, const JoinLi
 	return result;
 }
 
-Status BDBBackend::GetTableByName_Private(const std::string &name, Table **o_table) const
+Status BDBBackend::GetTableByName_Private(const std::string &name, DB **o_table) const
 {
 	Status result;
+
+	BDBBackend::TableMap::const_iterator iter = mTableMap.find(name);
+
+	if (iter != mTableMap.end())
+	{
+		*o_table = iter->second;
+	}
+	else
+	{
+		*o_table = NULL;
+
+		result = Status::kTableMissing;
+	}
 
 	return result;
 }
@@ -164,17 +196,14 @@ Status BDBBackend::OpenTable_Private(const std::string &inTableName, OpenMode in
 		NULL
 		, kDBName
 		, inTableName.c_str()
-		, DB_BTREE
+		, DB_RECNO
 		, flags
 		, 0);
 
 
 	if (ret != 0)
 	{
-		char errStr[255];		
-		sprintf_s(errStr, 255, "%s\n", db_strerror(ret));
-		PDDEBUG_OUTPUT(errStr);
-		//mpDBEnv->err(mpDBEnv, ret, "DB->open: %s", inTableName.c_str());
+		PDDebugOutput(db_strerror(ret));
 	}
 
 	if (result.OK())

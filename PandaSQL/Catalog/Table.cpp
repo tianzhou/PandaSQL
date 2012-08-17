@@ -6,6 +6,7 @@
 #include "Access/Iterator.h"
 
 #include "Utils/Common.h"
+#include "Utils/Debug.h"
 #include "Utils/Predicate.h"
 
 #include <iostream>

@@ -25,7 +25,7 @@ public:
 	//virtual Status InsertRecord(const TupleData &inTuple) = 0;
 	//virtual Status FindFirstRecordWithPredicate(const Predicate *inPredicate, Iterator **o_iterator) = 0;
 
-	virtual Status InsertData(const std::string &tableName, const Table::ColumnDefList &columnList, const Table::ColumnValueList &columnValueList);
+	virtual Status InsertData(const std::string &tableName, const std::string *keyStr, const std::string &dataStr);
 	virtual Status DeleteData(const std::string &tableName, const TuplePredicate *inTuplePredicate = NULL);
 	virtual Status SelectData(const Table::TableRefList &tableList, const JoinList &joinList, const Table::ColumnDefList &columnList, const TuplePredicate *inTuplePredicate = NULL);
 
@@ -34,7 +34,7 @@ private:
 	BDBBackend(const BDBBackend &rhs);
 	BDBBackend& operator=(const BDBBackend &rhs);
 
-	Status GetTableByName_Private(const std::string &name, Table **o_table) const;
+	Status GetTableByName_Private(const std::string &name, DB **o_table) const;
 
 	Status OpenTable_Private(const std::string &inTableName, OpenMode inMode);
 	Status CloseTable_Private(const std::string &inTableName);

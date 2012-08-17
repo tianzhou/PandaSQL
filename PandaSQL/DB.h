@@ -7,7 +7,7 @@
 #include "Utils/Join.h"
 #include "Utils/Status.h"
 
-#include <vector>
+#include <map>
 
 namespace PandaSQL
 {
@@ -20,8 +20,6 @@ class IDBBackend;
 class DB
 {
 public:
-
-	typedef std::vector<Table*> TableList;
 
 	struct Options
 	{
@@ -48,18 +46,22 @@ public:
 	uint32_t GetTableIDByName(const std::string &inTableName) const;
 	uint32_t GetColumnIDByName(const std::string &inColumnName) const;
 
-	Status GetTableByName(const std::string &name, Table **o_table) const;
-
 private:
+
+	typedef std::map<std::string, Table*> TableMap;
+	typedef std::pair<std::string, Table*> TableMapEntry;
+
 	DB(const DB &rhs);
 	DB& operator=(const DB &rhs);
+
+	Status GetTableByName_Private(const std::string &name, Table **o_table) const;
 
 	StorageType mStorageType;
 	IDBBackend *mpBackend;
 
 	TableCatalog mTableCatalog;
 
-	TableList mTableList;
+	TableMap mTableMap;
 
 	bool mIsOpen;
 };

@@ -3,6 +3,8 @@
 #include "TableCatalog.h"
 #include "Table.h"
 
+#include "Utils/Debug.h"
+
 namespace PandaSQL
 {
 

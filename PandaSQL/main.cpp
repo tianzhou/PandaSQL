@@ -6,9 +6,33 @@
 #include "Parser/ParserDriver.h"
 #include "DB.h"
 #include "VFS/IVFS.h"
+
+#include "Utils/Debug.h"
 #include "Utils/Status.h"
 
 #include <iostream>
+
+PandaSQL::Status ReadSQLScript(const char *filePath, PandaSQL::IVFS *io_VFS, PandaSQL::ParserDriver *io_parserDriver)
+{
+	PandaSQL::Status result;
+
+	PandaSQL::File *inputFile = NULL;
+
+	result = io_VFS->OpenFile(filePath, false, &inputFile);
+
+	if (result.OK())
+	{
+		result = io_parserDriver->LoadFromFile(inputFile);
+
+		PDASSERT(result.OK());
+
+		result = io_VFS->CloseFile(inputFile);
+
+		PDASSERT(result.OK());
+	}
+
+	return result;
+}
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -52,34 +76,13 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 
 #if 1
-		PandaSQL::File *inputFile = NULL;
 
-		result = pVFS->OpenFile("./create_db.txt", false, &inputFile);
-		
-		if (result.OK())
-		{
-			result = parserDriver.LoadFromFile(inputFile);
+		result = ReadSQLScript("./create_db.txt", pVFS, &parserDriver);
 
-			PDASSERT(result.OK());
+		result = ReadSQLScript("./insert.txt", pVFS, &parserDriver);
 
-			result = pVFS->CloseFile(inputFile);
+		result = ReadSQLScript("./select.txt", pVFS, &parserDriver);
 
-			PDASSERT(result.OK());
-		}
-
-
-		result = pVFS->OpenFile("./select_where_join.txt", false, &inputFile);
-		
-		if (result.OK())
-		{
-			result = parserDriver.LoadFromFile(inputFile);
-			
-			PDASSERT(result.OK());
-
-			result = pVFS->CloseFile(inputFile);
-
-			PDASSERT(result.OK());
-		}
 #else
 
 		inQueryString = ("SELECT t1.field1, t2.field2 FROM t1;");

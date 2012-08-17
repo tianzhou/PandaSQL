@@ -76,7 +76,7 @@
 				ExecutionBucket="9"
 				Optimization="0"
 				AdditionalIncludeDirectories=".;3rdParty\antlr\include;3rdParty\berkeleydb\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;PDDEBUG"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -173,7 +173,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories=".;3rdParty\antlr\include;3rdParty\berkeleydb\include"
-				PreprocessorDefinitions="x64;_DEBUG;_CONSOLE"
+				PreprocessorDefinitions="x64;_DEBUG;_CONSOLE;PDDEBUG"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -469,6 +469,14 @@
 				</File>
 				<File
 					RelativePath=".\Utils\Common.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Utils\Debug.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Utils\Debug.h"
 					>
 				</File>
 				<File

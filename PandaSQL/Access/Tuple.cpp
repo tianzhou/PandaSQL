@@ -2,6 +2,8 @@
 
 #include "Tuple.h"
 
+#include "Utils/Debug.h"
+
 namespace PandaSQL
 {
 

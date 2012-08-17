@@ -5,7 +5,7 @@
 #include "Storage/Buffer/Page.h"
 #include "Access/Tuple.h"
 
-
+#include "Utils/Debug.h"
 #include "Utils/Predicate.h"
 
 namespace PandaSQL

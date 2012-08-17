@@ -34,7 +34,7 @@ public:
 	virtual Status CreateTable(const std::string &tableName, const Table::ColumnDefList &columnList) = 0;
 	virtual Status OpenTable(const std::string &tableName) = 0;
 
-	virtual Status InsertData(const std::string &tableName, const Table::ColumnDefList &columnList, const Table::ColumnValueList &columnValueList) = 0;
+	virtual Status InsertData(const std::string &tableName, const std::string *keyStr, const std::string &dataStr) = 0;
 	virtual Status DeleteData(const std::string &tableName, const TuplePredicate *inTuplePredicate = NULL) = 0;
 	virtual Status SelectData(const Table::TableRefList &tableList, const JoinList &joinList, const Table::ColumnDefList &columnList, const TuplePredicate *inTuplePredicate = NULL) = 0;
 	//virtual Status InsertRecord(const TupleData &inTuple) = 0;

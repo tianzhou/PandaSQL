@@ -3,6 +3,8 @@
 #include "HeapStore.h"
 #include "Storage/Buffer/PageProxy.h"
 
+#include "Utils/Debug.h"
+
 namespace PandaSQL
 {
 

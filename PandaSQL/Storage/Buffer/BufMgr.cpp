@@ -5,6 +5,8 @@
 
 #include "VFS/File.h"
 
+#include "Utils/Debug.h"
+
 namespace PandaSQL
 {
 
