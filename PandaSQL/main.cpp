@@ -4,7 +4,7 @@
 #include "stdafx.h"
 
 #include "Parser/ParserDriver.h"
-#include "DB.h"
+#include "PandaDB.h"
 #include "VFS/IVFS.h"
 
 #include "Utils/Debug.h"
@@ -39,10 +39,10 @@ int _tmain(int argc, _TCHAR* argv[])
 	std::string inQueryString;
 	PandaSQL::Status result;
 
-	PandaSQL::IVFS *pVFS = PandaSQL::DB::CreateVFS();
+	PandaSQL::IVFS *pVFS = PandaSQL::PandaDB::CreateVFS();
 
-	PandaSQL::DB db(PandaSQL::kBDB);
-	PandaSQL::DB::Options openOptions;
+	PandaSQL::PandaDB db(PandaSQL::kBDB);
+	PandaSQL::PandaDB::Options openOptions;
 	openOptions.create_if_missing = true;
 	result = db.Open("C:\\Users\\Tianzhou\\Desktop\\PD_Data\\testDB", openOptions);
 
@@ -77,12 +77,13 @@ int _tmain(int argc, _TCHAR* argv[])
 
 #if 1
 
-		result = ReadSQLScript("./create_db.txt", pVFS, &parserDriver);
+		result = ReadSQLScript("./create_db.txt", pVFS, &parserDriver);		
+
+		result = ReadSQLScript("./delete.txt", pVFS, &parserDriver);
 
 		result = ReadSQLScript("./insert.txt", pVFS, &parserDriver);
 
 		result = ReadSQLScript("./select.txt", pVFS, &parserDriver);
-
 #else
 
 		inQueryString = ("SELECT t1.field1, t2.field2 FROM t1;");

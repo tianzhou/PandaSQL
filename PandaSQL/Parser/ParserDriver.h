@@ -1,7 +1,7 @@
 #ifndef PANDASQL_PARSER_DRIVER_H
 #define PANDASQL_PARSER_DRIVER_H
 
-#include "DB.h"
+#include "PandaDB.h"
 
 #include "Catalog/Table.h"
 
@@ -22,7 +22,7 @@ namespace PandaSQL
 class Statement
 {
 public:
-	Statement(DB *io_pDB);
+	Statement(PandaDB *io_pDB);
 	~Statement();
 
 	enum StatementType
@@ -79,16 +79,16 @@ public:
 	void PrintStatement();
 
 private:
-	DB *mpDB;
+	PandaDB *mpDB;
 
 	std::string	mOrigStmtText;
 
 	StatementType mStmtType;
 	Table::TableRefList mTableRefs;
 
-	Table::ColumnValueList mSetExprList;
+	ExprList mSetExprList;
 
-	Table::ColumnDefList mColumnDefs;
+	ColumnDefList mColumnDefs;
 
 	JoinList mJoinList;
 
@@ -100,7 +100,7 @@ private:
 class ParserDriver
 {
 public:
-	ParserDriver(DB *io_pDB);
+	ParserDriver(PandaDB *io_pDB);
 	~ParserDriver();
 
 	Status LoadFromFile(File *inFile);
@@ -135,7 +135,7 @@ private:
 	ParserDriver& operator=(const ParserDriver &rhs);
 
 
-	DB *mpDB;
+	PandaDB *mpDB;
 	Statement mStmt;
 	
 	//True when we are reading statment from table file to load table def.

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "Predicate.h"
-#include "DB.h"
+#include "PandaDB.h"
 #include "Access/Tuple.h"
 
 #include "Utils/Debug.h"
@@ -188,20 +188,20 @@ void PredicateItem::Print(uint32_t level) const
 	}
 }
 
-Status PredicateItem::Prepare(const DB &inDB, const Table::TableRefList &inTableRefList)
+Status PredicateItem::Prepare(const PandaDB &inDB, const Table::TableRefList &inTableRefList)
 {
 	Status result;
 
 	if (mLeftExpr.type == kExprColumnDef)
 	{
-		result = AmendColumnDef(inDB, inTableRefList, &mLeftExpr.columnDef);
+		result = inDB.AmendColumnDef(inTableRefList, &mLeftExpr.columnDef);
 	}
 
 	if (result.OK())
 	{
 		if (mRightExpr.type == kExprColumnDef)
 		{
-			result = AmendColumnDef(inDB, inTableRefList, &mRightExpr.columnDef);
+			result = inDB.AmendColumnDef(inTableRefList, &mRightExpr.columnDef);
 		}
 	}
 
@@ -504,7 +504,7 @@ void Predicate::Print(uint32_t level) const
 	}	
 }
 
-Status Predicate::Prepare(const DB &inDB, const Table::TableRefList &inTableRefList)
+Status Predicate::Prepare(const PandaDB &inDB, const Table::TableRefList &inTableRefList)
 {
 	Status result;
 

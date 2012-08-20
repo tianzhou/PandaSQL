@@ -24,8 +24,6 @@ class Table
 public:
 
 	typedef std::vector<std::string> TableRefList;
-	typedef std::vector<ColumnDef> ColumnDefList;
-	typedef std::vector<Expr> ColumnValueList;
 
 	Table();
 	~Table();

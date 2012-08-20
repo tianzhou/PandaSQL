@@ -1,0 +1,4 @@
+UPDATE Master
+SET course = "Updated Math"
+WHERE course = "Math"
+;

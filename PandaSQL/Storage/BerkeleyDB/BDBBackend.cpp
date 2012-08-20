@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "BDBBackend.h"
+#include "BDBScanIterator.h"
 
 #include "Catalog/Table.h"
 
@@ -78,7 +79,7 @@ Status BDBBackend::Close()
 	return result;
 }
 
-Status BDBBackend::CreateTable(const std::string &tableName, const Table::ColumnDefList &columnList)
+Status BDBBackend::CreateTable(const std::string &tableName, const ColumnDefList &columnList)
 {
 	Status result;
 
@@ -143,12 +144,129 @@ Status BDBBackend::DeleteData(const std::string &tableName, const TuplePredicate
 {
 	Status result;
 
+	DB *pTable = NULL;
+	
+	result = this->GetTableByName_Private(tableName, &pTable);
+
+	if (result.OK())
+	{
+		DBC *dbcp = NULL;
+		int ret;
+
+		ret = pTable->cursor(pTable, NULL, &dbcp, 0);
+
+		if (ret != 0)
+		{
+			PDDebugOutput(db_strerror(ret));
+			result = Status::kInternalError;
+		}	
+
+		if (result.OK())
+		{
+			DBT key;
+			DBT data;
+
+			memset(&key, 0, sizeof(key));
+			memset(&data, 0, sizeof(data));
+
+			/* Walk through the database and print out the key/data pairs. */
+			while ((ret = dbcp->get(dbcp, &key, &data, DB_NEXT)) == 0)
+			{
+				ret = dbcp->del(dbcp, 0);
+
+				if (ret != 0)
+				{
+					break;
+				}
+			}
+
+			if (ret != DB_NOTFOUND)
+			{
+				PDDebugOutput(db_strerror(ret));
+				result = Status::kInternalError;
+			}
+
+			ret = dbcp->close(dbcp);
+
+			if (ret != 0)
+			{
+				PDDebugOutput(db_strerror(ret));
+				result = Status::kInternalError;
+			}
+		}
+	}
+
 	return result;
 }
 
-Status BDBBackend::SelectData(const Table::TableRefList &tableList, const JoinList &joinList, const Table::ColumnDefList &columnList, const TuplePredicate *inTuplePredicate /*= NULL*/)
+Status BDBBackend::SelectData(const std::string &tableName, const ColumnDefList &columnList, const TuplePredicate *inTuplePredicate /*= NULL*/)
 {
 	Status result;
+
+	DB *pTable = NULL;
+	
+	result = this->GetTableByName_Private(tableName, &pTable);
+
+	if (result.OK())
+	{
+		DBC *dbcp = NULL;
+		int ret;
+
+		ret = pTable->cursor(pTable, NULL, &dbcp, 0);
+
+		if (ret != 0)
+		{
+			PDDebugOutput(db_strerror(ret));
+			result = Status::kInternalError;
+		}	
+
+		if (result.OK())
+		{
+			DBT key;
+			DBT data;
+
+			memset(&key, 0, sizeof(key));
+			memset(&data, 0, sizeof(data));
+
+			/* Walk through the database and print out the key/data pairs. */
+			while ((ret = dbcp->get(dbcp, &key, &data, DB_NEXT)) == 0)
+			{
+				printf("%u : %.*s\n",
+					*(int *)key.data,
+					(int)data.size, (char *)data.data);
+			}
+
+			if (ret != DB_NOTFOUND)
+			{
+				PDDebugOutput(db_strerror(ret));
+				result = Status::kInternalError;
+			}
+
+			ret = dbcp->close(dbcp);
+
+			if (ret != 0)
+			{
+				PDDebugOutput(db_strerror(ret));
+				result = Status::kInternalError;
+			}
+		}
+	}
+
+	return result;
+}
+
+Iterator* BDBBackend::CreateScanIterator(const std::string &tableName, const TuplePredicate *inTuplePredicate /*= NULL*/)
+{
+	Iterator *result = NULL;
+
+	DB *pTable = NULL;
+	
+	Status localResult = this->GetTableByName_Private(tableName, &pTable);
+
+	if (localResult.OK())
+	{
+		result = new BDBScanIterator(inTuplePredicate, pTable);
+	}
 
 	return result;
 }

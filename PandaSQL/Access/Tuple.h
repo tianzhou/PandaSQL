@@ -40,7 +40,8 @@ public:
 	void AppendData(const std::string &inData);
 	void SetDataAtIndex(uint32_t index, const std::string &inData);
 
-	std::string ToString() const;
+	static void ValueListToString(const ColumnDefList &inColumnDefList, const ColumnValueList &inColumnValueList, std::string *io_string);
+	static void StringToValueList(const ColumnDefList &inColumnDefList, std::string &inString, ColumnValueList *io_columnValueList);
 
 private:
 	//TupleData(const TupleData &rhs);

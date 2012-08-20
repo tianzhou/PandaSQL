@@ -438,4 +438,11 @@ Status CVSScanIterator::GetValue(TupleData *o_tuple) const
 	return result;
 }
 
+Status CVSScanIterator::GetValue(std::string *o_rowString) const
+{
+	Status result;
+
+	return result;
+}
+
 }	// PandaSQL

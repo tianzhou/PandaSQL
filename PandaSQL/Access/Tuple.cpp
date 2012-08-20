@@ -53,24 +53,54 @@ void TupleData::SetDataAtIndex(uint32_t index, const std::string &inData)
 	mValueList[index] = inData;
 }
 
-std::string TupleData::ToString() const
+//static
+void TupleData::ValueListToString(const ColumnDefList &inColumnDefList, const ColumnValueList &inColumnValueList, std::string *io_string)
 {
-	std::string resultString;
-	std::string oneValue;
+	PDASSERT(inColumnDefList.size() == inColumnValueList.size());
 
-	for (uint32_t i = 0; i < this->Count(); i++)
+	io_string->clear();
+
+	ColumnDefList::const_iterator defIter = inColumnDefList.begin();
+	ColumnValueList::const_iterator valueIter = inColumnValueList.begin();
+
+	//TODO: No coercing at this point
+	while (defIter != inColumnDefList.end() && valueIter != inColumnValueList.end())
 	{
-		if (i != 0)
+		if (valueIter->valueType == kInt)
 		{
-			resultString += ' ';
+			if (defIter->dataType == kInt)
+			{
+				io_string->append((char *)&valueIter->number, sizeof(valueIter->number));
+			}
+			else
+			{
+				PDASSERT(0);
+			}
+		}
+		else if (valueIter->valueType == kText)
+		{
+			if (defIter->dataType == kText)
+			{
+				io_string->append(valueIter->text);
+			}
+			else
+			{
+				PDASSERT(0);
+			}
+		}
+		else
+		{
+			PDASSERT(0);
 		}
 
-		this->GetDataAtIndex(i, &oneValue);
-
-		resultString += oneValue;
+		defIter++;
+		valueIter++;
 	}
+}
 
-	return resultString;
+//static
+void TupleData::StringToValueList(const ColumnDefList &inColumnDefList, std::string &inString, ColumnValueList *io_columnValueList)
+{
 }
 
 };	// PandaSQL

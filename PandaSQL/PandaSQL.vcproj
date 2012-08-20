@@ -413,15 +413,15 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\DB.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\DB.h"
-				>
-			</File>
-			<File
 				RelativePath=".\main.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PandaDB.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PandaDB.h"
 				>
 			</File>
 			<File
@@ -847,6 +847,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Storage\BerkeleyDB\BDBScanIterator.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Storage\BerkeleyDB\BDBScanIterator.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Storage\BerkeleyDB\BDBStorage.cpp"
 						>
 					</File>
@@ -914,6 +922,10 @@
 			>
 		</File>
 		<File
+			RelativePath=".\delete.txt"
+			>
+		</File>
+		<File
 			RelativePath=".\insert.txt"
 			>
 		</File>
@@ -935,6 +947,10 @@
 		</File>
 		<File
 			RelativePath=".\select_where_join.txt"
+			>
+		</File>
+		<File
+			RelativePath=".\update.txt"
 			>
 		</File>
 	</Files>

@@ -1,22 +1,21 @@
-#ifndef PANDASQL_CVS_SCANITERATOR_H
-#define PANDASQL_CVS_SCANITERATOR_H
-
-#include "Storage/StorageTypes.h"
+#ifndef PANDASQL_BDB_SCANITERATOR_H
+#define PANDASQL_BDB_SCANITERATOR_H
 
 #include "Access/Iterator.h"
 
 #include "Utils/Types.h"
 
+#include <db_cxx.h>
+
 namespace PandaSQL
 {
 
-class PageProxy;
-
-class CVSScanIterator : public Iterator
+class BDBScanIterator : public Iterator
 {
 public:
-	CVSScanIterator(const TuplePredicate *inPredicate, PageProxy *io_pageProxy);
-	virtual ~CVSScanIterator();
+
+	BDBScanIterator(const TuplePredicate *inPredicate, DB *io_dbTable);
+	virtual ~BDBScanIterator();
 
 	virtual bool Valid() const;
 	virtual Status SeekToFirst();
@@ -33,25 +32,19 @@ public:
 	virtual Status GetValue(std::string *o_rowString) const;
 
 protected:
-	 
-	struct PosInfo
-	{
-		PageNum pageNum;
-		uint32_t offset; //Offset in page
-	};
  
-	CVSScanIterator(const CVSScanIterator &rhs);
-	CVSScanIterator& operator=(const CVSScanIterator &rhs);
+	BDBScanIterator(const BDBScanIterator &rhs);
+	BDBScanIterator& operator=(const BDBScanIterator &rhs);
 
-	Status Next_Inner();
+	Status MoveCursor_Private(u_int32_t flags);
 
-	PageProxy *mpPageProxy;
-
-	PosInfo mSeekPos;
-	PosInfo mValuePos;
-	bool mPosAfterLast;
+private:
+	
+	DB *mpDBTable;
+	DBC *mpDBCursor;
+	mutable Status mLastError;
 };
 
 }	// PandaSQL
 
-#endif	// PANDASQL_CVS_SCANITERATOR_H
+#endif	// PANDASQL_BDB_SCANITERATOR_H

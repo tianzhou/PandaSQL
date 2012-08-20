@@ -1,13 +1,26 @@
 #ifndef PANDASQL_COLUMN_H
 #define PANDASQL_COLUMN_H
 
-#include "Utils/Types.h"
 #include "Utils/Status.h"
+#include "Utils/Types.h"
+
 
 #include <string>
+#include <vector>
 
 namespace PandaSQL
 {
+
+struct ColumnValue
+{
+	DataType valueType;
+
+	int32_t number;
+
+	std::string text;
+};
+
+typedef std::vector<ColumnValue> ColumnValueList;
 
 struct ColumnDef
 {
@@ -17,6 +30,8 @@ struct ColumnDef
 	ConstraintType constraintType;
 	ColumnDef();
 };
+
+typedef std::vector<ColumnDef> ColumnDefList;
 
 }	// PandaSQL
 

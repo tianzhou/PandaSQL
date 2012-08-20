@@ -10,14 +10,15 @@ public:
 	enum Code
 	{
 		kOK = 0,
-		kEOF = 1,
-		kMemoryError = 2,
-		kIOError = 3,
-		kTableMissing = 4,
-		kColumnMissing = 5,
-		kInvalidExpression = 6,
-		kInvalidCommand = 7,
-		kTableAlreadyExists = 8
+		kInternalError = 1,
+		kEOF = 2,
+		kMemoryError = 3,
+		kIOError = 4,
+		kTableMissing = 5,
+		kColumnMissing = 6,
+		kInvalidExpression = 7,
+		kInvalidCommand = 8,
+		kTableAlreadyExists = 9
 	};
 
 	Status() : mState(kOK) {}

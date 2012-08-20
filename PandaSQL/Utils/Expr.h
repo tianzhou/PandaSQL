@@ -29,6 +29,10 @@ struct Expr
 	ColumnDef columnDef;
 };
 
+typedef std::vector<Expr> ExprList;
+
+void Eval(const ExprList &inExprList, ColumnValueList *io_valueList);
+
 }	// PandaSQL
 
 

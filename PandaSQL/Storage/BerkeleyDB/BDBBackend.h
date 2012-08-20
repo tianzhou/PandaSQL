@@ -20,14 +20,16 @@ public:
 	virtual Status Open();
 	virtual Status Close();
 
-	virtual Status CreateTable(const std::string &tableName, const Table::ColumnDefList &columnList);
+	virtual Status CreateTable(const std::string &tableName, const ColumnDefList &columnList);
 	virtual Status OpenTable(const std::string &tableName);
 	//virtual Status InsertRecord(const TupleData &inTuple) = 0;
 	//virtual Status FindFirstRecordWithPredicate(const Predicate *inPredicate, Iterator **o_iterator) = 0;
 
 	virtual Status InsertData(const std::string &tableName, const std::string *keyStr, const std::string &dataStr);
 	virtual Status DeleteData(const std::string &tableName, const TuplePredicate *inTuplePredicate = NULL);
-	virtual Status SelectData(const Table::TableRefList &tableList, const JoinList &joinList, const Table::ColumnDefList &columnList, const TuplePredicate *inTuplePredicate = NULL);
+	virtual Status SelectData(const std::string &tableName, const ColumnDefList &columnList, const TuplePredicate *inTuplePredicate = NULL);
+
+	virtual Iterator* CreateScanIterator(const std::string &tableName, const TuplePredicate *inTuplePredicate = NULL);
 
 private:
 

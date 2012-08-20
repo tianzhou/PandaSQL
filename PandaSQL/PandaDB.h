@@ -1,6 +1,7 @@
-#ifndef PANDASQL_DB_H
-#define PANDASQL_DB_H
+#ifndef PANDASQL_PANDADB_H
+#define PANDASQL_PANDADB_H
 
+#include "Catalog/Column.h"
 #include "Catalog/Table.h"
 #include "Catalog/TableCatalog.h"
 
@@ -17,7 +18,7 @@ class File;
 class TuplePredicate;
 class IDBBackend;
 
-class DB
+class PandaDB
 {
 public:
 
@@ -30,31 +31,34 @@ public:
 
 	static IVFS* CreateVFS();
 
-	DB(StorageType inStorageType);
-	~DB();
+	PandaDB(StorageType inStorageType);
+	~PandaDB();
 	Status Open(const std::string &inDBPath, const Options &inOptions);
 	Status Close();
-	Status CreateTable(const std::string &tableName, const Table::ColumnDefList &columnList);
+	Status CreateTable(const std::string &tableName, const ColumnDefList &columnList);
 
 	Status OpenTable(const std::string &tableName);
 
-	Status InsertData(const std::string &tableName, const Table::ColumnDefList &columnList, const Table::ColumnValueList &columnValueList);
+	Status InsertData(const std::string &tableName, const ColumnDefList &columnList, const ExprList &columnExprList);
 	Status DeleteData(const std::string &tableName, const TuplePredicate *inTuplePredicate = NULL);
-	Status SelectData(const Table::TableRefList &tableList, const JoinList &joinList, const Table::ColumnDefList &columnList, const TuplePredicate *inTuplePredicate = NULL);
+	Status SelectData(const Table::TableRefList &tableList, const JoinList &joinList, const ColumnDefList &columnList, const TuplePredicate *inTuplePredicate = NULL);
 
 	Table* GetTableByID(uint32_t inTableID) const;
 	uint32_t GetTableIDByName(const std::string &inTableName) const;
 	uint32_t GetColumnIDByName(const std::string &inColumnName) const;
+
+	Status AmendColumnDef(const Table::TableRefList &inTableRefList, ColumnDef *io_columnDef) const;
 
 private:
 
 	typedef std::map<std::string, Table*> TableMap;
 	typedef std::pair<std::string, Table*> TableMapEntry;
 
-	DB(const DB &rhs);
-	DB& operator=(const DB &rhs);
+	PandaDB(const PandaDB &rhs);
+	PandaDB& operator=(const PandaDB &rhs);
 
-	Status GetTableByName_Private(const std::string &name, Table **o_table) const;
+	Status	GetTableByName_Private(const std::string &name, Table **o_table) const;
+	void	ClearTableMap_Private();
 
 	StorageType mStorageType;
 	IDBBackend *mpBackend;
@@ -68,4 +72,4 @@ private:
 
 }	// PandaSQL
 
-#endif	// PANDASQL_DB_H
+#endif	// PANDASQL_PANDADB_H

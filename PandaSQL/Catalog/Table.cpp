@@ -75,40 +75,40 @@ Status Table::AddRecord(const ColumnDefList &columnList, const ColumnValueList &
 {
 	Status result;
 
-	TupleData oneTuple;
+	//TupleData oneTuple;
 
-	ColumnValueList::const_iterator iter = columnValueList.begin();
+	//ColumnValueList::const_iterator iter = columnValueList.begin();
 
-	std::string theValue;
+	//std::string theValue;
 
-	for (; iter != columnValueList.end(); iter++)
-	{
-		if (iter->type == kExprNumber)
-		{
-			NumberToString(iter->number, &theValue);
-		}
-		else if (iter->type == kExprText)
-		{
-			theValue = iter->text;
-		}
-		else if (iter->type == kExprColumnDef)
-		{
-			PDASSERT(0);
-		}
+	//for (; iter != columnValueList.end(); iter++)
+	//{
+	//	if (iter->type == kExprNumber)
+	//	{
+	//		NumberToString(iter->number, &theValue);
+	//	}
+	//	else if (iter->type == kExprText)
+	//	{
+	//		theValue = iter->text;
+	//	}
+	//	else if (iter->type == kExprColumnDef)
+	//	{
+	//		PDASSERT(0);
+	//	}
 
-		oneTuple.AppendData(theValue);
-	}
+	//	oneTuple.AppendData(theValue);
+	//}
 
-	Iterator *theIter = mpDataHost->CreateScanIterator();
+	//Iterator *theIter = mpDataHost->CreateScanIterator();
 
-	result = theIter->SeekAfterLast();
+	//result = theIter->SeekAfterLast();
 
-	if (result.OK())
-	{
-		result = theIter->InsertValue(oneTuple);
-	}
+	//if (result.OK())
+	//{
+	//	result = theIter->InsertValue(oneTuple);
+	//}
 
-	delete theIter;
+	//delete theIter;
 
 	return result;
 }
@@ -144,25 +144,25 @@ Status Table::SelectRecords(const ColumnDefList &columnList, const TuplePredicat
 {
 	Status result;
 
-	Iterator *theIter = mpDataHost->CreateScanIterator(inTuplePredicate);
+	//Iterator *theIter = mpDataHost->CreateScanIterator(inTuplePredicate);
 
-	while (theIter->Valid())
-	{
-		TupleData theTuple;
+	//while (theIter->Valid())
+	//{
+	//	TupleData theTuple;
 
-		result = theIter->GetValue(&theTuple);
+	//	result = theIter->GetValue(&theTuple);
 
-		if (!result.OK())
-		{
-			break;
-		}
+	//	if (!result.OK())
+	//	{
+	//		break;
+	//	}
 
-		std::cout << theTuple.ToString() << std::endl;
+	//	std::cout << theTuple.ToString() << std::endl;
 
-		theIter->Next();
-	}
+	//	theIter->Next();
+	//}
 
-	delete theIter;
+	//delete theIter;
 
 	return result;
 }

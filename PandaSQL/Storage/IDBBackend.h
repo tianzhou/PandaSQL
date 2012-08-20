@@ -10,6 +10,8 @@
 namespace PandaSQL
 {
 
+class Iterator;
+
 class IDBBackend
 {
 public:
@@ -31,14 +33,16 @@ public:
 	virtual Status Open() = 0;
 	virtual Status Close() = 0;
 
-	virtual Status CreateTable(const std::string &tableName, const Table::ColumnDefList &columnList) = 0;
+	virtual Status CreateTable(const std::string &tableName, const ColumnDefList &columnList) = 0;
 	virtual Status OpenTable(const std::string &tableName) = 0;
 
 	virtual Status InsertData(const std::string &tableName, const std::string *keyStr, const std::string &dataStr) = 0;
 	virtual Status DeleteData(const std::string &tableName, const TuplePredicate *inTuplePredicate = NULL) = 0;
-	virtual Status SelectData(const Table::TableRefList &tableList, const JoinList &joinList, const Table::ColumnDefList &columnList, const TuplePredicate *inTuplePredicate = NULL) = 0;
+	virtual Status SelectData(const std::string &tableName, const ColumnDefList &columnList, const TuplePredicate *inTuplePredicate = NULL) = 0;
 	//virtual Status InsertRecord(const TupleData &inTuple) = 0;
 	//virtual Status FindFirstRecordWithPredicate(const Predicate *inPredicate, Iterator **o_iterator) = 0;
+
+	virtual Iterator* CreateScanIterator(const std::string &tableName, const TuplePredicate *inTuplePredicate = NULL) = 0;
 
 protected:
 	IDBBackend(const std::string &inRootPath);

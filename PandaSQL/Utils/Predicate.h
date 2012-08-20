@@ -11,7 +11,7 @@
 namespace PandaSQL
 {
 
-class DB;
+class PandaDB;
 
 class TuplePredicate
 {
@@ -61,7 +61,7 @@ public:
 	void Print(uint32_t level) const;
 
 	//inTableRefList: available table context
-	Status Prepare(const DB &inDB, const Table::TableRefList &inTableRefList);
+	Status Prepare(const PandaDB &inDB, const Table::TableRefList &inTableRefList);
 	
 	bool Eval(const std::vector<TupleEntry> &inTupleContext) const;
 
@@ -86,7 +86,7 @@ public:
 	void Reset();
 
 	void Print(uint32_t level) const;
-	Status Prepare(const DB &inDB, const Table::TableRefList &inTableRefList);
+	Status Prepare(const PandaDB &inDB, const Table::TableRefList &inTableRefList);
 	void TransformToCNF(); 
 
 	bool Eval(const std::vector<TupleEntry> &inTupleContext) const;

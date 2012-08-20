@@ -22,7 +22,7 @@ namespace PandaSQL
 
 static const std::string kTableColumnSep = ".";
 
-Statement::Statement(DB *io_pDB)
+Statement::Statement(PandaDB *io_pDB)
 :
 mpDB(io_pDB)
 ,mStmtType(kStmtUnknown)
@@ -104,18 +104,18 @@ Status Statement::Prepare()
 {
 	Status result;
 
-	//result = mPredicate.Prepare(*mpDB, mTableRefs);
-	//mPredicate.TransformToCNF();
+	result = mPredicate.Prepare(*mpDB, mTableRefs);
+	mPredicate.TransformToCNF();
 
-	//Table::ColumnDefList::iterator iter = mColumnDefs.begin();
+	ColumnDefList::iterator iter = mColumnDefs.begin();
 
-	//if (mStmtType != kStmtCreateTable)
-	//{
-	//	for (; iter != mColumnDefs.end(); iter++)
-	//	{
-	//		result = AmendColumnDef(*mpDB, mTableRefs, &(*iter));
-	//	}
-	//}
+	if (mStmtType != kStmtCreateTable)
+	{
+		for (; iter != mColumnDefs.end(); iter++)
+		{
+			result = mpDB->AmendColumnDef(mTableRefs, &(*iter));
+		}
+	}
 	
 	this->PrintStatement();
 
@@ -142,7 +142,7 @@ Status Statement::Execute(bool loadTable)
 			else
 			{
 				//TODO: Do it in prepare
-				Table::ColumnDefList::iterator colIter = mColumnDefs.begin();
+				ColumnDefList::iterator colIter = mColumnDefs.begin();
 
 				for (; colIter != mColumnDefs.end(); colIter++)
 				{		
@@ -161,39 +161,40 @@ Status Statement::Execute(bool loadTable)
 		}
 	case kStmtSelect:
 		{
-			ColumnQualifiedName join1 = {"Master", "master_id"};
-			ColumnQualifiedName join2 = {"Detail", "detail_id"};
-			mJoinList.push_back(join1);
-			mJoinList.push_back(join2);
+			//ColumnQualifiedName join1 = {"Master", "master_id"};
+			//ColumnQualifiedName join2 = {"Detail", "detail_id"};
+			//mJoinList.push_back(join1);
+			//mJoinList.push_back(join2);
 
 			TuplePredicate tuplePredicate;
-			//result = mpDB->SelectData(mTableRefs, mJoinList, mColumnDefs, &mPredicate);
+			result = mpDB->SelectData(mTableRefs, mJoinList, mColumnDefs, NULL);
 			break;
 		}
 	case kStmtDelete:
 		{
-			Predicate thePredicate;
-			PredicateItem predicateItem;
+			//Predicate thePredicate;
+			//PredicateItem predicateItem;
 
-			PandaSQL::Expr lExpr;
-			lExpr.type = kExprColumnDef;
+			//PandaSQL::Expr lExpr;
+			//lExpr.type = kExprColumnDef;
 
-			ColumnQualifiedName qualifiedName = {"", "name"};
-			ColumnDef theDef;
-			theDef.qualifiedName = qualifiedName;
-			theDef.index = kInvalidColumnIndex;
-			theDef.dataType = kText;
-			theDef.constraintType = kConstraintNone;
-			
-			lExpr.columnDef = theDef;
+			//ColumnQualifiedName qualifiedName = {"", "name"};
+			//ColumnDef theDef;
+			//theDef.qualifiedName = qualifiedName;
+			//theDef.index = kInvalidColumnIndex;
+			//theDef.dataType = kText;
+			//theDef.constraintType = kConstraintNone;
+			//
+			//lExpr.columnDef = theDef;
 
-			PandaSQL::Expr rExpr;
-			rExpr.type = kExprText;
-			rExpr.text = "\"Peter\"";
+			//PandaSQL::Expr rExpr;
+			//rExpr.type = kExprText;
+			//rExpr.text = "\"Peter\"";
 
-			predicateItem.SetFormat(lExpr, rExpr, PredicateItem::kEqual);
-			thePredicate.SetSinglePredicateItem(predicateItem);
+			//predicateItem.SetFormat(lExpr, rExpr, PredicateItem::kEqual);
+			//thePredicate.SetSinglePredicateItem(predicateItem);
 			//result = mpDB->DeleteData(mTableRefs[0], &thePredicate);
+			result = mpDB->DeleteData(mTableRefs[0], NULL);
 			break;
 		}
 
@@ -220,7 +221,7 @@ void Statement::PrintStatement()
 **ParserDriver**
 ***************************************************/
 
-ParserDriver::ParserDriver(DB *io_pDB)
+ParserDriver::ParserDriver(PandaDB *io_pDB)
 :
 mpDB(io_pDB)
 ,mStmt(io_pDB)

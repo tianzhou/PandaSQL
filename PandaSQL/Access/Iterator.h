@@ -3,6 +3,8 @@
 
 #include "Utils/Status.h"
 
+#include <string>
+
 namespace PandaSQL
 {
 
@@ -27,6 +29,7 @@ public:
 	virtual Status UpdateValue(const TupleData &inTuple) = 0;
 	virtual Status DeleteValue() = 0;
 	virtual Status GetValue(TupleData *o_tuple) const = 0;
+	virtual Status GetValue(std::string *o_rowString) const = 0;
 
 	Status GetStatus() const { return mStatus; }
 
