@@ -132,13 +132,12 @@ Status PandaDB::InsertData(const std::string &tableName, const ColumnDefList &co
 {
 	Status result;
 
-	ColumnValueList columnValueList;
-	Eval(columnExprList, &columnValueList);
-
-	std::string rowString;
-	TupleData::ValueListToString(columnList, columnValueList, &rowString);
-
-	result = mpBackend->InsertData(tableName, NULL, rowString);
+	TupleDesc tupleDesc;
+	TupleData tupleData;
+	ColumnDefListToTupleDesc(columnList, &tupleDesc);
+	Expr::EvalExprList(columnExprList, tupleDesc, &tupleData);
+	
+	result = mpBackend->InsertData(tableName, tupleDesc, tupleData, -1);
 
 	return result;
 }
@@ -149,7 +148,7 @@ Status PandaDB::DeleteData(const std::string &tableName, const TuplePredicate *i
 
 	Table *theTable = NULL;
 
-	result = this->GetTableByName_Private(tableName, &theTable);
+	result = this->GetTableByName(tableName, &theTable);
 
 	if (result.OK())
 	{
@@ -164,30 +163,34 @@ Status PandaDB::SelectData(const Table::TableRefList &tableList, const JoinList 
 {
 	Status result;
 
+	TupleDesc tupleDesc;
+	ColumnDefListToTupleDesc(columnList, &tupleDesc);
 	if (tableList.size() == 1)
 	{
 		Table *theTable = NULL;
 
-		result = this->GetTableByName_Private(tableList[0], &theTable);
-
+		result = this->GetTableByName(tableList[0], &theTable);
+   
 		if (result.OK())
 		{
 			std::cout << "****** Select Table:" << tableList[0] << " ******" << std::endl;
-			//result = mpBackend->SelectData(tableList[0], columnList, inTuplePredicate);
-			Iterator *theIter = mpBackend->CreateScanIterator(tableList[0], inTuplePredicate);
+			result = mpBackend->SelectData(tableList[0], columnList, inTuplePredicate);
+			Iterator *theIter = mpBackend->CreateScanIterator(tableList[0], tupleDesc, inTuplePredicate);
 
 			while (theIter->Valid())
 			{
-				std::string rowString;
+				TupleData tupleData;
 
-				result = theIter->GetValue(&rowString);
+				result = theIter->GetValue(&tupleData);
 
 				if (!result.OK())
 				{
 					break;
 				}
 
-				std::cout << rowString << std::endl;
+#ifdef PDDEBUG
+				PrintTuple(tupleDesc, tupleData);
+#endif
 
 				theIter->Next();
 			}
@@ -197,73 +200,73 @@ Status PandaDB::SelectData(const Table::TableRefList &tableList, const JoinList 
 	}
 	else if (tableList.size() == 2)
 	{
-		Table *outerTable = NULL;
-		Table *innerTable = NULL;
+		//Table *outerTable = NULL;
+		//Table *innerTable = NULL;
 
-		result = this->GetTableByName_Private(joinList[0].tableName, &outerTable);
+		//result = this->GetTableByName(joinList[0].tableName, &outerTable);
 
-		if (result.OK())
-		{
-			result = this->GetTableByName_Private(joinList[1].tableName, &innerTable);
+		//if (result.OK())
+		//{
+		//	result = this->GetTableByName(joinList[1].tableName, &innerTable);
 
-			if (result.OK())
-			{
-				Iterator *outerScan = outerTable->CreateScanIterator();
+		//	if (result.OK())
+		//	{
+		//		Iterator *outerScan = outerTable->CreateScanIterator();
 
-				PDASSERT(outerScan);
+		//		PDASSERT(outerScan);
 
-				while (outerScan->Valid())
-				{
-					TupleData outerTuple;
+		//		while (outerScan->Valid())
+		//		{
+		//			TupleData outerTuple;
 
-					result = outerScan->GetValue(&outerTuple);
+		//			result = outerScan->GetValue(&outerTuple);
 
-					if (!result.OK())
-					{
-						break;
-					}
+		//			if (!result.OK())
+		//			{
+		//				break;
+		//			}
 
-					std::vector<TupleEntry> tupleContext;
-					TupleEntry outerTupleEntry = {outerTable->GetName(), outerTuple};
-					tupleContext.push_back(outerTupleEntry);
+		//			std::vector<TupleEntry> tupleContext;
+		//			TupleEntry outerTupleEntry = {outerTable->GetName(), outerTuple};
+		//			tupleContext.push_back(outerTupleEntry);
 
-					Iterator *innerScan = innerTable->CreateScanIterator();
+		//			Iterator *innerScan = innerTable->CreateScanIterator();
 
-					PDASSERT(innerScan);
+		//			PDASSERT(innerScan);
 
-					while (innerScan->Valid())
-					{
-						TupleData innerTuple;
+		//			while (innerScan->Valid())
+		//			{
+		//				TupleData innerTuple;
 
-						result = innerScan->GetValue(&innerTuple);
+		//				result = innerScan->GetValue(&innerTuple);
 
-						if (!result.OK())
-						{
-							break;
-						}
+		//				if (!result.OK())
+		//				{
+		//					break;
+		//				}
 
-						//if (!inTuplePredicate
-						//	|| inTuplePredicate->Eval(tupleContext))
-						//{
-						//	std::cout << outerTuple.ToString() << std::endl;
-						//}
+		//				//if (!inTuplePredicate
+		//				//	|| inTuplePredicate->Eval(tupleContext))
+		//				//{
+		//				//	std::cout << outerTuple.ToString() << std::endl;
+		//				//}
 
-						innerScan->Next();
-					}
+		//				innerScan->Next();
+		//			}
 
-					delete innerScan;
+		//			delete innerScan;
 
-					if (!result.OK())
-					{
-						break;
-					}
+		//			if (!result.OK())
+		//			{
+		//				break;
+		//			}
 
-					outerScan->Next();
-				}
+		//			outerScan->Next();
+		//		}
 
-				delete outerScan;
-			}
-		}
+		//		delete outerScan;
+		//	}
+		//}
 	}
 	else
 	{
@@ -287,7 +290,7 @@ Status PandaDB::AmendColumnDef(const Table::TableRefList &inTableRefList, Column
 		{
 			Table *theTable;
 
-			result = this->GetTableByName_Private(*iter, &theTable);
+			result = this->GetTableByName(*iter, &theTable);
 
 			if (result.OK())
 			{
@@ -315,7 +318,7 @@ Status PandaDB::AmendColumnDef(const Table::TableRefList &inTableRefList, Column
 			{
 				Table *theTable;
 
-				result = this->GetTableByName_Private(*iter, &theTable);
+				result = this->GetTableByName(*iter, &theTable);
 
 				if (result.OK())
 				{
@@ -340,7 +343,7 @@ Status PandaDB::AmendColumnDef(const Table::TableRefList &inTableRefList, Column
 	return result;
 }
 
-Status PandaDB::GetTableByName_Private(const std::string &name, Table **o_table) const
+Status PandaDB::GetTableByName(const std::string &name, Table **o_table) const
 {
 	Status result;
 

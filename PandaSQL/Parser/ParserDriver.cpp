@@ -8,10 +8,12 @@
 
 #include "Storage/IStorage.h"
 
+#include "Utils/Common.h"
+#include "Utils/Debug.h"
 #include "Utils/Predicate.h"
 #include "Utils/Status.h"
 #include "Utils/Types.h"
-#include "Utils/Common.h"
+
 
 #include <fstream>
 #include <sstream>
@@ -26,6 +28,7 @@ Statement::Statement(PandaDB *io_pDB)
 :
 mpDB(io_pDB)
 ,mStmtType(kStmtUnknown)
+,mAllColumns(false)
 {
 }
 
@@ -90,6 +93,11 @@ void Statement::AddColumnDef(const ColumnDef &inDef)
 	mColumnDefs.push_back(inDef);
 }
 
+void Statement::AddAllColumns()
+{
+	mAllColumns = true;
+}
+
 void Statement::SetIndexRef(const std::string &inIndexRef)
 {
 	mIndexRef = inIndexRef;
@@ -107,13 +115,37 @@ Status Statement::Prepare()
 	result = mPredicate.Prepare(*mpDB, mTableRefs);
 	mPredicate.TransformToCNF();
 
-	ColumnDefList::iterator iter = mColumnDefs.begin();
-
-	if (mStmtType != kStmtCreateTable)
+	if (mAllColumns)
 	{
-		for (; iter != mColumnDefs.end(); iter++)
+		PDASSERT(mColumnDefs.empty());
+
+		Table::TableRefList::const_iterator iter = mTableRefs.begin();
+		Table *theTable;
+		for (; iter != mTableRefs.end(); iter++)
 		{
-			result = mpDB->AmendColumnDef(mTableRefs, &(*iter));
+			result = mpDB->GetTableByName(*iter, &theTable);
+
+			if (result.OK())
+			{
+				const ColumnDefList& theColumnDefList = theTable->GetAllColumns();
+				mColumnDefs.insert(mColumnDefs.end(), theColumnDefList.begin(), theColumnDefList.end());
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+	else
+	{
+		ColumnDefList::iterator iter = mColumnDefs.begin();
+
+		if (mStmtType != kStmtCreateTable)
+		{
+			for (; iter != mColumnDefs.end(); iter++)
+			{
+				result = mpDB->AmendColumnDef(mTableRefs, &(*iter));
+			}
 		}
 	}
 	
@@ -503,20 +535,20 @@ void ParserDriver::GetNumber(ANTLR3_BASE_TREE *tree, int32_t *o_num)
 
 void ParserDriver::GetExprForText(ANTLR3_BASE_TREE *tree, Expr *o_expr)
 {
-	o_expr->type = kExprText;
-	GetString(tree, &o_expr->text);
+	o_expr->mType = kExprText;
+	GetString(tree, &o_expr->mTextValue);
 }
 
 void ParserDriver::GetExprForNumber(ANTLR3_BASE_TREE *tree, Expr *o_expr)
 {
-	o_expr->type = kExprNumber;
-	GetNumber(tree, &o_expr->number);
+	o_expr->mType = kExprNumber;
+	GetNumber(tree, &o_expr->mNumberValue);
 }
 
 void ParserDriver::GetExprForColumnDef(const ColumnQualifiedName &inQualifiedName, Expr *o_expr)
 {
-	o_expr->type = kExprColumnDef;
-	o_expr->columnDef.qualifiedName = inQualifiedName;
+	o_expr->mType = kExprColumnDef;
+	o_expr->mColumnDef.qualifiedName = inQualifiedName;
 }
 
 }	// namespace PandaSQL

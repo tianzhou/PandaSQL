@@ -63,7 +63,7 @@ public:
 	//inTableRefList: available table context
 	Status Prepare(const PandaDB &inDB, const Table::TableRefList &inTableRefList);
 	
-	bool Eval(const std::vector<TupleEntry> &inTupleContext) const;
+	//bool Eval(const std::vector<TupleEntry> &inTupleContext) const;
 
 private:
 
@@ -89,7 +89,7 @@ public:
 	Status Prepare(const PandaDB &inDB, const Table::TableRefList &inTableRefList);
 	void TransformToCNF(); 
 
-	bool Eval(const std::vector<TupleEntry> &inTupleContext) const;
+	//bool Eval(const std::vector<TupleEntry> &inTupleContext) const;
 
 private:
 

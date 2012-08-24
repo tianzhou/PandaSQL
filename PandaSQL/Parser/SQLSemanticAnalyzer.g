@@ -216,7 +216,8 @@ select_list
 }
 	:	^(TOK_SELECT_LIST TOK_ALL_COLUMNS)
 		{
-			printf("selectList: *\n");
+			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+			pDriver->GetStatement().AddAllColumns();
 		}
 	|	^(TOK_SELECT_LIST 
 			(column_ref[&qualifiedName]
@@ -482,7 +483,7 @@ expr[PandaSQL::Expr *o_expr]
 @init
 {
 	PandaSQL::ColumnQualifiedName qualifiedName;
-	o_expr->type = PandaSQL::kExprUnknown;
+	o_expr->mType = PandaSQL::kExprUnknown;
 }
 	:	num=NUMBER_LITERAL
 		{

@@ -7,7 +7,6 @@
 namespace PandaSQL
 {
 
-class TupleData;
 class TuplePredicate;
 class Iterator;
 

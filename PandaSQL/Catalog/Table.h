@@ -32,6 +32,7 @@ public:
 	std::string GetName() const { return mName; }
 	void AddColumnDef(const ColumnDef &inColumDef);
 
+	const ColumnDefList& GetAllColumns() const { return mColumnList; }
 	Status GetColumnByName(const std::string &name, ColumnDef *o_columnDef) const;
 
 	Status Open(IStorage::OpenMode openMode);

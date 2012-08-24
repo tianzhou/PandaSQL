@@ -205,21 +205,21 @@ Status CVSScanIterator::SeekAfterLast()
 	return result;
 }
 
-Status CVSScanIterator::SeekToPredicate(const TuplePredicate *inTuplePredicate)
-{
-	Status result;
-
-	if (inTuplePredicate)
-	{
-		
-	}
-	else
-	{
-		result = this->SeekToFirst();
-	}
-
-	return result;
-}
+//Status CVSScanIterator::SeekToPredicate(const TuplePredicate *inTuplePredicate)
+//{
+//	Status result;
+//
+//	if (inTuplePredicate)
+//	{
+//		
+//	}
+//	else
+//	{
+//		result = this->SeekToFirst();
+//	}
+//
+//	return result;
+//}
 
 //Status CVSScanIterator::SeekToKey(const std::string &inKey)
 //{

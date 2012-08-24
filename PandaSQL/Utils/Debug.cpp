@@ -5,7 +5,15 @@
 namespace PandaSQL
 {
 
-void DebugString(const char *fileName, int32_t lineNum, const char *str)
+void DebugString(const char *str)
+{
+	char charStr[255];		
+	sprintf_s(charStr, 255, "%s\n", str);
+	
+	OutputDebugStringA(charStr);
+}
+
+void DebugStringVerbose(const char *fileName, int32_t lineNum, const char *str)
 {
 	const char *nameStr = fileName;
 	const char *nameOnly = strrchr(fileName, '\\');
@@ -15,10 +23,10 @@ void DebugString(const char *fileName, int32_t lineNum, const char *str)
 		nameStr = nameOnly + 1;
 	}
 
-	char errStr[255];		
-	sprintf_s(errStr, 255, "%s (file: %s line: %d)\n", str, nameStr, lineNum);
+	char charStr[255];		
+	sprintf_s(charStr, 255, "%s (file: %s line: %d)\n", str, nameStr, lineNum);
 	
-	OutputDebugStringA(errStr);
+	OutputDebugStringA(charStr);
 }
 
 }	// PandaSQL

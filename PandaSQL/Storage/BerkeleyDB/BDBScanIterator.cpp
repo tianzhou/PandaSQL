@@ -10,8 +10,8 @@ namespace PandaSQL
 
 static char kDeleteMark[] = " ";
 
-BDBScanIterator::BDBScanIterator(const TuplePredicate *inTuplePredicate, DB *io_dbTable)
-:Iterator(inTuplePredicate)
+BDBScanIterator::BDBScanIterator(const TupleDesc &inTupleDesc, const TuplePredicate *inTuplePredicate, DB *io_dbTable)
+:Iterator(inTupleDesc, inTuplePredicate)
 ,mpDBTable(io_dbTable)
 ,mpDBCursor(NULL)
 ,mLastError(Status::kOK)
@@ -25,7 +25,7 @@ BDBScanIterator::~BDBScanIterator()
 
 	if (ret != 0)
 	{
-		PDDebugOutput(db_strerror(ret));
+		PDDebugOutputVerbose(db_strerror(ret));
 	}
 }
 
@@ -47,7 +47,7 @@ Status BDBScanIterator::SeekToFirst()
 
 		if (ret != 0)
 		{
-			PDDebugOutput(db_strerror(ret));
+			PDDebugOutputVerbose(db_strerror(ret));
 			result = Status::kInternalError;
 		}
 	}
@@ -71,23 +71,23 @@ Status BDBScanIterator::SeekAfterLast()
 	return result;
 }
 
-Status BDBScanIterator::SeekToPredicate(const TuplePredicate *inTuplePredicate)
-{
-	Status result;
-
-	if (inTuplePredicate)
-	{
-		
-	}
-	else
-	{
-		result = this->SeekToFirst();
-	}
-
-	mLastError = result;
-
-	return result;
-}
+//Status BDBScanIterator::SeekToPredicate(const TuplePredicate *inTuplePredicate)
+//{
+//	Status result;
+//
+//	if (inTuplePredicate)
+//	{
+//		
+//	}
+//	else
+//	{
+//		result = this->SeekToFirst();
+//	}
+//
+//	mLastError = result;
+//
+//	return result;
+//}
 
 Status BDBScanIterator::Next()
 {
@@ -138,13 +138,6 @@ Status BDBScanIterator::DeleteValue()
 Status BDBScanIterator::GetValue(TupleData *o_tuple) const
 {
 	Status result;
-	
-	return result;
-}
-
-Status BDBScanIterator::GetValue(std::string *o_rowString) const
-{
-	Status result;
 
 	PDASSERT(mpDBCursor);
 
@@ -158,12 +151,22 @@ Status BDBScanIterator::GetValue(std::string *o_rowString) const
 
 	if (ret != 0)
 	{
-		PDDebugOutput(db_strerror(ret));
-		result = Status::kInternalError;
+		if (ret == DB_NOTFOUND)
+		{
+			result = Status::kEOF;
+		}
+		else
+		{
+			PDDebugOutputVerbose(db_strerror(ret));
+			result = Status::kInternalError;
+		}
 	}
 	else
 	{
-		o_rowString->append((const char *)data.data, data.size);
+		std::string rowString;	
+		rowString.append((const char *)data.data, data.size);
+		
+		StringToTuple(mpTupleDesc, rowString, o_tuple);
 	}
 
 	mLastError = result;
@@ -187,14 +190,13 @@ Status BDBScanIterator::MoveCursor_Private(u_int32_t flags)
 
 	if (ret != 0)
 	{
-		PDDebugOutput(db_strerror(ret));
-
 		if (ret == DB_NOTFOUND)
 		{
 			result = Status::kEOF;
 		}
 		else
 		{
+			PDDebugOutputVerbose(db_strerror(ret));
 			result = Status::kInternalError;
 		}
 	}

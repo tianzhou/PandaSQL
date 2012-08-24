@@ -1,0 +1,60 @@
+refer:http://www.sqlite.org/syntaxdiagrams.html
+
+select-stmt:
+select-core
+ORDER BY [ASC | DESC]
+LIMIT expr
+
+select-core:
+SELECT [DISTINCT | ALL] result-column+
+FROM join-source
+WHERE expr
+GROUP BY expr
+ 
+result-column:
+[* | table-name.field-name]
+
+join-source:
+table-name join-op table-name
+
+update-stmt:
+UPDATE table-name
+SET column-name = expr {,column-name = expr}*
+WHERE expr
+
+insert-stmt:
+INSERT INTO table-name
+(column-name{,column-name}*)
+VALUES
+(expr{,expr}*)
+
+delete-stmt:
+DELETE FROM table-name
+WHERE expr
+
+create-table-stmt:
+CREATE TABLE
+table-name ( column-def{,column-def}* {,table-constraint}* )
+
+column-def:
+column-name type-name {column-constraint}*
+
+table-constraint:
+PRIMARY KEY ( indexed-column{,indexed-column}* )
+
+column-constraint:
+[NOT NULL | UNIQUE | PRIMARY KEY]
+
+create-index-stmt:
+CREATE [UNIQUE] INDEX
+index-name on table-name ( indexed-column{,indexed-column}* )
+
+indexed-column:
+column-name [ASC | DESC]
+
+expr:
+[literal-value
+| [table-name.]column-name
+| unary-operator expr
+| expr binary-operator expr
+]

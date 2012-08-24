@@ -5,9 +5,10 @@
 namespace PandaSQL
 {
 
-Iterator::Iterator(const TuplePredicate *inTuplePredicate)
+Iterator::Iterator(const TupleDesc &inTupleDesc, const TuplePredicate *inTuplePredicate)
 :
-mpTuplePredicate(inTuplePredicate)
+mpTupleDesc(inTupleDesc)
+,mpTuplePredicate(inTuplePredicate)
 {
 }
 

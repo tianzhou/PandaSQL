@@ -1,6 +1,8 @@
 #ifndef PANDASQL_IDBBackend_H
 #define PANDASQL_IDBBackend_H
 
+#include "Access/Tuple.h"
+
 #include "Catalog/Table.h"
 
 #include "Utils/Join.h"
@@ -36,13 +38,13 @@ public:
 	virtual Status CreateTable(const std::string &tableName, const ColumnDefList &columnList) = 0;
 	virtual Status OpenTable(const std::string &tableName) = 0;
 
-	virtual Status InsertData(const std::string &tableName, const std::string *keyStr, const std::string &dataStr) = 0;
+	virtual Status InsertData(const std::string &tableName, const TupleDesc &tupleDesc, const TupleData &tupleData, int32_t keyIndex) = 0;
 	virtual Status DeleteData(const std::string &tableName, const TuplePredicate *inTuplePredicate = NULL) = 0;
 	virtual Status SelectData(const std::string &tableName, const ColumnDefList &columnList, const TuplePredicate *inTuplePredicate = NULL) = 0;
 	//virtual Status InsertRecord(const TupleData &inTuple) = 0;
 	//virtual Status FindFirstRecordWithPredicate(const Predicate *inPredicate, Iterator **o_iterator) = 0;
 
-	virtual Iterator* CreateScanIterator(const std::string &tableName, const TuplePredicate *inTuplePredicate = NULL) = 0;
+	virtual Iterator* CreateScanIterator(const std::string &tableName, const TupleDesc &inTupleDesc, const TuplePredicate *inTuplePredicate = NULL) = 0;
 
 protected:
 	IDBBackend(const std::string &inRootPath);

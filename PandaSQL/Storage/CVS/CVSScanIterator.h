@@ -21,7 +21,7 @@ public:
 	virtual bool Valid() const;
 	virtual Status SeekToFirst();
 	virtual Status SeekAfterLast();
-	virtual Status SeekToPredicate(const TuplePredicate *inPredicate);
+	//virtual Status SeekToPredicate(const TuplePredicate *inPredicate);
 	//virtual Status SeekToKey(const std::string &inKey);
 	virtual Status Next();
 	virtual Status Prev();

@@ -7,32 +7,41 @@
 namespace PandaSQL
 {
 
-void Eval(const ExprList &inExprList, ColumnValueList *io_valueList)
+void Expr::Eval(TupleDescElement inDescElement, TupleDataElement *io_data) const
 {
-	ExprList::const_iterator iter = inExprList.begin();
-
 	//TODO: No coercing at this point
-	for (; iter != inExprList.end(); iter++)
+	if (inDescElement.mDataType == kInt)
 	{
-		ColumnValue oneColumnValue;
+		io_data->mNumber = mNumberValue;
+	}
+	else if (inDescElement.mDataType == kText)
+	{
+		io_data->mText = mTextValue;
+	}
+	else
+	{
+		//TODO
+		PDASSERT(0);
+	}
+}
 
-		if (iter->type == kExprNumber)
-		{
-			oneColumnValue.valueType = kInt;
-			oneColumnValue.number = iter->number;
-		}
-		else if (iter->type == kExprText)
-		{
-			oneColumnValue.valueType = kText;
-			oneColumnValue.text = iter->text;
-		}
-		else if (iter->type == kExprColumnDef)
-		{
-			//TODO
-			PDASSERT(0);
-		}
+void Expr::EvalExprList(const ExprList &inExprList, const TupleDesc &inTupleDesc, TupleData *io_tupleData)
+{
+	PDASSERT(inExprList.size() == inTupleDesc.size());
 
-		io_valueList->push_back(oneColumnValue);
+	ExprList::const_iterator exprIter = inExprList.begin();
+	TupleDesc::const_iterator tupleDescIter = inTupleDesc.begin();
+
+	while (exprIter != inExprList.end())
+	{
+		TupleDataElement oneTupleElement;
+
+		exprIter->Eval(*tupleDescIter, &oneTupleElement);
+
+		io_tupleData->push_back(oneTupleElement);
+
+		exprIter++;
+		tupleDescIter++;
 	}
 }
 

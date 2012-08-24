@@ -1,7 +1,9 @@
-#ifndef PANDASQL_EXPR_H
-#define PANDASQL_EXPR_H
+#ifndef PANDASQL_EXPRESSION_H
+#define PANDASQL_EXPRESSION_H
 
+#include "Access/Tuple.h"
 #include "Catalog/Column.h"
+
 #include "Utils/Types.h"
 
 namespace PandaSQL
@@ -15,25 +17,32 @@ enum ExprType
 	kExprColumnDef = 3
 };
 
-struct Expr
-{
-	ExprType type;
-
-	//type == kExprNumber
-	int32_t number;
-
-	//type == kExprText
-	std::string text;
-
-	//type == kExprColumnDef
-	ColumnDef columnDef;
-};
+class Expr;
 
 typedef std::vector<Expr> ExprList;
 
-void Eval(const ExprList &inExprList, ColumnValueList *io_valueList);
+class Expr
+{
+
+public:
+
+	void Eval(TupleDescElement inDescElement, TupleDataElement *io_data) const;
+
+	static void EvalExprList(const ExprList &inExprList, const TupleDesc &inTupleDesc, TupleData *io_tupleData);
+
+	ExprType mType;
+
+	//type == kExprNumber
+	int32_t mNumberValue;
+
+	//type == kExprText
+	std::string mTextValue;
+
+	//type == kExprColumnDef
+	ColumnDef mColumnDef;
+};
 
 }	// PandaSQL
 
 
-#endif //PANDASQL_EXPR_H
+#endif //PANDASQL_EXPRESSION_H

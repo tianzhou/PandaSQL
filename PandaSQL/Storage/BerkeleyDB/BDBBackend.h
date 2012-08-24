@@ -25,11 +25,11 @@ public:
 	//virtual Status InsertRecord(const TupleData &inTuple) = 0;
 	//virtual Status FindFirstRecordWithPredicate(const Predicate *inPredicate, Iterator **o_iterator) = 0;
 
-	virtual Status InsertData(const std::string &tableName, const std::string *keyStr, const std::string &dataStr);
+	virtual Status InsertData(const std::string &tableName, const TupleDesc &tupleDesc, const TupleData &tupleData, int32_t keyIndex);
 	virtual Status DeleteData(const std::string &tableName, const TuplePredicate *inTuplePredicate = NULL);
 	virtual Status SelectData(const std::string &tableName, const ColumnDefList &columnList, const TuplePredicate *inTuplePredicate = NULL);
 
-	virtual Iterator* CreateScanIterator(const std::string &tableName, const TuplePredicate *inTuplePredicate = NULL);
+	virtual Iterator* CreateScanIterator(const std::string &tableName, const TupleDesc &inTupleDesc, const TuplePredicate *inTuplePredicate = NULL);
 
 private:
 

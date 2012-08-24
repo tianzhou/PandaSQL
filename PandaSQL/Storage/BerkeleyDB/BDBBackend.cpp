@@ -24,7 +24,7 @@ IDBBackend(inRootPath)
 	*/
 	if ((ret = db_env_create(&mpDBEnv, 0)) != 0)
 	{
-		PDDebugOutput(db_strerror(ret));
+		PDDebugOutputVerbose(db_strerror(ret));
 	}
 }
 
@@ -49,7 +49,7 @@ Status BDBBackend::Open()
 
 		if (ret != 0)
 		{
-			PDDebugOutput(db_strerror(ret));
+			PDDebugOutputVerbose(db_strerror(ret));
 		}
 
 		PDASSERT(ret == 0);
@@ -97,7 +97,7 @@ Status BDBBackend::OpenTable(const std::string &tableName)
 	return result;
 }
 
-Status BDBBackend::InsertData(const std::string &tableName, const std::string *keyStr, const std::string &dataStr)
+Status BDBBackend::InsertData(const std::string &tableName, const TupleDesc &tupleDesc, const TupleData &tupleData, int32_t keyIndex)
 {
 	Status result;
 
@@ -114,21 +114,28 @@ Status BDBBackend::InsertData(const std::string &tableName, const std::string *k
 		db_recno_t recno;
 		
 		memset(&key, 0, sizeof(key));
-		if (keyStr)
+
+		std::string keyString;
+		if (keyIndex >= 0)
 		{		
-			key.data = (void *)keyStr->c_str();
-			key.size = keyStr->length();
+			TupleElementToString(tupleDesc[keyIndex], tupleData[keyIndex], &keyString);
+			
+			key.data = (void *)keyString.c_str();
+			key.size = keyString.length();
 		}
 
 		memset(&data, 0, sizeof(data));
-		data.data = (void *)dataStr.c_str();
-		data.size = dataStr.length();
+
+		std::string rowString;
+		TupleToString(tupleDesc, tupleData, &rowString);
+		data.data = (void *)rowString.c_str();
+		data.size = rowString.length();
 
 		ret = pTable->put(pTable, NULL, &key, &data, DB_APPEND);
 
 		if (ret != 0)
 		{
-			PDDebugOutput(db_strerror(ret));
+			PDDebugOutputVerbose(db_strerror(ret));
 		}
 		else
 		{
@@ -157,7 +164,7 @@ Status BDBBackend::DeleteData(const std::string &tableName, const TuplePredicate
 
 		if (ret != 0)
 		{
-			PDDebugOutput(db_strerror(ret));
+			PDDebugOutputVerbose(db_strerror(ret));
 			result = Status::kInternalError;
 		}	
 
@@ -182,7 +189,7 @@ Status BDBBackend::DeleteData(const std::string &tableName, const TuplePredicate
 
 			if (ret != DB_NOTFOUND)
 			{
-				PDDebugOutput(db_strerror(ret));
+				PDDebugOutputVerbose(db_strerror(ret));
 				result = Status::kInternalError;
 			}
 
@@ -190,7 +197,7 @@ Status BDBBackend::DeleteData(const std::string &tableName, const TuplePredicate
 
 			if (ret != 0)
 			{
-				PDDebugOutput(db_strerror(ret));
+				PDDebugOutputVerbose(db_strerror(ret));
 				result = Status::kInternalError;
 			}
 		}
@@ -216,7 +223,7 @@ Status BDBBackend::SelectData(const std::string &tableName, const ColumnDefList 
 
 		if (ret != 0)
 		{
-			PDDebugOutput(db_strerror(ret));
+			PDDebugOutputVerbose(db_strerror(ret));
 			result = Status::kInternalError;
 		}	
 
@@ -238,7 +245,7 @@ Status BDBBackend::SelectData(const std::string &tableName, const ColumnDefList 
 
 			if (ret != DB_NOTFOUND)
 			{
-				PDDebugOutput(db_strerror(ret));
+				PDDebugOutputVerbose(db_strerror(ret));
 				result = Status::kInternalError;
 			}
 
@@ -246,7 +253,7 @@ Status BDBBackend::SelectData(const std::string &tableName, const ColumnDefList 
 
 			if (ret != 0)
 			{
-				PDDebugOutput(db_strerror(ret));
+				PDDebugOutputVerbose(db_strerror(ret));
 				result = Status::kInternalError;
 			}
 		}
@@ -255,7 +262,7 @@ Status BDBBackend::SelectData(const std::string &tableName, const ColumnDefList 
 	return result;
 }
 
-Iterator* BDBBackend::CreateScanIterator(const std::string &tableName, const TuplePredicate *inTuplePredicate /*= NULL*/)
+Iterator* BDBBackend::CreateScanIterator(const std::string &tableName, const TupleDesc &inTupleDesc, const TuplePredicate *inTuplePredicate /*= NULL*/)
 {
 	Iterator *result = NULL;
 
@@ -265,7 +272,7 @@ Iterator* BDBBackend::CreateScanIterator(const std::string &tableName, const Tup
 
 	if (localResult.OK())
 	{
-		result = new BDBScanIterator(inTuplePredicate, pTable);
+		result = new BDBScanIterator(inTupleDesc, inTuplePredicate, pTable);
 	}
 
 	return result;
@@ -321,7 +328,7 @@ Status BDBBackend::OpenTable_Private(const std::string &inTableName, OpenMode in
 
 	if (ret != 0)
 	{
-		PDDebugOutput(db_strerror(ret));
+		PDDebugOutputVerbose(db_strerror(ret));
 	}
 
 	if (result.OK())

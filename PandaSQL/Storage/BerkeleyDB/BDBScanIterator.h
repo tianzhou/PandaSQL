@@ -14,13 +14,13 @@ class BDBScanIterator : public Iterator
 {
 public:
 
-	BDBScanIterator(const TuplePredicate *inPredicate, DB *io_dbTable);
+	BDBScanIterator(const TupleDesc &inTupleDesc, const TuplePredicate *inPredicate, DB *io_dbTable);
 	virtual ~BDBScanIterator();
 
 	virtual bool Valid() const;
 	virtual Status SeekToFirst();
 	virtual Status SeekAfterLast();
-	virtual Status SeekToPredicate(const TuplePredicate *inPredicate);
+	//virtual Status SeekToPredicate(const TuplePredicate *inPredicate);
 	//virtual Status SeekToKey(const std::string &inKey);
 	virtual Status Next();
 	virtual Status Prev();
@@ -29,7 +29,6 @@ public:
 	virtual Status UpdateValue(const TupleData &inTuple);
 	virtual Status DeleteValue();
 	virtual Status GetValue(TupleData *o_tuple) const;
-	virtual Status GetValue(std::string *o_rowString) const;
 
 protected:
  

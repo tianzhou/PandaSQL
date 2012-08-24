@@ -65,7 +65,8 @@ public:
 	void AddColumnDefWithName(const ColumnQualifiedName &inQualifiedName);
 
 	//For cerate_table_stmt, column def[1..N]
-	void AddColumnDef(const ColumnDef &inDef); 
+	void AddColumnDef(const ColumnDef &inDef);
+	void AddAllColumns();
 
 	//For create_index_stmt
 	void SetIndexRef(const std::string &inIndexRef);
@@ -89,6 +90,7 @@ private:
 	ExprList mSetExprList;
 
 	ColumnDefList mColumnDefs;
+	bool	mAllColumns;
 
 	JoinList mJoinList;
 

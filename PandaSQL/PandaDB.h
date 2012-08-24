@@ -43,6 +43,8 @@ public:
 	Status DeleteData(const std::string &tableName, const TuplePredicate *inTuplePredicate = NULL);
 	Status SelectData(const Table::TableRefList &tableList, const JoinList &joinList, const ColumnDefList &columnList, const TuplePredicate *inTuplePredicate = NULL);
 
+	Status GetTableByName(const std::string &name, Table **o_table) const;
+
 	Table* GetTableByID(uint32_t inTableID) const;
 	uint32_t GetTableIDByName(const std::string &inTableName) const;
 	uint32_t GetColumnIDByName(const std::string &inColumnName) const;
@@ -57,7 +59,6 @@ private:
 	PandaDB(const PandaDB &rhs);
 	PandaDB& operator=(const PandaDB &rhs);
 
-	Status	GetTableByName_Private(const std::string &name, Table **o_table) const;
 	void	ClearTableMap_Private();
 
 	StorageType mStorageType;
