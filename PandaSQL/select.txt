@@ -1,5 +1,2 @@
-SELECT *
+SELECT name
 FROM Master;
-
-SELECT *
-FROM Detail;

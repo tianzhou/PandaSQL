@@ -910,6 +910,18 @@
 						RelativePath=".\Storage\BerkeleyDB\BDBStorage.h"
 						>
 					</File>
+					<Filter
+						Name="Transaction"
+						>
+						<File
+							RelativePath=".\Storage\BerkeleyDB\Transaction\BDBTransaction.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Storage\BerkeleyDB\Transaction\BDBTransaction.h"
+							>
+						</File>
+					</Filter>
 				</Filter>
 			</Filter>
 			<Filter

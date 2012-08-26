@@ -50,6 +50,8 @@ void TupleToString(const TupleDesc &desc, const TupleData &data, std::string *o_
 void StringToTupleElement(const TupleDescElement &descElement, const std::string &inString, uint32_t *io_offset, TupleDataElement *o_dataElement);
 void StringToTuple(const TupleDesc &desc, const std::string &inString, TupleData *o_data);
 
+void ProjectTuple(const ColumnDefList &inAllColDefList, const ColumnDefList &inProjectColDefList, const TupleData &inTupleData, TupleData *o_projectTupleData);
+
 void ColumnDefListToTupleDesc(const ColumnDefList &colDefList, TupleDesc *io_tupleDesc);
 
 #ifdef PDDEBUG

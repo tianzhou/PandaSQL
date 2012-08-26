@@ -2,6 +2,8 @@
 
 #include "Debug.h"
 
+#include <iostream>
+
 namespace PandaSQL
 {
 
@@ -10,7 +12,7 @@ void DebugString(const char *str)
 	char charStr[255];		
 	sprintf_s(charStr, 255, "%s\n", str);
 	
-	OutputDebugStringA(charStr);
+	std::cout << charStr ;
 }
 
 void DebugStringVerbose(const char *fileName, int32_t lineNum, const char *str)

@@ -159,12 +159,10 @@ Status PandaDB::DeleteData(const std::string &tableName, const TuplePredicate *i
 	return result;
 }
 
-Status PandaDB::SelectData(const Table::TableRefList &tableList, const JoinList &joinList, const ColumnDefList &columnList, const TuplePredicate *inTuplePredicate /*= NULL*/)
+Status PandaDB::SelectData(const Table::TableRefList &tableList, const JoinList &joinList, const ColumnDefList &projectColumnList, const TuplePredicate *inTuplePredicate /*= NULL*/)
 {
 	Status result;
 
-	TupleDesc tupleDesc;
-	ColumnDefListToTupleDesc(columnList, &tupleDesc);
 	if (tableList.size() == 1)
 	{
 		Table *theTable = NULL;
@@ -174,13 +172,20 @@ Status PandaDB::SelectData(const Table::TableRefList &tableList, const JoinList 
 		if (result.OK())
 		{
 			std::cout << "****** Select Table:" << tableList[0] << " ******" << std::endl;
-			result = mpBackend->SelectData(tableList[0], columnList, inTuplePredicate);
-			Iterator *theIter = mpBackend->CreateScanIterator(tableList[0], tupleDesc, inTuplePredicate);
+			//result = mpBackend->SelectData(tableList[0], columnList, inTuplePredicate);
+			const ColumnDefList &allColumnList = theTable->GetAllColumns();
+			TupleDesc tupleDesc;
+			TupleDesc projectTupleDesc;
 
+			ColumnDefListToTupleDesc(allColumnList, &tupleDesc);
+			ColumnDefListToTupleDesc(projectColumnList, &projectTupleDesc);
+			
+			Iterator *theIter = mpBackend->CreateScanIterator(tableList[0], tupleDesc, inTuplePredicate);
+			
+			TupleData tupleData;
+			TupleData projectTupleData;
 			while (theIter->Valid())
 			{
-				TupleData tupleData;
-
 				result = theIter->GetValue(&tupleData);
 
 				if (!result.OK())
@@ -188,8 +193,11 @@ Status PandaDB::SelectData(const Table::TableRefList &tableList, const JoinList 
 					break;
 				}
 
+				//TODO: This is slow when doing every time
+				ProjectTuple(allColumnList, projectColumnList, tupleData, &projectTupleData);			
+
 #ifdef PDDEBUG
-				PrintTuple(tupleDesc, tupleData);
+				PrintTuple(projectTupleDesc, projectTupleData);
 #endif
 
 				theIter->Next();

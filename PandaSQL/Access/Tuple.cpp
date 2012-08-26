@@ -159,6 +159,8 @@ void StringToTuple(const TupleDesc &desc, const std::string &inString, TupleData
 {
 	size_t offset = 0;
 
+	o_data->clear();
+
 	for (size_t i = 0; i < desc.size(); i++)
 	{
 		TupleDataElement oneDataElement;
@@ -170,6 +172,28 @@ void StringToTuple(const TupleDesc &desc, const std::string &inString, TupleData
 
 	//TODO: Check
 	PDASSERT(offset <= inString.length());
+}
+
+void ProjectTuple(const ColumnDefList &inAllColDefList, const ColumnDefList &inProjectColDefList, const TupleData &inTupleData, TupleData *o_projectTupleData)
+{
+	ColumnDefList::const_iterator projectIter = inProjectColDefList.begin();
+	ColumnDefList::const_iterator allColIter;
+
+	o_projectTupleData->clear();
+
+	for (; projectIter != inProjectColDefList.end(); projectIter++)
+	{
+		allColIter = inAllColDefList.begin();
+
+		for (; allColIter != inAllColDefList.end(); allColIter++)
+		{
+			PDASSERT(projectIter->qualifiedName.tableName == allColIter->qualifiedName.tableName);
+			if (projectIter->qualifiedName.columnName == allColIter->qualifiedName.columnName)
+			{
+				o_projectTupleData->push_back(inTupleData[allColIter->index]);
+			}
+		}
+	}
 }
 
 void ColumnDefListToTupleDesc(const ColumnDefList &colDefList, TupleDesc *io_tupleDesc)

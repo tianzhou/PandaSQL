@@ -2,6 +2,7 @@
 
 #include "BDBBackend.h"
 #include "BDBScanIterator.h"
+#include "Transaction/BDBTransaction.h"
 
 #include "Catalog/Table.h"
 
@@ -158,47 +159,72 @@ Status BDBBackend::DeleteData(const std::string &tableName, const TuplePredicate
 	if (result.OK())
 	{
 		DBC *dbcp = NULL;
+		DB_TXN *tid = NULL;
 		int ret;
 
-		ret = pTable->cursor(pTable, NULL, &dbcp, 0);
+		ret = TransactionBegin(mpDBEnv, NULL, &tid);
 
 		if (ret != 0)
 		{
 			PDDebugOutputVerbose(db_strerror(ret));
 			result = Status::kInternalError;
-		}	
+		}
 
 		if (result.OK())
 		{
-			DBT key;
-			DBT data;
-
-			memset(&key, 0, sizeof(key));
-			memset(&data, 0, sizeof(data));
-
-			/* Walk through the database and print out the key/data pairs. */
-			while ((ret = dbcp->get(dbcp, &key, &data, DB_NEXT)) == 0)
-			{
-				ret = dbcp->del(dbcp, 0);
-
-				if (ret != 0)
-				{
-					break;
-				}
-			}
-
-			if (ret != DB_NOTFOUND)
-			{
-				PDDebugOutputVerbose(db_strerror(ret));
-				result = Status::kInternalError;
-			}
-
-			ret = dbcp->close(dbcp);
+			ret = pTable->cursor(pTable, tid, &dbcp, 0);
 
 			if (ret != 0)
 			{
 				PDDebugOutputVerbose(db_strerror(ret));
 				result = Status::kInternalError;
+			}	
+
+			if (result.OK())
+			{
+				DBT key;
+				DBT data;
+
+				memset(&key, 0, sizeof(key));
+				memset(&data, 0, sizeof(data));
+
+				/* Walk through the database and print out the key/data pairs. */
+				while ((ret = dbcp->get(dbcp, &key, &data, DB_NEXT)) == 0)
+				{
+					ret = dbcp->del(dbcp, 0);
+
+					if (ret != 0)
+					{
+						break;
+					}
+				}
+
+				if (ret != DB_NOTFOUND)
+				{
+					PDDebugOutputVerbose(db_strerror(ret));
+					result = Status::kInternalError;
+				}
+
+				ret = dbcp->close(dbcp);
+
+				if (ret != 0)
+				{
+					PDDebugOutputVerbose(db_strerror(ret));
+					result = Status::kInternalError;
+				}
+
+				ret = TransactionCommit(tid);
+				
+				if (ret != 0)
+				{
+					PDDebugOutputVerbose(db_strerror(ret));
+
+					if (result.OK())
+					{
+						result = Status::kInternalError;
+					}
+				}
+
 			}
 		}
 	}
@@ -310,7 +336,7 @@ Status BDBBackend::OpenTable_Private(const std::string &inTableName, OpenMode in
 
 	PDASSERT(ret == 0);
 
-	u_int32_t flags = 0;
+	u_int32_t flags = DB_AUTO_COMMIT;
 
 	if ((inMode & kCreateIfMissing) != 0)
 	{
@@ -329,6 +355,7 @@ Status BDBBackend::OpenTable_Private(const std::string &inTableName, OpenMode in
 	if (ret != 0)
 	{
 		PDDebugOutputVerbose(db_strerror(ret));
+		result = Status::kInternalError;
 	}
 
 	if (result.OK())

@@ -138,13 +138,25 @@ Status Statement::Prepare()
 	}
 	else
 	{
-		ColumnDefList::iterator iter = mColumnDefs.begin();
-
-		if (mStmtType != kStmtCreateTable)
+		if (mStmtType == kStmtCreateTable)
 		{
+			ColumnDefList::iterator iter = mColumnDefs.begin();
+			uint32_t columnIndex = 0;
+
 			for (; iter != mColumnDefs.end(); iter++)
 			{
-				result = mpDB->AmendColumnDef(mTableRefs, &(*iter));
+				iter->qualifiedName.tableName = mTableRefs[0];
+				iter->index = columnIndex;
+				columnIndex++;
+			}
+		}
+		else
+		{
+			ColumnDefList::iterator iter = mColumnDefs.begin();
+
+			for (; iter != mColumnDefs.end(); iter++)
+			{	
+				result = mpDB->AmendColumnDef(mTableRefs, &(*iter));				
 			}
 		}
 	}
@@ -173,14 +185,6 @@ Status Statement::Execute(bool loadTable)
 			}
 			else
 			{
-				//TODO: Do it in prepare
-				ColumnDefList::iterator colIter = mColumnDefs.begin();
-
-				for (; colIter != mColumnDefs.end(); colIter++)
-				{		
-					colIter->qualifiedName.tableName = mTableRefs[0];
-				}
-
 				result = mpDB->CreateTable(mTableRefs[0], mColumnDefs);
 			}
 
