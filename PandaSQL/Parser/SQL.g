@@ -16,28 +16,44 @@ tokens
 {
 TOK_ALL_COLUMNS;
 TOK_BINARY_OP;
+TOK_BOOLEAN_VALUE_EXPRESSION;
+TOK_BOOLEAN_TERM;
+TOK_BOOLEAN_FACTOR;
+TOK_BOOLEAN_TEST;
+TOK_BOOLEAN_PREDICAND;
+TOK_BOOLEAN_PRIMARY;
+TOK_COLUMN_DEF;
+TOK_COLUMN_DEF_LIST;
 TOK_COLUMN_REF;
+TOK_COMMON_VALUE_EXPRESSION;
+TOK_COMPARISON_PREDICATE;
 TOK_CREATE_TABLE_STMT;
 TOK_CREATE_INDEX_STMT;
-TOK_COLUMN_DEF_LIST;
-TOK_COLUMN_DEF;
 TOK_DELETE_STMT;
 TOK_DROP_TABLE;
 TOK_DROP_INDEX;
 TOK_FROM_CLAUSE;
-TOK_PREDICATE_OR_LIST;
-TOK_PREDICATE_AND_LIST;
-TOK_SELECT_CORE;
-TOK_SELECT_LIST;
-TOK_SELECT_STMT;
 TOK_INDEX_REF;
 TOK_INSERT_STMT;
 TOK_INSERT_VALUES;
+TOK_NONPARENTHESIZED_VALUE_EXPRESSION_EXPRESSION;
+TOK_PREDICATE;
+TOK_PREDICATE_OR_LIST;
+TOK_PREDICATE_AND_LIST;
+TOK_ROW_VALUE_CONSTRUCTOR_PREDICAND;
+TOK_ROW_VALUE_PREDICAND;
+TOK_SEARCH_CONDITION;
+TOK_SELECT_CORE;
+TOK_SELECT_LIST;
+TOK_SELECT_STMT;
+TOK_STRING_VALUE_EXPRESSION;
+TOK_TABLE_REF;
+TOK_UNSIGNED_VALUE_SPECIFICATION;
 TOK_UPDATE_CORE;
 TOK_UPDATE_STMT;
 TOK_UPDATE_SET_LIST;
 TOK_UPDATE_SET;
-TOK_TABLE_REF;
+TOK_VALUE_EXPRESSION_EXPRESSION;
 TOK_WHERE;
 }
 
@@ -104,7 +120,7 @@ column_def_list
 	;
 	
 column_def
-	:	column_ref type_name column_constraint -> ^(TOK_COLUMN_DEF column_ref type_name column_constraint)
+	:	column_reference type_name column_constraint -> ^(TOK_COLUMN_DEF column_reference type_name column_constraint)
 	;
 	
 type_name
@@ -119,8 +135,8 @@ column_constraint
 	;
 	
 create_index_stmt
-	:	KW_CREATE KW_INDEX index_ref KW_ON table_ref LPAREN column_ref RPAREN
-		-> ^(TOK_CREATE_INDEX_STMT index_ref table_ref column_ref)
+	:	KW_CREATE KW_INDEX index_ref KW_ON table_ref LPAREN column_reference RPAREN
+		-> ^(TOK_CREATE_INDEX_STMT index_ref table_ref column_reference)
 	;
 	
 index_ref
@@ -151,7 +167,7 @@ set_qualifier
 	
 select_list
 	:	STAR -> ^(TOK_SELECT_LIST TOK_ALL_COLUMNS)
-	|	column_ref (COMMA column_ref)* -> ^(TOK_SELECT_LIST column_ref+)
+	|	column_reference (COMMA column_reference)* -> ^(TOK_SELECT_LIST column_reference+)
 	;
 	
 from_clause
@@ -171,12 +187,12 @@ set_clause_list
 	;
 	
 set_clause
-	:	column_ref EQUAL expr -> ^(TOK_UPDATE_SET column_ref expr)
+	:	column_reference EQUAL expr -> ^(TOK_UPDATE_SET column_reference expr)
 	;
 	
 insert_stmt
-	:	KW_INSERT KW_INTO table_ref LPAREN column_ref (COMMA column_ref)* RPAREN KW_VALUES LPAREN expr (COMMA expr)* RPAREN
-		-> ^(TOK_INSERT_STMT table_ref column_ref+ TOK_INSERT_VALUES expr+)
+	:	KW_INSERT KW_INTO table_ref LPAREN column_reference (COMMA column_reference)* RPAREN KW_VALUES LPAREN expr (COMMA expr)* RPAREN
+		-> ^(TOK_INSERT_STMT table_ref column_reference+ TOK_INSERT_VALUES expr+)
 	;
 	
 delete_stmt
@@ -191,13 +207,130 @@ limit_clause
 	:	KW_LIMIT
 	;
 	
-where_clause
-	:	KW_WHERE predicate_list -> ^(TOK_WHERE predicate_list)
+//----------5 Lexical elements BEGIN----------
+
+
+//5.3 <literal>
+unsigned_literal
+	:	unsigned_numeric_literal
 	;
 	
-predicate_list
-	:	predicate_or (KW_OR predicate_or)* -> ^(TOK_PREDICATE_OR_LIST predicate_or+)
+unsigned_numeric_literal
+	:	exact_numeric_literal
 	;
+	
+exact_numeric_literal
+	:	unsigned_integer
+	;
+	
+unsigned_integer
+	:	UNSIGNED_INTEGER
+	;
+
+//----------Lexical elements END----------
+	
+//----------6 Scalar expressions BEGIN----------
+//6.3 <value expression primary>
+value_expression_primary
+	:	nonparenthesized_value_expression_primary 
+	|	LPAREN! nonparenthesized_value_expression_primary RPAREN!
+	;
+
+nonparenthesized_value_expression_primary
+	:	unsigned_value_specification -> ^(TOK_VALUE_EXPRESSION_EXPRESSION unsigned_value_specification)
+	|	column_reference -> ^(TOK_VALUE_EXPRESSION_EXPRESSION column_reference)
+	;
+	
+//6.4 <value specification> and <target specification>
+unsigned_value_specification
+	:	unsigned_literal -> ^(TOK_UNSIGNED_VALUE_SPECIFICATION unsigned_literal)
+	;
+	
+//6.7 <column reference>
+column_reference
+	:	(tableName=IDENTIFIER DOT)? columnName=IDENTIFIER -> ^(TOK_COLUMN_REF $columnName $tableName?)
+	;
+
+//6.26 <value expression>
+common_value_expression
+	:	string_value_expression -> ^(TOK_COMMON_VALUE_EXPRESSION string_value_expression)
+	;
+	
+//6.29 <string value expression>
+string_value_expression
+	:	value_expression_primary -> ^(TOK_STRING_VALUE_EXPRESSION value_expression_primary)
+	;
+	
+//6.35 <boolean value expression>
+bool_value_expression
+	:	boolean_term (KW_OR boolean_term)* -> ^(TOK_BOOLEAN_VALUE_EXPRESSION boolean_term+)
+	;
+	
+boolean_term
+	:	boolean_factor (KW_AND boolean_factor)* -> ^(TOK_BOOLEAN_TERM boolean_factor+)
+	;
+	
+boolean_factor
+	:	KW_NOT? boolean_test -> ^(TOK_BOOLEAN_FACTOR KW_NOT? boolean_test)
+	;
+	
+boolean_test
+	:	boolean_primary (KW_IS KW_NOT? truth_value)? -> ^(TOK_BOOLEAN_TEST boolean_primary (KW_IS KW_NOT? truth_value)?)
+	;
+	
+truth_value
+	:	KW_TRUE
+	|	KW_FALSE
+	;
+	
+boolean_primary
+	:	predicate -> ^(TOK_BOOLEAN_PRIMARY predicate)
+	|	boolean_predicand -> ^(TOK_BOOLEAN_PRIMARY boolean_predicand)
+	;
+	
+boolean_predicand
+	:	LPAREN! bool_value_expression RPAREN!
+	|	nonparenthesized_value_expression_primary
+	;
+
+//----------Scalar expressions END----------
+	
+//----------7 Query expressions BEGIN----------
+
+//7.1 <row value constructor>
+row_value_constructor_predicand
+	:	common_value_expression -> ^(TOK_ROW_VALUE_CONSTRUCTOR_PREDICAND common_value_expression)
+	;
+	
+//7.2 <row value expression>
+row_value_predicand
+	:	row_value_constructor_predicand -> ^(TOK_ROW_VALUE_PREDICAND row_value_constructor_predicand) 
+	;
+	
+where_clause
+	:	KW_WHERE search_condition -> ^(TOK_WHERE search_condition)
+	;
+
+//----------Query expressions END----------
+
+//----------8 Predicates BEGIN----------
+predicate
+	:	comparison_predicate -> ^(TOK_PREDICATE comparison_predicate)
+	;
+	
+comparison_predicate
+	:	lvalue=row_value_predicand comparison_op rvalue=row_value_predicand -> ^(TOK_COMPARISON_PREDICATE comparison_op $lvalue $rvalue)
+	;
+	
+comparison_op
+	:	EQUAL
+	;
+	
+search_condition
+	:	bool_value_expression -> ^(TOK_SEARCH_CONDITION bool_value_expression)
+	;
+	
+//----------Predicates END----------
 	
 predicate_or
 	:	predicate_and (KW_AND predicate_and)* -> ^(TOK_PREDICATE_AND_LIST predicate_and+)
@@ -206,6 +339,10 @@ predicate_or
 predicate_and
 	:	LPAREN! predicate_list RPAREN!
 	|	lexpr=expr binary_op rexpr=expr	-> ^(TOK_BINARY_OP binary_op $lexpr $rexpr)
+	;
+	
+predicate_list
+	:
 	;
 	
 binary_op
@@ -221,22 +358,23 @@ group_by_clause
 	:	KW_GROUP KW_BY
 	;
 	
-column_ref
-	:	(tableName=IDENTIFIER DOT)? columnName=IDENTIFIER -> ^(TOK_COLUMN_REF $columnName $tableName?)
-	;
-	
 table_ref
 	:	IDENTIFIER -> ^(TOK_TABLE_REF IDENTIFIER)
 	;
 	
 expr
-	:	NUMBER_LITERAL
+	:	UNSIGNED_INTEGER
+	|	NUMBER_LITERAL
 	|	STRING_LITERAL
-	|	column_ref
+	|	column_reference
+	;
+	
+UNSIGNED_INTEGER
+	:	Digit+
 	;	
 	
 NUMBER_LITERAL
-	:	Digit+ (DOT (Digit)+)?
+	:	Digit+ (DOT (Digit)+)+
 	;
 	
 STRING_LITERAL
@@ -269,8 +407,16 @@ KW_DROP
 	: ('D'|'d')('R'|'r')('O'|'o')('P'|'p')
 	;
 	
+KW_FALSE
+	: ('F'|'f')('A'|'a')('L'|'l')('S'|'s')('E'|'e')
+	;
+	
 KW_FROM
 	: ('F'|'f')('R'|'r')('O'|'o')('M'|'m')
+	;
+	
+KW_INDEX
+	: ('I'|'i')('N'|'n')('D'|'d')('E'|'e')('X'|'x')
 	;
 	
 KW_INSERT
@@ -281,16 +427,16 @@ KW_INTO
 	: ('I'|'i')('N'|'n')('T'|'t')('O'|'o')
 	;
 	
+KW_IS
+	: ('I'|'i')('S'|'s')
+	;
+	
 KW_KEY
 	: ('K'|'k')('E'|'e')('Y'|'y')
 	;
 	
 KW_LIMIT
 	: ('L'|'l')('I'|'i')('M'|'m')('I'|'i')('T'|'t')
-	;
-	
-KW_INDEX
-	: ('I'|'i')('N'|'n')('D'|'d')('E'|'e')('X'|'x')
 	;
 	
 KW_NOT
@@ -333,6 +479,10 @@ KW_TABLE
 	: ('T'|'t')('A'|'a')('B'|'b')('L'|'l')('E'|'e')
 	;
 
+KW_TRUE
+	: ('T'|'t')('R'|'r')('U'|'u')('E'|'e')
+	;
+	
 KW_VALUES
 	: ('V'|'v')('A'|'a')('L'|'l')('U'|'u')('E'|'e')('S'|'s')
 	;

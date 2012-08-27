@@ -310,6 +310,8 @@ Status ParserDriver::LoadFromFile(File *inFile)
 
 Status ParserDriver::ParseQuery(std::string inQueryString)
 {
+	printf("\nstmt: %s\n", inQueryString.c_str());
+
 	Status result;
 
 		// Now we declare the ANTLR related local variables we need.
@@ -478,7 +480,7 @@ Status ParserDriver::ParseQuery(std::string inQueryString)
 
 			if (!this->IsLoadTable())
 			{
-				printf("\nNodes: %s\n", langAST.tree->toStringTree(langAST.tree)->chars);
+				printf("\nParser OK: Nodes: %s\n", langAST.tree->toStringTree(langAST.tree)->chars);
 			}
 
 			// Tree parsers are given a common tree node stream (or your override)

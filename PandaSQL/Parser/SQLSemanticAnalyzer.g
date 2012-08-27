@@ -78,7 +78,7 @@ column_def
 	PandaSQL::ColumnDef columnDef;
 	PandaSQL::ColumnQualifiedName qualifiedName;
 }
-	:	^(TOK_COLUMN_DEF column_ref[&qualifiedName] type=type_name constraint=column_constraint)
+	:	^(TOK_COLUMN_DEF column_reference[&qualifiedName] type=type_name constraint=column_constraint)
 		{
 			columnDef.qualifiedName = qualifiedName;
 			columnDef.dataType = type;
@@ -126,7 +126,7 @@ create_index_stmt
 	std::string tableRef;
 	PandaSQL::ColumnQualifiedName qualifiedName;
 }
-	:	^(TOK_CREATE_INDEX_STMT index_ref[&indexRef] table_ref[&tableRef] column_ref[&qualifiedName])
+	:	^(TOK_CREATE_INDEX_STMT index_ref[&indexRef] table_ref[&tableRef] column_reference[&qualifiedName])
 		{
 			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
 			pDriver->GetStatement().SetIndexRef(indexRef);
@@ -185,11 +185,11 @@ dml_stmt
 select_stmt
 @init
 {
-	printf("***select_statement begin***\n");
+	
 }
 @after
 {
-	printf("***select_statement end***\n");
+	
 }
 	:	^(TOK_SELECT_STMT select_core order_by_clause? limit_clause?)
 		{
@@ -220,7 +220,7 @@ select_list
 			pDriver->GetStatement().AddAllColumns();
 		}
 	|	^(TOK_SELECT_LIST 
-			(column_ref[&qualifiedName]
+			(column_reference[&qualifiedName]
 			{
 				PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
 				pDriver->GetStatement().AddColumnDefWithName(qualifiedName);
@@ -228,7 +228,6 @@ select_list
 			)+
 		 )
 		{
-			printf("selectColumnRef: *\n");
 		}
 	;
 	
@@ -250,17 +249,159 @@ from_clause
 		} 	
 	;
 	
+//----------5 Lexical elements BEGIN----------
+
+
+//5.3 <literal>
+unsigned_literal
+	:	unsigned_numeric_literal
+	;
+	
+unsigned_numeric_literal
+	:	exact_numeric_literal
+	;
+	
+exact_numeric_literal
+	:	unsigned_integer
+	;
+	
+unsigned_integer
+	:	UNSIGNED_INTEGER
+	;
+	
+//----------Lexical elements END----------
+	
+//----------6 Scalar expressions BEGIN----------
+
+//6.3 <value expression primary>
+value_expression_primary
+@init
+{
+	PandaSQL::ColumnQualifiedName qualifiedName;
+}
+	:	^(TOK_VALUE_EXPRESSION_EXPRESSION unsigned_value_specification)
+	|	^(TOK_VALUE_EXPRESSION_EXPRESSION column_reference[&qualifiedName])
+	;
+	
+//6.4 <value specification> and <target specification>
+unsigned_value_specification
+	:	^(TOK_UNSIGNED_VALUE_SPECIFICATION unsigned_literal)
+	;
+
+//6.7 <column reference>	
+column_reference[PandaSQL::ColumnQualifiedName *o_columnQualifiedName]
+@init
+{
+	std::string columnRef;
+	std::string tableRef;
+	bool hasTableRef = false;
+}
+	:	^(TOK_COLUMN_REF identifier[&columnRef] identifier[&tableRef]?)
+		{
+			o_columnQualifiedName->columnName = columnRef;
+			o_columnQualifiedName->tableName = tableRef;
+		}
+	;
+
+//6.26 <value expression>
+common_value_expression
+	:	^(TOK_COMMON_VALUE_EXPRESSION string_value_expression)
+	;
+	
+//6.29 <string value expression>
+string_value_expression
+	:	^(TOK_STRING_VALUE_EXPRESSION value_expression_primary)
+	;
+	
+//6.35 <boolean value expression>
+bool_value_expression
+	:	^(TOK_BOOLEAN_VALUE_EXPRESSION boolean_term+)
+	;
+	
+boolean_term
+	:	^(TOK_BOOLEAN_TERM boolean_factor+)
+	;
+	
+boolean_factor
+	:	^(TOK_BOOLEAN_FACTOR KW_NOT? boolean_test)
+	;
+	
+boolean_test
+	:	^(TOK_BOOLEAN_TEST boolean_primary (KW_IS KW_NOT? truth_value)?)
+	;
+	
+truth_value
+	:	KW_TRUE
+	|	KW_FALSE
+	;
+	
+boolean_primary
+	:	^(TOK_BOOLEAN_PRIMARY predicate)
+	|	^(TOK_BOOLEAN_PRIMARY boolean_predicand)
+	;
+	
+boolean_predicand
+	:	bool_value_expression
+	|	value_expression_primary
+	;
+	
+//----------Scalar expressions END----------
+		
+//----------7 Query expressions BEGIN----------
+
+//7.1 <row value constructor>
+row_value_constructor_predicand
+	:	^(TOK_ROW_VALUE_CONSTRUCTOR_PREDICAND common_value_expression)
+	;
+	
+//7.2 <row value expression>
+row_value_predicand
+	:	^(TOK_ROW_VALUE_PREDICAND row_value_constructor_predicand) 
+	;
+	
 where_clause
 @init
 {
 	PandaSQL::Predicate predicate;
+	PandaSQL::Expr whereExpression;
 }
 	:	^(TOK_WHERE predicate_list[predicate])
 		{
 			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
 			pDriver->GetStatement().SetPredicate(predicate);
 		}
+	|	^(TOK_WHERE search_condition[&whereExpression])
+		{
+		
+		}
 	;
+	
+//----------Query expressions END----------
+	
+//----------8 Predicates BEGIN----------
+
+predicate
+	:	^(TOK_PREDICATE comparison_predicate)
+	;
+	
+comparison_predicate
+	:	^(TOK_COMPARISON_PREDICATE comparison_op row_value_predicand row_value_predicand)
+	;
+	
+comparison_op
+	:	EQUAL
+	;
+
+search_condition[PandaSQL::Expr *o_expression]
+@init
+{
+}
+	:	^(TOK_SEARCH_CONDITION bool_value_expression)
+		{
+		}
+	;
+
+//----------Predicates END----------	
 	
 predicate_list[PandaSQL::Predicate &o_Predicate]
 @init
@@ -379,7 +520,7 @@ set_clause
 	PandaSQL::ColumnQualifiedName qualifiedName;
 	PandaSQL::Expr theExpr;
 }
-	:	^(TOK_UPDATE_SET column_ref[&qualifiedName] expr[&theExpr])
+	:	^(TOK_UPDATE_SET column_reference[&qualifiedName] expr[&theExpr])
 		{
 			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
 			pDriver->GetStatement().AddColumnDefWithName(qualifiedName);
@@ -395,7 +536,7 @@ insert_stmt
 	PandaSQL::Expr theExpr;
 }
 	:	^(TOK_INSERT_STMT table_ref[&tableRef]
-			(column_ref[&qualifiedName]
+			(column_reference[&qualifiedName]
 			{
 				PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
 				pDriver->GetStatement().AddColumnDefWithName(qualifiedName);
@@ -442,20 +583,6 @@ group_by_clause
 		}
 	;
 	
-column_ref[PandaSQL::ColumnQualifiedName *o_columnQualifiedName]
-@init
-{
-	std::string columnRef;
-	std::string tableRef;
-	bool hasTableRef = false;
-}
-	:	^(TOK_COLUMN_REF identifier[&columnRef] identifier[&tableRef]?)
-		{
-			o_columnQualifiedName->columnName = columnRef;
-			o_columnQualifiedName->tableName = tableRef;
-		}
-	;
-	
 table_ref[std::string *o_tableRef]
 @init
 {
@@ -485,7 +612,11 @@ expr[PandaSQL::Expr *o_expr]
 	PandaSQL::ColumnQualifiedName qualifiedName;
 	o_expr->mType = PandaSQL::kExprUnknown;
 }
-	:	num=NUMBER_LITERAL
+	:	num=UNSIGNED_INTEGER
+		{
+			PandaSQL::ParserDriver::GetExprForNumber($num, o_expr);
+		}
+	|	num=NUMBER_LITERAL
 		{
 			PandaSQL::ParserDriver::GetExprForNumber($num, o_expr);
 			
@@ -494,7 +625,7 @@ expr[PandaSQL::Expr *o_expr]
 		{
 			PandaSQL::ParserDriver::GetExprForText($str, o_expr);
 		}
-	|	column_ref[&qualifiedName]
+	|	column_reference[&qualifiedName]
 		{
 			PandaSQL::ParserDriver::GetExprForColumnDef(qualifiedName, o_expr);
 		}

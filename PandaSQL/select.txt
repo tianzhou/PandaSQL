@@ -1,2 +1,7 @@
 SELECT name
-FROM Master;
+FROM Master
+;
+
+SELECT name
+FROM Detail
+;

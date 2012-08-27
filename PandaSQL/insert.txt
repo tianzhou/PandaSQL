@@ -1,4 +1,5 @@
-INSERT INTO Master (master_id, name) VALUES (1, "Bob");
+INSERT INTO Master (master_id, name) VALUES (
+1, "Bob");
 INSERT INTO Master (master_id, name) VALUES (2, "Peter");
 INSERT INTO Master (master_id, name) VALUES (3, "Mary");
 
