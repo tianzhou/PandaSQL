@@ -7,10 +7,11 @@
 
 #include "VFS/File.h"
 
+#include "Utils/Expr.h"
+#include "Utils/Join.h"
+#include "Utils/Predicate.h"
 #include "Utils/Status.h"
 #include "Utils/Types.h"
-#include "Utils/Predicate.h"
-#include "Utils/Join.h"
 
 #include <string>
 #include <vector>
@@ -118,6 +119,9 @@ public:
 	static void GetExprForText(ANTLR3_BASE_TREE *tree, Expr *o_expr);
 	static void GetExprForNumber(ANTLR3_BASE_TREE *tree, Expr *o_expr);
 	static void GetExprForColumnDef(const ColumnQualifiedName &inQualifiedName, Expr *o_expr);
+
+	Expr* CreateExprForNumericLiteral(ANTLR3_BASE_TREE *numericTree);
+	//Expr* CreateExprForColumnReference(
 
 privileged:
 

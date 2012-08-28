@@ -557,4 +557,11 @@ void ParserDriver::GetExprForColumnDef(const ColumnQualifiedName &inQualifiedNam
 	o_expr->mColumnDef.qualifiedName = inQualifiedName;
 }
 
+Expr* ParserDriver::CreateExprForNumericLiteral(ANTLR3_BASE_TREE *numericTree)
+{
+	Expr *pNumericExpr = new ConstantExpr();
+
+	return pNumericExpr;
+}
+
 }	// namespace PandaSQL

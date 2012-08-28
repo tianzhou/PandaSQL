@@ -81,8 +81,8 @@ column_def
 	:	^(TOK_COLUMN_DEF column_reference[&qualifiedName] type=type_name constraint=column_constraint)
 		{
 			columnDef.qualifiedName = qualifiedName;
-			columnDef.dataType = type;
-			columnDef.constraintType = constraint; 
+			columnDef.dataType = $type.dataType;
+			columnDef.constraintType = $constraint.constraintType; 
 			
 			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
 			pDriver->GetStatement().AddColumnDef(columnDef);
@@ -253,20 +253,55 @@ from_clause
 
 
 //5.3 <literal>
-unsigned_literal
-	:	unsigned_numeric_literal
+unsigned_literal returns [PandaSQL::Expr *io_pExpr]
+@init
+{
+	PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+}
+	:	unl=unsigned_numeric_literal
+		{
+			$io_pExpr = $unl.io_pExpr;
+		}
+	|	general_literal
 	;
 	
-unsigned_numeric_literal
-	:	exact_numeric_literal
+general_literal
+	:	character_string_literal
+	|	boolean_literal
 	;
 	
-exact_numeric_literal
-	:	unsigned_integer
+character_string_literal
+	:	QUOTE (Letter | Digit | '_')* QUOTE
 	;
 	
-unsigned_integer
+unsigned_numeric_literal returns [PandaSQL::Expr *io_pExpr]
+	:	enl=exact_numeric_literal
+		{
+			$io_pExpr = $enl.io_pExpr;
+		}
+	;
+	
+exact_numeric_literal returns [PandaSQL::Expr *io_pExpr]
+	:	ui=unsigned_integer
+		{
+			$io_pExpr = $ui.io_pExpr;
+		}
+	;
+	
+unsigned_integer returns [PandaSQL::Expr *io_pExpr]
+@init
+{
+	PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+}
 	:	UNSIGNED_INTEGER
+		{
+			$io_pExpr = pDriver->CreateExprForNumericLiteral($UNSIGNED_INTEGER);
+		}
+	;
+	
+boolean_literal
+	:	KW_TRUE
+	|	KW_FALSE
 	;
 	
 //----------Lexical elements END----------
@@ -274,18 +309,28 @@ unsigned_integer
 //----------6 Scalar expressions BEGIN----------
 
 //6.3 <value expression primary>
-value_expression_primary
+value_expression_primary returns [PandaSQL::Expr *io_pExpr]
 @init
 {
 	PandaSQL::ColumnQualifiedName qualifiedName;
 }
-	:	^(TOK_VALUE_EXPRESSION_EXPRESSION unsigned_value_specification)
+	:	^(TOK_VALUE_EXPRESSION_EXPRESSION uvs=unsigned_value_specification)
+		{
+			$io_pExpr = $uvs.io_pExpr;
+		}
 	|	^(TOK_VALUE_EXPRESSION_EXPRESSION column_reference[&qualifiedName])
 	;
 	
 //6.4 <value specification> and <target specification>
-unsigned_value_specification
-	:	^(TOK_UNSIGNED_VALUE_SPECIFICATION unsigned_literal)
+unsigned_value_specification returns [PandaSQL::Expr *io_pExpr]
+@init
+{
+
+}
+	:	^(TOK_UNSIGNED_VALUE_SPECIFICATION ul=unsigned_literal)
+		{
+			$io_pExpr = $ul.io_pExpr;
+		}
 	;
 
 //6.7 <column reference>	
@@ -327,12 +372,7 @@ boolean_factor
 	;
 	
 boolean_test
-	:	^(TOK_BOOLEAN_TEST boolean_primary (KW_IS KW_NOT? truth_value)?)
-	;
-	
-truth_value
-	:	KW_TRUE
-	|	KW_FALSE
+	:	^(TOK_BOOLEAN_TEST boolean_primary (KW_IS KW_NOT? boolean_literal)?)
 	;
 	
 boolean_primary

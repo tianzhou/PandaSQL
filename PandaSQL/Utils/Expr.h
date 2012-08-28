@@ -26,6 +26,13 @@ class Expr
 
 public:
 
+	enum
+	{
+		kExprColumnRef,
+	};
+
+	typedef uint16_t ExprType;
+
 	void Eval(TupleDescElement inDescElement, TupleDataElement *io_data) const;
 
 	static void EvalExprList(const ExprList &inExprList, const TupleDesc &inTupleDesc, TupleData *io_tupleData);
@@ -40,6 +47,18 @@ public:
 
 	//type == kExprColumnDef
 	ColumnDef mColumnDef;
+};
+
+class ColumnExpr : public Expr
+{
+public:
+
+};
+
+class ConstantExpr : public Expr
+{
+public:
+
 };
 
 }	// PandaSQL

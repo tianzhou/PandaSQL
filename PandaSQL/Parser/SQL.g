@@ -213,6 +213,16 @@ limit_clause
 //5.3 <literal>
 unsigned_literal
 	:	unsigned_numeric_literal
+	|	general_literal
+	;
+	
+general_literal
+	:	character_string_literal
+	|	boolean_literal
+	;
+	
+character_string_literal
+	:	QUOTE (Letter | Digit | '_')* QUOTE
 	;
 	
 unsigned_numeric_literal
@@ -225,6 +235,11 @@ exact_numeric_literal
 	
 unsigned_integer
 	:	UNSIGNED_INTEGER
+	;
+	
+boolean_literal
+	:	KW_TRUE
+	|	KW_FALSE
 	;
 
 //----------Lexical elements END----------
@@ -275,12 +290,7 @@ boolean_factor
 	;
 	
 boolean_test
-	:	boolean_primary (KW_IS KW_NOT? truth_value)? -> ^(TOK_BOOLEAN_TEST boolean_primary (KW_IS KW_NOT? truth_value)?)
-	;
-	
-truth_value
-	:	KW_TRUE
-	|	KW_FALSE
+	:	boolean_primary (KW_IS KW_NOT? boolean_literal)? -> ^(TOK_BOOLEAN_TEST boolean_primary (KW_IS KW_NOT? boolean_literal)?)
 	;
 	
 boolean_primary
@@ -538,6 +548,8 @@ GEQ   : '>=' ;
 LESS  : '<' ;
 
 LEQ   : '<=' ;
+
+QUOTE : '\'' ;
 
 SEMI : ';' ;
 
