@@ -10,6 +10,7 @@
 
 #include "Utils/Common.h"
 #include "Utils/Debug.h"
+#include "Utils/Expr/ConstantExpr.h"
 #include "Utils/Predicate.h"
 #include "Utils/Status.h"
 #include "Utils/Types.h"
@@ -251,6 +252,11 @@ void Statement::PrintStatement()
 	{
 		std::cout << "Column " << i << ": " << mColumnDefs[i].qualifiedName.tableName << "." << mColumnDefs[i].qualifiedName.columnName << std::endl;
 	}
+}
+
+void Statement::SetWhereClauseExpression(const Expr &inWhereExpr)
+{
+	mWhereExpr = inWhereExpr;
 }
 
 /**************************************************
@@ -559,7 +565,13 @@ void ParserDriver::GetExprForColumnDef(const ColumnQualifiedName &inQualifiedNam
 
 Expr* ParserDriver::CreateExprForNumericLiteral(ANTLR3_BASE_TREE *numericTree)
 {
-	Expr *pNumericExpr = new ConstantExpr();
+	ConstantExpr *pNumericExpr = new ConstantExpr();
+
+	int32_t number;
+
+	ParserDriver::GetNumber(numericTree, &number);
+
+	pNumericExpr->SetInt(number);
 
 	return pNumericExpr;
 }

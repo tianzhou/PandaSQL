@@ -7,7 +7,7 @@
 
 #include "VFS/File.h"
 
-#include "Utils/Expr.h"
+#include "Utils/Expr/Expr.h"
 #include "Utils/Join.h"
 #include "Utils/Predicate.h"
 #include "Utils/Status.h"
@@ -80,6 +80,8 @@ public:
 	Status Execute(bool loadTable);
 	void PrintStatement();
 
+	void SetWhereClauseExpression(const Expr &inWhereExpr);
+
 private:
 	PandaDB *mpDB;
 
@@ -98,6 +100,8 @@ private:
 	Predicate mPredicate;
 
 	std::string mIndexRef;
+
+	Expr mWhereExpr;
 };
 
 class ParserDriver

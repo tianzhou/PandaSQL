@@ -1,5 +1,5 @@
-#ifndef PANDASQL_EXPRESSION_H
-#define PANDASQL_EXPRESSION_H
+#ifndef PANDASQL_EXPR_H
+#define PANDASQL_EXPR_H
 
 #include "Access/Tuple.h"
 #include "Catalog/Column.h"
@@ -31,7 +31,7 @@ public:
 		kExprColumnRef,
 	};
 
-	typedef uint16_t ExprType;
+	typedef uint8_t ExprType;
 
 	void Eval(TupleDescElement inDescElement, TupleDataElement *io_data) const;
 
@@ -55,13 +55,7 @@ public:
 
 };
 
-class ConstantExpr : public Expr
-{
-public:
-
-};
-
 }	// PandaSQL
 
 
-#endif //PANDASQL_EXPRESSION_H
+#endif //PANDASQL_EXPR_H

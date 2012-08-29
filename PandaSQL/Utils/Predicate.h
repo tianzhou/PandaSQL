@@ -3,7 +3,7 @@
 
 #include "Catalog/Table.h"
 #include "Access/Tuple.h"
-#include "Utils/Expr.h"
+#include "Utils/Expr/Expr.h"
 #include "Utils/Types.h"
 
 #include <vector>

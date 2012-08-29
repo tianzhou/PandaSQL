@@ -480,14 +480,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Utils\Expr.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Utils\Expr.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Utils\Join.cpp"
 					>
 				</File>
@@ -527,6 +519,26 @@
 					RelativePath=".\Utils\WinUtils.h"
 					>
 				</File>
+				<Filter
+					Name="Expr"
+					>
+					<File
+						RelativePath=".\Utils\Expr\ConstantExpr.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Utils\Expr\ConstantExpr.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Utils\Expr\Expr.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Utils\Expr\Expr.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Parser"

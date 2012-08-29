@@ -359,30 +359,54 @@ string_value_expression
 	;
 	
 //6.35 <boolean value expression>
-bool_value_expression
-	:	^(TOK_BOOLEAN_VALUE_EXPRESSION boolean_term+)
+bool_value_expression returns [PandaSQL::Expr *io_pExpr]
+	:	^(TOK_BOOLEAN_VALUE_EXPRESSION KW_OR
+			(bt=boolean_term
+			{
+				$io_pExpr = $bt.io_pExpr;
+			})+)
 	;
 	
-boolean_term
-	:	^(TOK_BOOLEAN_TERM boolean_factor+)
+boolean_term returns [PandaSQL::Expr *io_pExpr]
+	:	^(TOK_BOOLEAN_TERM KW_AND
+			(bf=boolean_factor
+			{
+				$io_pExpr = $bf.io_pExpr;
+			}
+			)+)
 	;
 	
-boolean_factor
-	:	^(TOK_BOOLEAN_FACTOR KW_NOT? boolean_test)
+boolean_factor returns [PandaSQL::Expr *io_pExpr]
+	:	^(TOK_BOOLEAN_FACTOR KW_NOT? bt=boolean_test)
+		{
+			$io_pExpr = $bt.io_pExpr;
+		}
 	;
 	
-boolean_test
-	:	^(TOK_BOOLEAN_TEST boolean_primary (KW_IS KW_NOT? boolean_literal)?)
+boolean_test returns [PandaSQL::Expr *io_pExpr]
+	:	^(TOK_BOOLEAN_TEST bp=boolean_primary (KW_IS KW_NOT? boolean_literal)?)
+		{
+			$io_pExpr = $bp.io_pExpr;
+		}
 	;
 	
-boolean_primary
+boolean_primary returns [PandaSQL::Expr *io_pExpr]
 	:	^(TOK_BOOLEAN_PRIMARY predicate)
-	|	^(TOK_BOOLEAN_PRIMARY boolean_predicand)
+	|	^(TOK_BOOLEAN_PRIMARY bp=boolean_predicand)
+		{
+			$io_pExpr = $bp.io_pExpr;
+		}
 	;
 	
-boolean_predicand
-	:	bool_value_expression
-	|	value_expression_primary
+boolean_predicand returns [PandaSQL::Expr *io_pExpr]
+	:	bve=bool_value_expression
+		{
+			$io_pExpr = $bve.io_pExpr;
+		}
+	|	vep=value_expression_primary
+		{
+			$io_pExpr = $vep.io_pExpr;
+		}
 	;
 	
 //----------Scalar expressions END----------
@@ -403,16 +427,15 @@ where_clause
 @init
 {
 	PandaSQL::Predicate predicate;
-	PandaSQL::Expr whereExpression;
+	PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
 }
 	:	^(TOK_WHERE predicate_list[predicate])
 		{
-			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
 			pDriver->GetStatement().SetPredicate(predicate);
 		}
-	|	^(TOK_WHERE search_condition[&whereExpression])
+	|	^(TOK_WHERE sc=search_condition)
 		{
-		
+			pDriver->GetStatement().SetWhereClauseExpression(*$sc.io_pExpr);
 		}
 	;
 	
@@ -432,12 +455,13 @@ comparison_op
 	:	EQUAL
 	;
 
-search_condition[PandaSQL::Expr *o_expression]
+search_condition returns [PandaSQL::Expr *io_pExpr]
 @init
 {
 }
-	:	^(TOK_SEARCH_CONDITION bool_value_expression)
+	:	^(TOK_SEARCH_CONDITION ble=bool_value_expression)
 		{
+			$io_pExpr = $ble.io_pExpr;
 		}
 	;
 
