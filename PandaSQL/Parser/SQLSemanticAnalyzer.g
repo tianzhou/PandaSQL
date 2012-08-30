@@ -318,7 +318,10 @@ value_expression_primary returns [PandaSQL::Expr *io_pExpr]
 		{
 			$io_pExpr = $uvs.io_pExpr;
 		}
-	|	^(TOK_VALUE_EXPRESSION_EXPRESSION column_reference[&qualifiedName])
+	|	^(TOK_VALUE_EXPRESSION_EXPRESSION cr=column_reference_expr)
+		{
+			$io_pExpr = $cr.io_pExpr;
+		}
 	;
 	
 //6.4 <value specification> and <target specification>
@@ -347,61 +350,108 @@ column_reference[PandaSQL::ColumnQualifiedName *o_columnQualifiedName]
 			o_columnQualifiedName->tableName = tableRef;
 		}
 	;
+	
+column_reference_expr returns [PandaSQL::Expr *io_pExpr]
+@init
+{
+	std::string columnName;
+	std::string tableName;
+	PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+}
+	:	^(TOK_COLUMN_REF identifier[&columnName] identifier[&tableName]?)
+		{
+			io_pExpr = pDriver->CreateExprForColumnReference(tableName, columnName);
+		}
+	;
 
 //6.26 <value expression>
-common_value_expression
-	:	^(TOK_COMMON_VALUE_EXPRESSION string_value_expression)
+common_value_expression returns [PandaSQL::Expr *io_pExpr]
+	:	^(TOK_COMMON_VALUE_EXPRESSION sve=string_value_expression)
+		{
+			$io_pExpr = $sve.io_pExpr;
+		}
 	;
 	
 //6.29 <string value expression>
-string_value_expression
-	:	^(TOK_STRING_VALUE_EXPRESSION value_expression_primary)
+string_value_expression returns [PandaSQL::Expr *io_pExpr]
+	:	^(TOK_STRING_VALUE_EXPRESSION vep=value_expression_primary)
+		{
+			$io_pExpr = $vep.io_pExpr;
+		}
 	;
 	
 //6.35 <boolean value expression>
-bool_value_expression returns [PandaSQL::Expr *io_pExpr]
-	:	^(TOK_BOOLEAN_VALUE_EXPRESSION KW_OR
+bool_value_expression returns [PandaSQL::BooleanExpr *io_pBooleanExpr]
+@init
+{
+	PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+	$io_pBooleanExpr = pDriver->CreateExprForBooleanList(false);
+}
+	:	^(TOK_BOOLEAN_VALUE_EXPRESSION
 			(bt=boolean_term
 			{
-				$io_pExpr = $bt.io_pExpr;
+				//Or list
+				$io_pBooleanExpr->AddExpr($bt.io_pBooleanExpr);
+				
 			})+)
 	;
 	
-boolean_term returns [PandaSQL::Expr *io_pExpr]
-	:	^(TOK_BOOLEAN_TERM KW_AND
+boolean_term returns [PandaSQL::BooleanExpr *io_pBooleanExpr]
+@init
+{
+	PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+	$io_pBooleanExpr = pDriver->CreateExprForBooleanList(true);
+}
+	:	^(TOK_BOOLEAN_TERM
 			(bf=boolean_factor
 			{
-				$io_pExpr = $bf.io_pExpr;
+				//And list
+				$io_pBooleanExpr->AddExpr($bf.io_pBooleanExpr);
 			}
 			)+)
 	;
 	
-boolean_factor returns [PandaSQL::Expr *io_pExpr]
+boolean_factor returns [PandaSQL::BooleanExpr *io_pBooleanExpr]
+@init
+{
+	
+}
 	:	^(TOK_BOOLEAN_FACTOR KW_NOT? bt=boolean_test)
 		{
-			$io_pExpr = $bt.io_pExpr;
+			$io_pBooleanExpr = $bt.io_pBooleanExpr;
 		}
 	;
 	
-boolean_test returns [PandaSQL::Expr *io_pExpr]
+boolean_test returns [PandaSQL::BooleanExpr *io_pBooleanExpr]
+@init
+{
+	
+}
 	:	^(TOK_BOOLEAN_TEST bp=boolean_primary (KW_IS KW_NOT? boolean_literal)?)
 		{
-			$io_pExpr = $bp.io_pExpr;
+			$io_pBooleanExpr = $bp.io_pBooleanExpr;
 		}
 	;
 	
-boolean_primary returns [PandaSQL::Expr *io_pExpr]
-	:	^(TOK_BOOLEAN_PRIMARY predicate)
+boolean_primary returns [PandaSQL::BooleanExpr *io_pBooleanExpr]
+@init
+{
+	PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+}
+	:	^(TOK_BOOLEAN_PRIMARY p=predicate)
+		{
+			$io_pBooleanExpr = pDriver->CreateExprForBooleanPrimary(*$p.io_pExpr);
+		}
 	|	^(TOK_BOOLEAN_PRIMARY bp=boolean_predicand)
 		{
-			$io_pExpr = $bp.io_pExpr;
+			$io_pBooleanExpr = pDriver->CreateExprForBooleanPrimary(*$bp.io_pExpr);
 		}
 	;
 	
 boolean_predicand returns [PandaSQL::Expr *io_pExpr]
 	:	bve=bool_value_expression
 		{
-			$io_pExpr = $bve.io_pExpr;
+			$io_pExpr = $bve.io_pBooleanExpr;
 		}
 	|	vep=value_expression_primary
 		{
@@ -414,13 +464,19 @@ boolean_predicand returns [PandaSQL::Expr *io_pExpr]
 //----------7 Query expressions BEGIN----------
 
 //7.1 <row value constructor>
-row_value_constructor_predicand
-	:	^(TOK_ROW_VALUE_CONSTRUCTOR_PREDICAND common_value_expression)
+row_value_constructor_predicand returns [PandaSQL::Expr *io_pExpr]
+	:	^(TOK_ROW_VALUE_CONSTRUCTOR_PREDICAND cve=common_value_expression)
+		{
+			$io_pExpr = $cve.io_pExpr;
+		}
 	;
 	
 //7.2 <row value expression>
-row_value_predicand
-	:	^(TOK_ROW_VALUE_PREDICAND row_value_constructor_predicand) 
+row_value_predicand returns [PandaSQL::Expr *io_pExpr]
+	:	^(TOK_ROW_VALUE_PREDICAND rvcp=row_value_constructor_predicand)
+		{
+			$io_pExpr = $rvcp.io_pExpr;
+		}
 	;
 	
 where_clause
@@ -435,7 +491,7 @@ where_clause
 		}
 	|	^(TOK_WHERE sc=search_condition)
 		{
-			pDriver->GetStatement().SetWhereClauseExpression(*$sc.io_pExpr);
+			pDriver->GetStatement().SetWhereClauseExpression($sc.io_pBooleanExpr);
 		}
 	;
 	
@@ -443,25 +499,35 @@ where_clause
 	
 //----------8 Predicates BEGIN----------
 
-predicate
-	:	^(TOK_PREDICATE comparison_predicate)
+predicate returns [PandaSQL::Expr *io_pExpr]
+	:	^(TOK_PREDICATE cp=comparison_predicate)
+		{
+			$io_pExpr = $cp.io_pExpr;
+		}
 	;
 	
-comparison_predicate
-	:	^(TOK_COMPARISON_PREDICATE comparison_op row_value_predicand row_value_predicand)
+comparison_predicate returns [PandaSQL::Expr *io_pExpr]
+@init
+{
+	PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+}
+	:	^(TOK_COMPARISON_PREDICATE co=comparison_op lv=row_value_predicand rv=row_value_predicand)
+		{
+			$io_pExpr = pDriver->CreateExprForBinaryOp(*$co.text, *$lv.io_pExpr, *$rv.io_pExpr);
+		}
 	;
 	
 comparison_op
 	:	EQUAL
 	;
 
-search_condition returns [PandaSQL::Expr *io_pExpr]
+search_condition returns [PandaSQL::BooleanExpr *io_pBooleanExpr]
 @init
 {
 }
 	:	^(TOK_SEARCH_CONDITION ble=bool_value_expression)
 		{
-			$io_pExpr = $ble.io_pExpr;
+			$io_pBooleanExpr = $ble.io_pBooleanExpr;
 		}
 	;
 

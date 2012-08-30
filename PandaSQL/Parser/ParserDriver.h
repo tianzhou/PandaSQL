@@ -7,6 +7,7 @@
 
 #include "VFS/File.h"
 
+#include "Utils/Expr/BooleanExpr.h"
 #include "Utils/Expr/Expr.h"
 #include "Utils/Join.h"
 #include "Utils/Predicate.h"
@@ -80,7 +81,7 @@ public:
 	Status Execute(bool loadTable);
 	void PrintStatement();
 
-	void SetWhereClauseExpression(const Expr &inWhereExpr);
+	void SetWhereClauseExpression(const BooleanExpr *inWhereExpr);
 
 private:
 	PandaDB *mpDB;
@@ -101,7 +102,7 @@ private:
 
 	std::string mIndexRef;
 
-	Expr mWhereExpr;
+	const BooleanExpr *mpWhereExpr;
 };
 
 class ParserDriver
@@ -119,13 +120,17 @@ public:
 
 	static void GetString(ANTLR3_BASE_TREE *tree, std::string *o_str);
 	static void GetNumber(ANTLR3_BASE_TREE *tree, int32_t *o_num);
+	static void GetStringFromAntlrString(const ANTLR3_STRING &inOpString, std::string *io_string);
 
 	static void GetExprForText(ANTLR3_BASE_TREE *tree, Expr *o_expr);
 	static void GetExprForNumber(ANTLR3_BASE_TREE *tree, Expr *o_expr);
 	static void GetExprForColumnDef(const ColumnQualifiedName &inQualifiedName, Expr *o_expr);
 
 	Expr* CreateExprForNumericLiteral(ANTLR3_BASE_TREE *numericTree);
-	//Expr* CreateExprForColumnReference(
+	Expr* CreateExprForBinaryOp(const ANTLR3_STRING &inOpString, const Expr &inLeftOperand, const Expr &inRightOperand);
+	Expr* CreateExprForColumnReference(const std::string &inTableName, const std::string &inColumnName);
+	BooleanExpr* CreateExprForBooleanPrimary(const Expr &inSubExpr);
+	BooleanExpr* CreateExprForBooleanList(bool isAndList);
 
 privileged:
 

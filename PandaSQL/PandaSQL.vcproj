@@ -523,6 +523,30 @@
 					Name="Expr"
 					>
 					<File
+						RelativePath=".\Utils\Expr\BinaryExpr.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Utils\Expr\BinaryExpr.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Utils\Expr\BooleanExpr.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Utils\Expr\BooleanExpr.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Utils\Expr\ColumnExpr.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Utils\Expr\ColumnExpr.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Utils\Expr\ConstantExpr.cpp"
 						>
 					</File>

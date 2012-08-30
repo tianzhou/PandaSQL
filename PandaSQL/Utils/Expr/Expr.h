@@ -49,12 +49,6 @@ public:
 	ColumnDef mColumnDef;
 };
 
-class ColumnExpr : public Expr
-{
-public:
-
-};
-
 }	// PandaSQL
 
 

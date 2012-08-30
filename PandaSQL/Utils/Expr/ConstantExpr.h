@@ -1,5 +1,5 @@
-#ifndef PANDASQL_EXPRESSION_H
-#define PANDASQL_EXPRESSION_H
+#ifndef PANDASQL_CONSTANT_EXPR_H
+#define PANDASQL_CONSTANT_EXPR_H
 
 #include "Expr.h"
 
@@ -45,4 +45,4 @@ private:
 }	// PandaSQL
 
 
-#endif //PANDASQL_EXPRESSION_H
+#endif //PANDASQL_CONSTANT_EXPR_H

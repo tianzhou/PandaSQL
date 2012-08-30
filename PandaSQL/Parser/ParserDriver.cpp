@@ -10,6 +10,9 @@
 
 #include "Utils/Common.h"
 #include "Utils/Debug.h"
+#include "Utils/Expr/BinaryExpr.h"
+#include "Utils/Expr/BooleanExpr.h"
+#include "Utils/Expr/ColumnExpr.h"
 #include "Utils/Expr/ConstantExpr.h"
 #include "Utils/Predicate.h"
 #include "Utils/Status.h"
@@ -30,6 +33,7 @@ Statement::Statement(PandaDB *io_pDB)
 mpDB(io_pDB)
 ,mStmtType(kStmtUnknown)
 ,mAllColumns(false)
+,mpWhereExpr(NULL)
 {
 }
 
@@ -254,9 +258,9 @@ void Statement::PrintStatement()
 	}
 }
 
-void Statement::SetWhereClauseExpression(const Expr &inWhereExpr)
+void Statement::SetWhereClauseExpression(const BooleanExpr *inWhereExpr)
 {
-	mWhereExpr = inWhereExpr;
+	mpWhereExpr = inWhereExpr;
 }
 
 /**************************************************
@@ -545,6 +549,11 @@ void ParserDriver::GetNumber(ANTLR3_BASE_TREE *tree, int32_t *o_num)
 	*o_num = atoi(tmpStr.c_str());
 }
 
+void ParserDriver::GetStringFromAntlrString(const ANTLR3_STRING &inOpString, std::string *io_string)
+{
+	*io_string = std::string((const char *)inOpString.chars, inOpString.len);
+}
+
 void ParserDriver::GetExprForText(ANTLR3_BASE_TREE *tree, Expr *o_expr)
 {
 	o_expr->mType = kExprText;
@@ -574,6 +583,67 @@ Expr* ParserDriver::CreateExprForNumericLiteral(ANTLR3_BASE_TREE *numericTree)
 	pNumericExpr->SetInt(number);
 
 	return pNumericExpr;
+}
+
+Expr* ParserDriver::CreateExprForBinaryOp(const ANTLR3_STRING &inOpString, const Expr &inLeftOperand, const Expr &inRightOperand)
+{
+	BinaryExpr *pBinaryExpr = new BinaryExpr();
+
+	BinaryExpr::BinaryOpType op;
+	std::string opString;
+	ParserDriver::GetStringFromAntlrString(inOpString, &opString);
+
+	if (opString == "=")
+	{
+		op = BinaryExpr::kBinaryEqual;
+	}
+	else
+	{
+
+	}
+
+	pBinaryExpr->SetOpType(op);
+	pBinaryExpr->SetLeftOperand(&inLeftOperand);
+	pBinaryExpr->SetRightOperand(&inRightOperand);
+
+	return pBinaryExpr;
+}
+
+Expr* ParserDriver::CreateExprForColumnReference(const std::string &inTableName, const std::string &inColumnName)
+{
+	ColumnExpr *pColumnExpr = new ColumnExpr();
+
+	pColumnExpr->SetColumnName(inColumnName);
+	pColumnExpr->SetTableName(inTableName);
+
+	return pColumnExpr;
+}
+
+BooleanExpr* ParserDriver::CreateExprForBooleanPrimary(const Expr &inSubExpr)
+{
+	BooleanExpr *pBooleanExpr = new BooleanExpr();
+
+	pBooleanExpr->AddExpr(&inSubExpr);
+	pBooleanExpr->SetType(BooleanExpr::kBooleanNormal);
+
+	return pBooleanExpr;
+}
+
+BooleanExpr* ParserDriver::CreateExprForBooleanList(bool isAndList)
+{
+	BooleanExpr *pBooleanExpr = new BooleanExpr();
+
+	if (isAndList)
+	{
+		pBooleanExpr->SetType(BooleanExpr::kBooleanAndList);
+	}
+	else
+	{
+		pBooleanExpr->SetType(BooleanExpr::kBooleanOrList);
+	}
+
+	return pBooleanExpr;
+
 }
 
 }	// namespace PandaSQL
