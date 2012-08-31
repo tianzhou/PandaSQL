@@ -575,6 +575,14 @@
 					RelativePath=".\Parser\ParserDriver.h"
 					>
 				</File>
+				<File
+					RelativePath=".\Parser\Statement.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Parser\Statement.h"
+					>
+				</File>
 				<Filter
 					Name="antlr"
 					>
