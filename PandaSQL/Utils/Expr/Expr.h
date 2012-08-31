@@ -8,6 +8,8 @@
 
 namespace PandaSQL
 {
+
+class ExprContext;
 	
 enum ExprType
 {
@@ -36,6 +38,8 @@ public:
 	void Eval(TupleDescElement inDescElement, TupleDataElement *io_data) const;
 
 	static void EvalExprList(const ExprList &inExprList, const TupleDesc &inTupleDesc, TupleData *io_tupleData);
+
+	virtual bool IsTrue(ExprContext *io_exprContext) const;
 
 	ExprType mType;
 

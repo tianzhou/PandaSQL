@@ -45,4 +45,9 @@ void Expr::EvalExprList(const ExprList &inExprList, const TupleDesc &inTupleDesc
 	}
 }
 
+bool Expr::IsTrue(ExprContext *io_exprContext) const
+{
+	return true;
+}
+
 }	// PandaSQL

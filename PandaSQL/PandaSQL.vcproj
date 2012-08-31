@@ -562,6 +562,14 @@
 						RelativePath=".\Utils\Expr\Expr.h"
 						>
 					</File>
+					<File
+						RelativePath=".\Utils\Expr\ExprContext.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Utils\Expr\ExprContext.h"
+						>
+					</File>
 				</Filter>
 			</Filter>
 			<Filter
