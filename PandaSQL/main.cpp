@@ -83,7 +83,9 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		//result = ReadSQLScript("./insert.txt", pVFS, &parserDriver);
 
-		result = ReadSQLScript("./select_where.txt", pVFS, &parserDriver);
+		result = ReadSQLScript("./select.txt", pVFS, &parserDriver);
+
+		//result = ReadSQLScript("./select_where.txt", pVFS, &parserDriver);
 #else
 
 		inQueryString = ("SELECT t1.field1, t2.field2 FROM t1;");

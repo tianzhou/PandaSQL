@@ -27,6 +27,9 @@ public:
 	ParserDriver(PandaDB *io_pDB);
 	~ParserDriver();
 
+	void CreateStatement();
+	void ReleaseStatement();
+
 	Status LoadFromFile(File *inFile);
 	Status ParseQuery(std::string inQueryString);
 	Status Execute();
@@ -49,8 +52,8 @@ public:
 
 privileged:
 
-	const Statement& GetStatement() const { return mStmt; }
-	Statement& GetStatement() { return mStmt; }
+	const Statement& GetStatement() const { return *mpStmt; }
+	Statement& GetStatement() { return *mpStmt; }
 
 private:
 
@@ -66,7 +69,7 @@ private:
 
 
 	PandaDB *mpDB;
-	Statement mStmt;
+	Statement *mpStmt;
 	
 	//True when we are reading statment from table file to load table def.
 	bool mLoadTable;

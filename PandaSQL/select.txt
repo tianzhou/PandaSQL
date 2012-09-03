@@ -1,7 +1,7 @@
-SELECT name
+SELECT *
 FROM Master
 ;
 
-SELECT name
+SELECT detail_id
 FROM Detail
 ;

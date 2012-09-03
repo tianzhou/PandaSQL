@@ -87,8 +87,7 @@ scope
 		std::string theStmt;
 		theStmt.assign((const char *)$stmt.text->chars);
 	
-		PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-		pDriver->GetStatement().SetOriginalStmtText(theStmt);
+		io_pDriver->GetStatement().SetOriginalStmtText(theStmt);
 	}
 }
 	:	ddl_stmt^ SEMI!

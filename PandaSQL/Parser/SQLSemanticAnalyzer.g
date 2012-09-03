@@ -26,6 +26,9 @@ scope
 {
 	$stmt::pDriver = io_pDriver;
 }
+@after
+{
+}
 	:	ddl_stmt
 	|	dml_stmt
 	;

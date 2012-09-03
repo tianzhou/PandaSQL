@@ -32,7 +32,7 @@ namespace PandaSQL
 ParserDriver::ParserDriver(PandaDB *io_pDB)
 :
 mpDB(io_pDB)
-,mStmt(io_pDB)
+,mpStmt(NULL)
 ,mLoadTable(false)
 {
 }
@@ -40,6 +40,21 @@ mpDB(io_pDB)
 ParserDriver::~ParserDriver()
 {
 
+}
+
+void ParserDriver::CreateStatement()
+{
+	PDASSERT(mpStmt == NULL);
+
+	mpStmt = new Statement(mpDB);
+}
+	
+void ParserDriver::ReleaseStatement()
+{
+	PDASSERT(mpStmt);
+
+	delete mpStmt;
+	mpStmt = NULL;
 }
 
 Status ParserDriver::LoadFromFile(File *inFile)
@@ -52,12 +67,12 @@ Status ParserDriver::LoadFromFile(File *inFile)
 
 	do
 	{
-		this->GetStatement().Clear();
-
 		result = inFile->ReadToDelimiter(offset, 512, ";", true, buf, &o_bytesRead);
 
 		if (o_bytesRead > 0)
 		{
+			this->CreateStatement();
+
 			buf[o_bytesRead] = '\0';
 			result = this->ParseQuery(buf);
 
@@ -65,6 +80,8 @@ Status ParserDriver::LoadFromFile(File *inFile)
 			{
 				result = this->Execute();
 			}
+
+			this->ReleaseStatement();
 		}
 
 		offset += o_bytesRead;
@@ -275,7 +292,7 @@ Status ParserDriver::ParseQuery(std::string inQueryString)
 
 	if (result.OK())
 	{
-		result = mStmt.Prepare();
+		result = this->GetStatement().Prepare();
 	}
 	
 	return result;
@@ -288,7 +305,7 @@ void ParserDriver::PrintCurrentState()
 
 Status ParserDriver::Execute()
 {
-	return mStmt.Execute(this->IsLoadTable());
+	return this->GetStatement().Execute(this->IsLoadTable());
 }
 
 void ParserDriver::GetString(ANTLR3_BASE_TREE *tree, std::string *o_str)
