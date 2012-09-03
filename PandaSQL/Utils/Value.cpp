@@ -16,7 +16,26 @@ mValueType(kUnknownType)
 
 bool Value::operator==(const Value &rhs) const
 {
-	return true;
+	bool result = true;
+
+	switch (mValueType)
+	{
+	case kInt:
+		{
+			result = (mNumber == rhs.GetAsNumber());
+			break;
+		}
+	case kText:
+		{
+			result = (mText == rhs.GetAsString());
+			break;
+		}
+	default:
+		PDASSERT(0);
+		break;
+	}
+
+	return result;
 }
 
 int32_t Value::GetAsNumber() const

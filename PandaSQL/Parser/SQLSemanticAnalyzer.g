@@ -131,7 +131,7 @@ create_index_stmt
 			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
 			pDriver->GetStatement().SetIndexRef(indexRef);
 			pDriver->GetStatement().AddTableRef(tableRef);
-			pDriver->GetStatement().AddColumnDefWithName(qualifiedName);
+			pDriver->GetStatement().AddColumnWithQualifiedName(qualifiedName);
 		}
 	;
 	
@@ -197,7 +197,7 @@ select_stmt
 	;
 	
 select_core
-	:	^(TOK_SELECT_CORE set_qualifier select_list from_clause? where_clause? group_by_clause?)
+	:	^(TOK_SELECT_CORE set_qualifier from_clause select_list where_clause? group_by_clause?)
 	;
 	
 set_qualifier
@@ -223,7 +223,7 @@ select_list
 			(column_reference[&qualifiedName]
 			{
 				PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-				pDriver->GetStatement().AddColumnDefWithName(qualifiedName);
+				pDriver->GetStatement().AddColumnWithQualifiedName(qualifiedName);
 			}
 			)+
 		 )
@@ -354,13 +354,12 @@ column_reference[PandaSQL::ColumnQualifiedName *o_columnQualifiedName]
 column_reference_expr returns [PandaSQL::Expr *io_pExpr]
 @init
 {
-	std::string columnName;
-	std::string tableName;
+	PandaSQL::ColumnQualifiedName qualifiedName;
 	PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
 }
-	:	^(TOK_COLUMN_REF identifier[&columnName] identifier[&tableName]?)
+	:	column_reference[&qualifiedName]
 		{
-			io_pExpr = pDriver->CreateExprForColumnReference(tableName, columnName);
+			io_pExpr = pDriver->CreateExprForColumnReference(qualifiedName);
 		}
 	;
 
@@ -653,7 +652,7 @@ set_clause
 	:	^(TOK_UPDATE_SET column_reference[&qualifiedName] expr[&theExpr])
 		{
 			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-			pDriver->GetStatement().AddColumnDefWithName(qualifiedName);
+			pDriver->GetStatement().AddColumnWithQualifiedName(qualifiedName);
 			pDriver->GetStatement().AddExprRef(theExpr);
 		}
 	;
@@ -665,11 +664,16 @@ insert_stmt
 	PandaSQL::ColumnQualifiedName qualifiedName;
 	PandaSQL::Expr theExpr;
 }
-	:	^(TOK_INSERT_STMT table_ref[&tableRef]
+	:	^(TOK_INSERT_STMT
+			(table_ref[&tableRef]
+			{
+				PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+				pDriver->GetStatement().AddTableRef(tableRef);
+			})
 			(column_reference[&qualifiedName]
 			{
 				PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-				pDriver->GetStatement().AddColumnDefWithName(qualifiedName);
+				pDriver->GetStatement().AddColumnWithQualifiedName(qualifiedName);
 			})+
 			TOK_INSERT_VALUES
 			(expr[&theExpr]
@@ -677,10 +681,6 @@ insert_stmt
 				PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
 				pDriver->GetStatement().AddExprRef(theExpr);
 			})+)
-		{
-			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-			pDriver->GetStatement().AddTableRef(tableRef);
-		}
 	;
 	
 delete_stmt
@@ -756,6 +756,7 @@ expr[PandaSQL::Expr *o_expr]
 		}
 	|	column_reference[&qualifiedName]
 		{
-			PandaSQL::ParserDriver::GetExprForColumnDef(qualifiedName, o_expr);
+			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+			pDriver->GetStatement().AddColumnWithQualifiedName(qualifiedName);
 		}
 	;

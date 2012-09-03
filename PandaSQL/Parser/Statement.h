@@ -55,7 +55,7 @@ public:
 	//For select_stmt, selected column[1..N]
 	//For insert_stmt, affected column[1..N]
 	//For update_stmt, affected column[1..N]
-	void AddColumnDefWithName(const ColumnQualifiedName &inQualifiedName);
+	void AddColumnWithQualifiedName(const ColumnQualifiedName &inQualifiedName);
 
 	//For cerate_table_stmt, column def[1..N]
 	void AddColumnDef(const ColumnDef &inDef);
@@ -75,6 +75,11 @@ public:
 	void SetWhereClauseExpression(const BooleanExpr *inWhereExpr);
 
 private:
+
+	friend class ParserDriver;
+
+	const Table::TableRefList GetTableRefList() const { return mTableRefs; }
+
 	PandaDB *mpDB;
 
 	std::string	mOrigStmtText;

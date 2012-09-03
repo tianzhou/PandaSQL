@@ -3,6 +3,8 @@
 
 #include "Expr.h"
 
+#include "Catalog/Column.h"
+
 namespace PandaSQL
 {
 
@@ -13,13 +15,11 @@ public:
 	ColumnExpr();
 	~ColumnExpr();
 
-	std::string GetColumnName() const;
-	void SetColumnName(const std::string &inColumnName);
+	ColumnQualifiedName GetQualifiedColumnName() const;
+	void SetQualifiedColumnName(const ColumnQualifiedName &inQualifiedColumnName);
 
-	std::string GetTableName() const;
-	void SetTableName(const std::string &inTableName);
-
-	virtual Status GetValue(ExprContext *io_exprContext, Value *io_value);
+	virtual bool IsTrue(ExprContext *io_exprContext) const;
+	virtual Status GetValue(ExprContext *io_exprContext, Value *io_value) const;
 
 private:
 	

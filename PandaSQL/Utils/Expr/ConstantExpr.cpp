@@ -10,7 +10,6 @@ namespace PandaSQL
 ConstantExpr::ConstantExpr()
 :
 Expr(kExprConstant)
-,mConstantType(kConstantUnknown)
 {
 }
 
@@ -18,38 +17,38 @@ ConstantExpr::~ConstantExpr()
 {
 }
 
-ConstantExpr::ConstantType ConstantExpr::GetType() const
+int32_t ConstantExpr::GetNumber() const
 {
-	return mConstantType;
+	return mConstantValue.GetAsNumber();
 }
 
-void ConstantExpr::SetType(ConstantExpr::ConstantType inType)
+void ConstantExpr::SetNumber(int32_t inNumberValue)
 {
-	mConstantType = inType;
-}
-
-int32_t ConstantExpr::GetInt() const
-{
-	PDASSERT(mConstantType == kConstantInt);
-	return mIntValue;
-}
-
-void ConstantExpr::SetInt(int32_t inIntValue)
-{
-	this->SetType(kConstantInt);
-	mIntValue = inIntValue;
+	mConstantValue.SetAsNumber(inNumberValue);
 }
 	
 std::string ConstantExpr::GetText() const
 {
-	PDASSERT(mConstantType == kConstantText);
-	return mTextValue;
+	return mConstantValue.GetAsString();
 }
 
 void ConstantExpr::SetText(const std::string inTextValue)
 {
-	this->SetType(kConstantText);
-	mTextValue = inTextValue;
+	mConstantValue.SetAsString(inTextValue);
+}
+
+bool ConstantExpr::IsTrue(ExprContext *io_exprContext) const
+{
+	return true;
+}
+
+Status ConstantExpr::GetValue(ExprContext *io_exprContext, Value *io_value) const
+{
+	Status result;
+
+	*io_value = mConstantValue;
+
+	return result;
 }
 
 }	// PandaSQL

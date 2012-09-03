@@ -68,11 +68,16 @@ void Statement::AddExprRef(const Expr &inExpr)
 	mSetExprList.push_back(inExpr);
 }
 
-void Statement::AddColumnDefWithName(const ColumnQualifiedName &inQualifiedName)
+void Statement::AddColumnWithQualifiedName(const ColumnQualifiedName &inQualifiedName)
 {
 	ColumnDef theColumnDef;
-	theColumnDef.qualifiedName = inQualifiedName;
-	mColumnDefs.push_back(theColumnDef);
+
+	Status result = mpDB->GetColumnDefFromQualifiedName(mTableRefs, inQualifiedName, &theColumnDef);
+	
+	if (result.OK())
+	{
+		mColumnDefs.push_back(theColumnDef);
+	}
 }
 
 void Statement::AddColumnDef(const ColumnDef &inDef)
@@ -143,7 +148,7 @@ Status Statement::Prepare()
 
 			for (; iter != mColumnDefs.end(); iter++)
 			{	
-				result = mpDB->AmendColumnDef(mTableRefs, &(*iter));				
+				//result = mpDB->AmendColumnDef(mTableRefs, &(*iter));				
 			}
 		}
 	}
@@ -190,7 +195,7 @@ Status Statement::Execute(bool loadTable)
 			//mJoinList.push_back(join2);
 
 			TuplePredicate tuplePredicate;
-			result = mpDB->SelectData(mTableRefs, mJoinList, mColumnDefs, NULL);
+			result = mpDB->SelectData(mTableRefs, mJoinList, mColumnDefs, mpWhereExpr);
 			break;
 		}
 	case kStmtDelete:

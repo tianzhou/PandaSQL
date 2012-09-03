@@ -19,9 +19,14 @@ tableName(inTableName)
 
 bool ColumnQualifiedName::operator<(const ColumnQualifiedName &rhs) const
 {
-	return &this->tableName < &rhs.tableName;
+	if (this->tableName == rhs.tableName)
+	{
+		return this->columnName < rhs.columnName;
+	}
+
+	return this->tableName < rhs.tableName;
 }
-	
+
 ColumnDef::ColumnDef()
 :
 qualifiedName()

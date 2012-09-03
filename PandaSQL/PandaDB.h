@@ -49,7 +49,7 @@ public:
 	uint32_t GetTableIDByName(const std::string &inTableName) const;
 	uint32_t GetColumnIDByName(const std::string &inColumnName) const;
 
-	Status AmendColumnDef(const Table::TableRefList &inTableRefList, ColumnDef *io_columnDef) const;
+	Status GetColumnDefFromQualifiedName(const Table::TableRefList &inTableRefList, const ColumnQualifiedName &inQualifiedName, ColumnDef *io_columnDef) const;
 
 private:
 

@@ -4,18 +4,25 @@
 
 #include "Access/Iterator.h"
 
-#include "Catalog/Column.h"
-
 #include "Utils/Debug.h"
 
 namespace PandaSQL
 {
 
-void ExprContext::UpdateColumnWithTupleData(const ColumnQualifiedName &inColumnQualifiedName, const Value &inValue)
+void ExprContext::UpdateTupleValue(const ColumnDefList &inColumnDefList, const ValueList &inValueList)
 {
-	PDASSERT(mColumnValueMap.find(inColumnQualifiedName) == mColumnValueMap.end());
+	PDASSERT(inColumnDefList.size() == inValueList.size());
 
-	mColumnValueMap.insert(ColumnValuePair(inColumnQualifiedName, inValue));
+	ColumnDefList::const_iterator iter = inColumnDefList.begin();
+	ValueList::const_iterator iter2 = inValueList.begin();
+
+	while (iter != inColumnDefList.end())
+	{
+		mColumnValueMap[iter->qualifiedName] = *iter2;
+	
+		iter++;
+		iter2++;
+	}	
 }
 
 void ExprContext::GetColumnValue(const ColumnQualifiedName &inColumnQualifiedName, Value *io_value) const

@@ -1,6 +1,8 @@
 #ifndef PANDASQL_EXPR_CONTEXT_H
 #define PANDASQL_EXPR_CONTEXT_H
 
+#include "Catalog/Column.h"
+
 #include "Utils/Value.h"
 
 #include <map>
@@ -9,21 +11,17 @@
 namespace PandaSQL
 {
 
-struct ColumnDef;
-struct ColumnQualifiedName;
-
 class ExprContext
 {
 
 public:
 
-	void UpdateColumnWithTupleData(const ColumnQualifiedName &inColumnQualifiedName, const Value &inValue); 
+	void UpdateTupleValue(const ColumnDefList &inColumnDefList, const ValueList &inValueList); 
 	void GetColumnValue(const ColumnQualifiedName &inColumnQualifiedName, Value *io_value) const;
 
 private:
 
-	typedef std::map<const ColumnQualifiedName, const Value> ColumnValueMap;
-	typedef std::pair<const ColumnQualifiedName, const Value> ColumnValuePair;
+	typedef std::map<ColumnQualifiedName, Value> ColumnValueMap;
 
 	ColumnValueMap mColumnValueMap;
 	

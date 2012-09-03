@@ -328,12 +328,6 @@ void ParserDriver::GetExprForNumber(ANTLR3_BASE_TREE *tree, Expr *o_expr)
 	GetNumber(tree, &o_expr->mNumberValue);
 }
 
-void ParserDriver::GetExprForColumnDef(const ColumnQualifiedName &inQualifiedName, Expr *o_expr)
-{
-	//o_expr->mType = kExprColumnDef;
-	o_expr->mColumnDef.qualifiedName = inQualifiedName;
-}
-
 Expr* ParserDriver::CreateExprForNumericLiteral(ANTLR3_BASE_TREE *numericTree)
 {
 	ConstantExpr *pNumericExpr = new ConstantExpr();
@@ -342,7 +336,7 @@ Expr* ParserDriver::CreateExprForNumericLiteral(ANTLR3_BASE_TREE *numericTree)
 
 	ParserDriver::GetNumber(numericTree, &number);
 
-	pNumericExpr->SetInt(number);
+	pNumericExpr->SetNumber(number);
 
 	return pNumericExpr;
 }
@@ -371,12 +365,18 @@ Expr* ParserDriver::CreateExprForBinaryOp(const ANTLR3_STRING &inOpString, const
 	return pBinaryExpr;
 }
 
-Expr* ParserDriver::CreateExprForColumnReference(const std::string &inTableName, const std::string &inColumnName)
+Expr* ParserDriver::CreateExprForColumnReference(const ColumnQualifiedName &inColumnQualifiedName)
 {
-	ColumnExpr *pColumnExpr = new ColumnExpr();
+	ColumnExpr *pColumnExpr = NULL;
 
-	pColumnExpr->SetColumnName(inColumnName);
-	pColumnExpr->SetTableName(inTableName);
+	ColumnDef theColumnDef;
+	Status result = mpDB->GetColumnDefFromQualifiedName(this->GetStatement().GetTableRefList(), inColumnQualifiedName, &theColumnDef);
+
+	if (result.OK())
+	{
+		pColumnExpr = new ColumnExpr();
+		pColumnExpr->SetQualifiedColumnName(theColumnDef.qualifiedName);
+	}
 
 	return pColumnExpr;
 }
@@ -405,7 +405,6 @@ BooleanExpr* ParserDriver::CreateExprForBooleanList(bool isAndList)
 	}
 
 	return pBooleanExpr;
-
 }
 
 }	// namespace PandaSQL

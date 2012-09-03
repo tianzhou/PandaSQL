@@ -5,6 +5,8 @@
 
 #include "Statement.h"
 
+#include "Catalog/Column.h"
+
 #include "VFS/File.h"
 
 #include "Utils/Expr/BooleanExpr.h"
@@ -38,11 +40,10 @@ public:
 
 	static void GetExprForText(ANTLR3_BASE_TREE *tree, Expr *o_expr);
 	static void GetExprForNumber(ANTLR3_BASE_TREE *tree, Expr *o_expr);
-	static void GetExprForColumnDef(const ColumnQualifiedName &inQualifiedName, Expr *o_expr);
 
 	Expr* CreateExprForNumericLiteral(ANTLR3_BASE_TREE *numericTree);
 	Expr* CreateExprForBinaryOp(const ANTLR3_STRING &inOpString, const Expr &inLeftOperand, const Expr &inRightOperand);
-	Expr* CreateExprForColumnReference(const std::string &inTableName, const std::string &inColumnName);
+	Expr* CreateExprForColumnReference(const ColumnQualifiedName &inColumnQualifiedName);
 	BooleanExpr* CreateExprForBooleanPrimary(const Expr &inSubExpr);
 	BooleanExpr* CreateExprForBooleanList(bool isAndList);
 

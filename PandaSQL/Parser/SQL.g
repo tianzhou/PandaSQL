@@ -156,7 +156,7 @@ select_stmt
 	;
 	
 select_core
-	:	KW_SELECT set_qualifier select_list from_clause? where_clause? group_by_clause? -> ^(TOK_SELECT_CORE set_qualifier select_list from_clause? where_clause? group_by_clause?)
+	:	KW_SELECT set_qualifier select_list from_clause where_clause? group_by_clause? -> ^(TOK_SELECT_CORE set_qualifier from_clause select_list where_clause? group_by_clause?)
 	;
 	
 set_qualifier

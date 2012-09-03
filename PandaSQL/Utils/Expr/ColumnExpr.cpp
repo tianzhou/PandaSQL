@@ -18,27 +18,22 @@ ColumnExpr::~ColumnExpr()
 {
 }
 
-std::string ColumnExpr::GetColumnName() const
+ColumnQualifiedName ColumnExpr::GetQualifiedColumnName() const
 {
-	return mQualifiedColumnName.columnName;
+	return mQualifiedColumnName;
 }
 
-void ColumnExpr::SetColumnName(const std::string &inColumnName)
+void ColumnExpr::SetQualifiedColumnName(const ColumnQualifiedName &inQualifiedColumnName)
 {
-	mQualifiedColumnName.columnName = inColumnName;
+	mQualifiedColumnName = inQualifiedColumnName;
 }
 
-std::string ColumnExpr::GetTableName() const
+bool ColumnExpr::IsTrue(ExprContext *io_exprContext) const
 {
-	return mQualifiedColumnName.tableName;
+	return true;
 }
 
-void ColumnExpr::SetTableName(const std::string &inTableName)
-{
-	mQualifiedColumnName.tableName = inTableName;
-}
-
-Status ColumnExpr::GetValue(ExprContext *io_exprContext, Value *io_value)
+Status ColumnExpr::GetValue(ExprContext *io_exprContext, Value *io_value) const
 {
 	Status result;
 

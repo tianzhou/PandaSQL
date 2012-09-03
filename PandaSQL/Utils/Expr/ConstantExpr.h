@@ -3,6 +3,8 @@
 
 #include "Expr.h"
 
+#include "Utils/Value.h"
+
 namespace PandaSQL
 {
 
@@ -22,24 +24,20 @@ public:
 	ConstantExpr();
 	~ConstantExpr();
 
-	ConstantType GetType() const;
-	void SetType(ConstantType inType);
-
-	int32_t GetInt() const;
-	void SetInt(int32_t inIntValue);
+	int32_t GetNumber() const;
+	void SetNumber(int32_t inNumberValue);
 	
 	std::string GetText() const;
 	void SetText(const std::string inTextValue);
+
+	virtual bool IsTrue(ExprContext *io_exprContext) const;
+	virtual Status GetValue(ExprContext *io_exprContext, Value *io_value) const;
 
 private:
 
 	ConstantType mConstantType;
 	
-	//mConstantType == kConstantInt
-	int32_t mIntValue;
-
-	//mConstantType == kConstantText
-	std::string mTextValue;
+	Value mConstantValue;
 };
 
 }	// PandaSQL

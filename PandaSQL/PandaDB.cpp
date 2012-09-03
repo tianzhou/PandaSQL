@@ -187,6 +187,7 @@ Status PandaDB::SelectData(const Table::TableRefList &tableList, const JoinList 
 			ValueList tupleValue;
 			ValueList projectTupleValue;
 			ExprContext exprContext;
+
 			while (theIter->Valid())
 			{
 				result = theIter->GetValue(&tupleValue);
@@ -195,6 +196,8 @@ Status PandaDB::SelectData(const Table::TableRefList &tableList, const JoinList 
 				{
 					break;
 				}
+
+				exprContext.UpdateTupleValue(allColumnList, tupleValue);
 
 				if (!inWhereExpr || inWhereExpr->IsTrue(&exprContext))
 				{
@@ -290,13 +293,13 @@ Status PandaDB::SelectData(const Table::TableRefList &tableList, const JoinList 
 	return result;
 }
 
-Status PandaDB::AmendColumnDef(const Table::TableRefList &inTableRefList, ColumnDef *io_columnDef) const
+Status PandaDB::GetColumnDefFromQualifiedName(const Table::TableRefList &inTableRefList, const ColumnQualifiedName &inQualifiedName, ColumnDef *io_columnDef) const
 {
 	PDASSERT(io_columnDef);
 
 	Status result;
 
-	if (io_columnDef->qualifiedName.tableName.empty())
+	if (inQualifiedName.tableName.empty())
 	{
 		Table::TableRefList::const_iterator iter = inTableRefList.begin();
 
@@ -308,7 +311,7 @@ Status PandaDB::AmendColumnDef(const Table::TableRefList &inTableRefList, Column
 
 			if (result.OK())
 			{
-				Status localStatus = theTable->GetColumnByName(io_columnDef->qualifiedName.columnName, io_columnDef);
+				Status localStatus = theTable->GetColumnByName(inQualifiedName.columnName, io_columnDef);
 
 				if (localStatus.OK())
 				{
@@ -328,7 +331,7 @@ Status PandaDB::AmendColumnDef(const Table::TableRefList &inTableRefList, Column
 
 		for (; iter != inTableRefList.end(); iter++)
 		{
-			if (*iter == io_columnDef->qualifiedName.tableName)
+			if (*iter == inQualifiedName.tableName)
 			{
 				Table *theTable;
 
@@ -336,7 +339,7 @@ Status PandaDB::AmendColumnDef(const Table::TableRefList &inTableRefList, Column
 
 				if (result.OK())
 				{
-					Status localStatus = theTable->GetColumnByName(io_columnDef->qualifiedName.columnName, io_columnDef);
+					Status localStatus = theTable->GetColumnByName(inQualifiedName.columnName, io_columnDef);
 
 					if (!localStatus.OK())
 					{
