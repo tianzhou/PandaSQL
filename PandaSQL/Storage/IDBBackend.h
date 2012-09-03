@@ -3,6 +3,7 @@
 
 #include "Access/Tuple.h"
 
+#include "Catalog/Column.h"
 #include "Catalog/Table.h"
 
 #include "Utils/Join.h"
@@ -12,7 +13,7 @@
 namespace PandaSQL
 {
 
-class Iterator;
+class TupleIterator;
 
 class IDBBackend
 {
@@ -44,7 +45,7 @@ public:
 	//virtual Status InsertRecord(const TupleData &inTuple) = 0;
 	//virtual Status FindFirstRecordWithPredicate(const Predicate *inPredicate, Iterator **o_iterator) = 0;
 
-	virtual Iterator* CreateScanIterator(const std::string &tableName, const TupleDesc &inTupleDesc, const TuplePredicate *inTuplePredicate = NULL) = 0;
+	virtual TupleIterator* CreateScanIterator(const std::string &tableName, const ColumnDefList &inColumnDefList, const TuplePredicate *inTuplePredicate = NULL) = 0;
 
 protected:
 	IDBBackend(const std::string &inRootPath);

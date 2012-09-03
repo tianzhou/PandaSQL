@@ -288,9 +288,9 @@ Status BDBBackend::SelectData(const std::string &tableName, const ColumnDefList 
 	return result;
 }
 
-Iterator* BDBBackend::CreateScanIterator(const std::string &tableName, const TupleDesc &inTupleDesc, const TuplePredicate *inTuplePredicate /*= NULL*/)
+TupleIterator* BDBBackend::CreateScanIterator(const std::string &tableName, const ColumnDefList &inColumnDefList, const TuplePredicate *inTuplePredicate /*= NULL*/)
 {
-	Iterator *result = NULL;
+	TupleIterator *result = NULL;
 
 	DB *pTable = NULL;
 	
@@ -298,7 +298,7 @@ Iterator* BDBBackend::CreateScanIterator(const std::string &tableName, const Tup
 
 	if (localResult.OK())
 	{
-		result = new BDBScanIterator(inTupleDesc, inTuplePredicate, pTable);
+		result = new BDBScanIterator(inColumnDefList, pTable);
 	}
 
 	return result;

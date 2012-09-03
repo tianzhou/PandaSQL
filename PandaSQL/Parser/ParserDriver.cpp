@@ -318,19 +318,19 @@ void ParserDriver::GetStringFromAntlrString(const ANTLR3_STRING &inOpString, std
 
 void ParserDriver::GetExprForText(ANTLR3_BASE_TREE *tree, Expr *o_expr)
 {
-	o_expr->mType = kExprText;
+	//o_expr->mType = kExprText;
 	GetString(tree, &o_expr->mTextValue);
 }
 
 void ParserDriver::GetExprForNumber(ANTLR3_BASE_TREE *tree, Expr *o_expr)
 {
-	o_expr->mType = kExprNumber;
+	//o_expr->mType = kExprNumber;
 	GetNumber(tree, &o_expr->mNumberValue);
 }
 
 void ParserDriver::GetExprForColumnDef(const ColumnQualifiedName &inQualifiedName, Expr *o_expr)
 {
-	o_expr->mType = kExprColumnDef;
+	//o_expr->mType = kExprColumnDef;
 	o_expr->mColumnDef.qualifiedName = inQualifiedName;
 }
 

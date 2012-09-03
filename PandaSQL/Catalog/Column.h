@@ -22,6 +22,16 @@ struct ColumnValue
 
 typedef std::vector<ColumnValue> ColumnValueList;
 
+struct ColumnQualifiedName
+{
+	std::string tableName;
+	std::string columnName;
+
+	ColumnQualifiedName();
+	ColumnQualifiedName(const std::string inTableName, const std::string inColumnName);
+	bool operator<(const ColumnQualifiedName &rhs) const;
+};
+
 struct ColumnDef
 {
 	ColumnQualifiedName qualifiedName;

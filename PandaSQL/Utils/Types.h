@@ -45,12 +45,6 @@ enum ConstraintType
 	kConstraintNotNULL = 3,
 };
 
-struct ColumnQualifiedName
-{
-	std::string tableName;
-	std::string columnName;
-};
-
 enum StorageType
 {
 	kCVS,

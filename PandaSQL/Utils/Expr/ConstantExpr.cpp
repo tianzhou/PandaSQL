@@ -9,7 +9,8 @@ namespace PandaSQL
 
 ConstantExpr::ConstantExpr()
 :
-mConstantType(kConstantUnknown)
+Expr(kExprConstant)
+,mConstantType(kConstantUnknown)
 {
 }
 

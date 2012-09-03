@@ -4,12 +4,14 @@
 #include "Access/Tuple.h"
 #include "Catalog/Column.h"
 
+#include "Utils/Status.h"
 #include "Utils/Types.h"
 
 namespace PandaSQL
 {
 
 class ExprContext;
+class Value;
 	
 enum ExprType
 {
@@ -30,18 +32,28 @@ public:
 
 	enum
 	{
-		kExprColumnRef,
+		kExprUnknown = 0,
+		kExprColumnRef = 1,
+		kExprConstant = 2,
+		kExprBoolean = 3,
+		kExprBinary = 4
 	};
 
 	typedef uint8_t ExprType;
+
+	Expr();
+
+	Expr(ExprType inExprType);
 
 	void Eval(TupleDescElement inDescElement, TupleDataElement *io_data) const;
 
 	static void EvalExprList(const ExprList &inExprList, const TupleDesc &inTupleDesc, TupleData *io_tupleData);
 
 	virtual bool IsTrue(ExprContext *io_exprContext) const;
+	virtual Status GetValue(ExprContext *io_exprContext, Value *io_value) const;
 
-	ExprType mType;
+
+	ExprType mExprType;
 
 	//type == kExprNumber
 	int32_t mNumberValue;
@@ -51,6 +63,10 @@ public:
 
 	//type == kExprColumnDef
 	ColumnDef mColumnDef;
+
+protected:
+
+	
 };
 
 }	// PandaSQL

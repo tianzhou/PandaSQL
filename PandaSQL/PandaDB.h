@@ -13,10 +13,10 @@
 namespace PandaSQL
 {
 
-class IVFS;
+class BooleanExpr;
 class File;
-class TuplePredicate;
 class IDBBackend;
+class IVFS;
 
 class PandaDB
 {
@@ -40,8 +40,8 @@ public:
 	Status OpenTable(const std::string &tableName);
 
 	Status InsertData(const std::string &tableName, const ColumnDefList &columnList, const ExprList &columnExprList);
-	Status DeleteData(const std::string &tableName, const TuplePredicate *inTuplePredicate = NULL);
-	Status SelectData(const Table::TableRefList &tableList, const JoinList &joinList, const ColumnDefList &projectColumnList, const TuplePredicate *inTuplePredicate = NULL);
+	Status DeleteData(const std::string &tableName, const BooleanExpr *inBooleanExpr = NULL);
+	Status SelectData(const Table::TableRefList &tableList, const JoinList &joinList, const ColumnDefList &projectColumnList, const BooleanExpr *inWhereExpr = NULL);
 
 	Status GetTableByName(const std::string &name, Table **o_table) const;
 

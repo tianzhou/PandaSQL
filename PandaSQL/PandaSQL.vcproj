@@ -512,6 +512,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Utils\Value.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Utils\Value.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Utils\WinUtils.cpp"
 					>
 				</File>
@@ -993,6 +1001,14 @@
 				</File>
 				<File
 					RelativePath=".\Access\Tuple.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Access\TupleIterator.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Access\TupleIterator.h"
 					>
 				</File>
 			</Filter>

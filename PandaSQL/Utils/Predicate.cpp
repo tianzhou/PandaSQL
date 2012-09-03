@@ -161,49 +161,49 @@ void PredicateItem::Print(uint32_t level) const
 
 	identation += "  ";
 
-	if (mLeftExpr.mType == kExprNumber)
-	{
-		std::cout << identation << mLeftExpr.mNumberValue << std::endl;
-	}
-	else if (mLeftExpr.mType == kExprText)
-	{
-		std::cout << identation << mLeftExpr.mTextValue << std::endl;
-	}
-	else if (mLeftExpr.mType == kExprColumnDef)
-	{
-		std::cout << identation << mLeftExpr.mColumnDef.qualifiedName.tableName << "." << mLeftExpr.mColumnDef.qualifiedName.columnName << std::endl;
-	}
+	//if (mLeftExpr.mType == kExprNumber)
+	//{
+	//	std::cout << identation << mLeftExpr.mNumberValue << std::endl;
+	//}
+	//else if (mLeftExpr.mType == kExprText)
+	//{
+	//	std::cout << identation << mLeftExpr.mTextValue << std::endl;
+	//}
+	//else if (mLeftExpr.mType == kExprColumnDef)
+	//{
+	//	std::cout << identation << mLeftExpr.mColumnDef.qualifiedName.tableName << "." << mLeftExpr.mColumnDef.qualifiedName.columnName << std::endl;
+	//}
 
-	if (mRightExpr.mType == kExprNumber)
-	{
-		std::cout << identation << mRightExpr.mNumberValue << std::endl;
-	}
-	else if (mRightExpr.mType == kExprText)
-	{
-		std::cout << identation << mRightExpr.mTextValue << std::endl;
-	}
-	else if (mRightExpr.mType == kExprColumnDef)
-	{
-		std::cout << identation << mRightExpr.mColumnDef.qualifiedName.tableName << "." << mRightExpr.mColumnDef.qualifiedName.columnName << std::endl;
-	}
+	//if (mRightExpr.mType == kExprNumber)
+	//{
+	//	std::cout << identation << mRightExpr.mNumberValue << std::endl;
+	//}
+	//else if (mRightExpr.mType == kExprText)
+	//{
+	//	std::cout << identation << mRightExpr.mTextValue << std::endl;
+	//}
+	//else if (mRightExpr.mType == kExprColumnDef)
+	//{
+	//	std::cout << identation << mRightExpr.mColumnDef.qualifiedName.tableName << "." << mRightExpr.mColumnDef.qualifiedName.columnName << std::endl;
+	//}
 }
 
 Status PredicateItem::Prepare(const PandaDB &inDB, const Table::TableRefList &inTableRefList)
 {
 	Status result;
 
-	if (mLeftExpr.mType == kExprColumnDef)
-	{
-		result = inDB.AmendColumnDef(inTableRefList, &mLeftExpr.mColumnDef);
-	}
+	//if (mLeftExpr.mType == kExprColumnDef)
+	//{
+	//	result = inDB.AmendColumnDef(inTableRefList, &mLeftExpr.mColumnDef);
+	//}
 
-	if (result.OK())
-	{
-		if (mRightExpr.mType == kExprColumnDef)
-		{
-			result = inDB.AmendColumnDef(inTableRefList, &mRightExpr.mColumnDef);
-		}
-	}
+	//if (result.OK())
+	//{
+	//	if (mRightExpr.mType == kExprColumnDef)
+	//	{
+	//		result = inDB.AmendColumnDef(inTableRefList, &mRightExpr.mColumnDef);
+	//	}
+	//}
 
 	return result;
 }

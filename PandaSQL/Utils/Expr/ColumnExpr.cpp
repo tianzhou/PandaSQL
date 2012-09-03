@@ -2,12 +2,15 @@
 
 #include "ColumnExpr.h"
 
+#include "Utils/Expr/ExprContext.h"
 #include "Utils/Debug.h"
 
 namespace PandaSQL
 {
 
 ColumnExpr::ColumnExpr()
+:
+Expr(kExprColumnRef)
 {
 }
 
@@ -17,22 +20,31 @@ ColumnExpr::~ColumnExpr()
 
 std::string ColumnExpr::GetColumnName() const
 {
-	return mColumnName;
+	return mQualifiedColumnName.columnName;
 }
 
 void ColumnExpr::SetColumnName(const std::string &inColumnName)
 {
-	mColumnName = inColumnName;
+	mQualifiedColumnName.columnName = inColumnName;
 }
 
 std::string ColumnExpr::GetTableName() const
 {
-	return mTableName;
+	return mQualifiedColumnName.tableName;
 }
 
 void ColumnExpr::SetTableName(const std::string &inTableName)
 {
-	mTableName = inTableName;
+	mQualifiedColumnName.tableName = inTableName;
+}
+
+Status ColumnExpr::GetValue(ExprContext *io_exprContext, Value *io_value)
+{
+	Status result;
+
+	io_exprContext->GetColumnValue(mQualifiedColumnName, io_value);
+
+	return result;
 }
 
 }	// PandaSQL

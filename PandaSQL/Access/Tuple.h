@@ -5,11 +5,13 @@
 
 #include "Utils/Status.h"
 #include "Utils/Types.h"
+#include "Utils/Value.h"
 
 #include <vector>
 
 namespace PandaSQL
 {
+
 
 //class TupleDesc
 //{
@@ -47,15 +49,15 @@ typedef std::vector<TupleDataElement> TupleData;
 
 void TupleElementToString(const TupleDescElement &descElement, const TupleDataElement &dataElement, std::string *o_string);
 void TupleToString(const TupleDesc &desc, const TupleData &data, std::string *o_string);
-void StringToTupleElement(const TupleDescElement &descElement, const std::string &inString, uint32_t *io_offset, TupleDataElement *o_dataElement);
-void StringToTuple(const TupleDesc &desc, const std::string &inString, TupleData *o_data);
+void TupleStringToValue(const ColumnDef &inColumnDef, const std::string &inString, uint32_t *io_offset, Value *o_value);
+void TupleStringToValueList(const ColumnDefList &inColumnDefList, const std::string &inString, ValueList *o_valueList);
 
-void ProjectTuple(const ColumnDefList &inAllColDefList, const ColumnDefList &inProjectColDefList, const TupleData &inTupleData, TupleData *o_projectTupleData);
+void ProjectTuple(const ColumnDefList &inAllColDefList, const ColumnDefList &inProjectColDefList, const ValueList &inTupleValue, ValueList *o_projectTupleValue);
 
 void ColumnDefListToTupleDesc(const ColumnDefList &colDefList, TupleDesc *io_tupleDesc);
 
 #ifdef PDDEBUG
-void PrintTuple(const TupleDesc &desc, const TupleData &data);
+void PrintTuple(const ValueList &data);
 #endif
 //class TupleData 
 //{

@@ -9,13 +9,15 @@
 
 #include "Storage/IStorage.h"
 
-#include "Access/Iterator.h"
+#include "Access/TupleIterator.h"
 #include "Access/Tuple.h"
 
 #include "VFS/WinVFS.h"
 
 #include "Utils/Common.h"
 #include "Utils/Debug.h"
+#include "Utils/Expr/BooleanExpr.h"
+#include "Utils/Expr/ExprContext.h"
 #include "Utils/Predicate.h"
 
 #include <iostream>
@@ -142,7 +144,7 @@ Status PandaDB::InsertData(const std::string &tableName, const ColumnDefList &co
 	return result;
 }
 
-Status PandaDB::DeleteData(const std::string &tableName, const TuplePredicate *inTuplePredicate /* = NULL */)
+Status PandaDB::DeleteData(const std::string &tableName, const BooleanExpr *inBooleanExpr /* = NULL */)
 {
 	Status result;
 
@@ -153,13 +155,13 @@ Status PandaDB::DeleteData(const std::string &tableName, const TuplePredicate *i
 	if (result.OK())
 	{
 		std::cout << "****** Delete Table:" << tableName << " ******" << std::endl;
-		result = mpBackend->DeleteData(tableName, inTuplePredicate);
+		//result = mpBackend->DeleteData(tableName, inTuplePredicate);
 	}
 
 	return result;
 }
 
-Status PandaDB::SelectData(const Table::TableRefList &tableList, const JoinList &joinList, const ColumnDefList &projectColumnList, const TuplePredicate *inTuplePredicate /*= NULL*/)
+Status PandaDB::SelectData(const Table::TableRefList &tableList, const JoinList &joinList, const ColumnDefList &projectColumnList, const BooleanExpr *inWhereExpr /*= NULL*/)
 {
 	Status result;
 
@@ -174,31 +176,35 @@ Status PandaDB::SelectData(const Table::TableRefList &tableList, const JoinList 
 			std::cout << "****** Select Table:" << tableList[0] << " ******" << std::endl;
 			//result = mpBackend->SelectData(tableList[0], columnList, inTuplePredicate);
 			const ColumnDefList &allColumnList = theTable->GetAllColumns();
-			TupleDesc tupleDesc;
-			TupleDesc projectTupleDesc;
+			//TupleDesc tupleDesc;
+			//TupleDesc projectTupleDesc;
 
-			ColumnDefListToTupleDesc(allColumnList, &tupleDesc);
-			ColumnDefListToTupleDesc(projectColumnList, &projectTupleDesc);
+			//ColumnDefListToTupleDesc(allColumnList, &tupleDesc);
+			//ColumnDefListToTupleDesc(projectColumnList, &projectTupleDesc);
 			
-			Iterator *theIter = mpBackend->CreateScanIterator(tableList[0], tupleDesc, inTuplePredicate);
+			TupleIterator *theIter = mpBackend->CreateScanIterator(tableList[0], allColumnList, NULL);
 			
-			TupleData tupleData;
-			TupleData projectTupleData;
+			ValueList tupleValue;
+			ValueList projectTupleValue;
+			ExprContext exprContext;
 			while (theIter->Valid())
 			{
-				result = theIter->GetValue(&tupleData);
+				result = theIter->GetValue(&tupleValue);
 
 				if (!result.OK())
 				{
 					break;
 				}
 
-				//TODO: This is slow when doing every time
-				ProjectTuple(allColumnList, projectColumnList, tupleData, &projectTupleData);			
+				if (!inWhereExpr || inWhereExpr->IsTrue(&exprContext))
+				{
+					//TODO: This is slow when doing every time
+					ProjectTuple(allColumnList, projectColumnList, tupleValue, &projectTupleValue);			
 
 #ifdef PDDEBUG
-				PrintTuple(projectTupleDesc, projectTupleData);
+					PrintTuple(projectTupleValue);
 #endif
+				}
 
 				theIter->Next();
 			}

@@ -9,7 +9,8 @@ namespace PandaSQL
 
 BooleanExpr::BooleanExpr()
 :
-mType(kBooleanUnknown)
+Expr(kExprBoolean)
+,mType(kBooleanUnknown)
 ,mNegate(false)
 {
 }

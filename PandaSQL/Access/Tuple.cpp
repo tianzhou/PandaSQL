@@ -134,19 +134,24 @@ void TupleToString(const TupleDesc &desc, const TupleData &data, std::string *o_
 	}
 }
 
-void StringToTupleElement(const TupleDescElement &descElement, const std::string &inString, uint32_t *io_offset, TupleDataElement *o_dataElement)
+void TupleStringToValue(const ColumnDef &inColumnDef, const std::string &inString, uint32_t *io_offset, Value *o_value)
 {
-	if (descElement.mDataType == kInt)
+	if (inColumnDef.dataType == kInt)
 	{
-		o_dataElement->mNumber = *(const int *)(inString.c_str() + *io_offset);
+		int numberValue = *(const int *)(inString.c_str() + *io_offset);
+		o_value->SetAsNumber(numberValue);
 		*io_offset += sizeof(int);
 	}
-	else if (descElement.mDataType == kText)
+	else if (inColumnDef.dataType == kText)
 	{
+		std::string stringValue;
+
 		size_t length = *(const size_t *)(inString.c_str() + *io_offset);
 		*io_offset += sizeof(length);
 
-		o_dataElement->mText.append(inString.c_str() + *io_offset, length);
+		stringValue.append(inString.c_str() + *io_offset, length);
+		o_value->SetAsString(stringValue);
+		
 		*io_offset += length;
 	}
 	else
@@ -155,31 +160,31 @@ void StringToTupleElement(const TupleDescElement &descElement, const std::string
 	}
 }
 
-void StringToTuple(const TupleDesc &desc, const std::string &inString, TupleData *o_data)
+void TupleStringToValueList(const ColumnDefList &inColumnDefList, const std::string &inString, ValueList *o_valueList)
 {
 	size_t offset = 0;
 
-	o_data->clear();
+	o_valueList->clear();
 
-	for (size_t i = 0; i < desc.size(); i++)
+	for (size_t i = 0; i < inColumnDefList.size(); i++)
 	{
-		TupleDataElement oneDataElement;
+		Value oneValue;
 
-		StringToTupleElement(desc[i], inString, &offset, &oneDataElement);
+		TupleStringToValue(inColumnDefList[i], inString, &offset, &oneValue);
 
-		o_data->push_back(oneDataElement);
+		o_valueList->push_back(oneValue);
 	}
 
 	//TODO: Check
 	PDASSERT(offset <= inString.length());
 }
 
-void ProjectTuple(const ColumnDefList &inAllColDefList, const ColumnDefList &inProjectColDefList, const TupleData &inTupleData, TupleData *o_projectTupleData)
+void ProjectTuple(const ColumnDefList &inAllColDefList, const ColumnDefList &inProjectColDefList, const ValueList &inTupleValue, ValueList *o_projectTupleValue)
 {
 	ColumnDefList::const_iterator projectIter = inProjectColDefList.begin();
 	ColumnDefList::const_iterator allColIter;
 
-	o_projectTupleData->clear();
+	o_projectTupleValue->clear();
 
 	for (; projectIter != inProjectColDefList.end(); projectIter++)
 	{
@@ -190,7 +195,7 @@ void ProjectTuple(const ColumnDefList &inAllColDefList, const ColumnDefList &inP
 			PDASSERT(projectIter->qualifiedName.tableName == allColIter->qualifiedName.tableName);
 			if (projectIter->qualifiedName.columnName == allColIter->qualifiedName.columnName)
 			{
-				o_projectTupleData->push_back(inTupleData[allColIter->index]);
+				o_projectTupleValue->push_back(inTupleValue[allColIter->index]);
 			}
 		}
 	}
@@ -211,30 +216,18 @@ void ColumnDefListToTupleDesc(const ColumnDefList &colDefList, TupleDesc *io_tup
 }
 
 #ifdef PDDEBUG
-void PrintTuple(const TupleDesc &desc, const TupleData &data)
+void PrintTuple(const ValueList &data)
 {
-	PDASSERT(desc.size() == data.size());
-
 	std::string tupleString;
 	std::string oneString;
-	for (size_t i = 0; i < desc.size(); i++)
+	for (size_t i = 0; i < data.size(); i++)
 	{
 		if (i > 0)
 		{
 			tupleString.append(", ");
 		}
-		if (desc[i].mDataType == kInt)
-		{
-			NumberToString(data[i].mNumber, &oneString);
-		}
-		else if (desc[i].mDataType == kText)
-		{
-			oneString = data[i].mText;
-		}
-		else
-		{
-			PDASSERT(0);
-		}
+
+		oneString = data[i].GetAsString();
 
 		tupleString.append(oneString);
 	}

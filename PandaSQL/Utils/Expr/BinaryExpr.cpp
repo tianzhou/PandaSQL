@@ -3,13 +3,15 @@
 #include "BinaryExpr.h"
 
 #include "Utils/Debug.h"
+#include "Utils/Value.h"
 
 namespace PandaSQL
 {
 
 BinaryExpr::BinaryExpr()
 :
-mOpType(kBinaryUnknown)
+Expr(kExprBinary)
+,mOpType(kBinaryUnknown)
 ,mpLeftOperand(NULL)
 ,mpRightOperand(NULL)
 {
@@ -47,6 +49,35 @@ const Expr* BinaryExpr::GetRightOperand() const
 void BinaryExpr::SetRightOperand(const Expr *inRightOperand)
 {
 	mpRightOperand = inRightOperand;
+}
+
+bool BinaryExpr::IsTrue(ExprContext *io_exprContext) const
+{
+	bool result = true;
+
+	PDASSERT(mpLeftOperand && mpRightOperand);
+
+	if (mpLeftOperand && mpRightOperand)
+	{
+		Value leftValue, rightValue;
+		
+		mpLeftOperand->GetValue(io_exprContext, &leftValue);
+		mpRightOperand->GetValue(io_exprContext, &rightValue);
+
+		switch (mOpType)
+		{
+		case kBinaryEqual:
+			{
+				result = (leftValue == rightValue);
+				break;
+			}
+		default:
+			PDASSERT(0);
+			break;
+		}
+	}
+
+	return result;
 }
 
 }	// PandaSQL

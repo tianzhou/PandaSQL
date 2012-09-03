@@ -1,7 +1,7 @@
 #ifndef PANDASQL_BDB_SCANITERATOR_H
 #define PANDASQL_BDB_SCANITERATOR_H
 
-#include "Access/Iterator.h"
+#include "Access/TupleIterator.h"
 
 #include "Utils/Types.h"
 
@@ -10,25 +10,18 @@
 namespace PandaSQL
 {
 
-class BDBScanIterator : public Iterator
+class BDBScanIterator : public TupleIterator
 {
 public:
 
-	BDBScanIterator(const TupleDesc &inTupleDesc, const TuplePredicate *inPredicate, DB *io_dbTable);
+	BDBScanIterator(const ColumnDefList &inColumnDefList, DB *io_dbTable);
 	virtual ~BDBScanIterator();
 
 	virtual bool Valid() const;
 	virtual Status SeekToFirst();
-	virtual Status SeekAfterLast();
-	//virtual Status SeekToPredicate(const TuplePredicate *inPredicate);
-	//virtual Status SeekToKey(const std::string &inKey);
 	virtual Status Next();
 	virtual Status Prev();
-	//virtual Status GetKey(std::s tring *o_key) const;
-	virtual Status InsertValue(const TupleData &inTuple);
-	virtual Status UpdateValue(const TupleData &inTuple);
-	virtual Status DeleteValue();
-	virtual Status GetValue(TupleData *o_tuple) const;
+	virtual Status GetValue(ValueList *o_valueList) const;
 
 protected:
  
@@ -41,7 +34,6 @@ private:
 	
 	DB *mpDBTable;
 	DBC *mpDBCursor;
-	mutable Status mLastError;
 };
 
 }	// PandaSQL

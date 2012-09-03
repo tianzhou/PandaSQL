@@ -19,10 +19,11 @@ public:
 	std::string GetTableName() const;
 	void SetTableName(const std::string &inTableName);
 
-private:
+	virtual Status GetValue(ExprContext *io_exprContext, Value *io_value);
 
-	std::string mColumnName;
-	std::string mTableName;
+private:
+	
+	ColumnQualifiedName mQualifiedColumnName;
 };
 
 }	// PandaSQL

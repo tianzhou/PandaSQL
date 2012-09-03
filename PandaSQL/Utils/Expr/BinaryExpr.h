@@ -30,6 +30,8 @@ public:
 	const Expr* GetRightOperand() const;
 	void SetRightOperand(const Expr *inRightOperand);
 
+	virtual bool IsTrue(ExprContext *io_exprContext) const;
+
 private:
 
 	BinaryOpType mOpType;

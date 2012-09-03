@@ -740,7 +740,6 @@ expr[PandaSQL::Expr *o_expr]
 @init
 {
 	PandaSQL::ColumnQualifiedName qualifiedName;
-	o_expr->mType = PandaSQL::kExprUnknown;
 }
 	:	num=UNSIGNED_INTEGER
 		{

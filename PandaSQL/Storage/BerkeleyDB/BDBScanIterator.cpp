@@ -10,11 +10,10 @@ namespace PandaSQL
 
 static char kDeleteMark[] = " ";
 
-BDBScanIterator::BDBScanIterator(const TupleDesc &inTupleDesc, const TuplePredicate *inTuplePredicate, DB *io_dbTable)
-:Iterator(inTupleDesc, inTuplePredicate)
+BDBScanIterator::BDBScanIterator(const ColumnDefList &inColumnDefList, DB *io_dbTable)
+:TupleIterator(inColumnDefList)
 ,mpDBTable(io_dbTable)
 ,mpDBCursor(NULL)
-,mLastError(Status::kOK)
 {
 	this->SeekToFirst();
 }
@@ -62,33 +61,6 @@ Status BDBScanIterator::SeekToFirst()
 	return result;
 }
 
-Status BDBScanIterator::SeekAfterLast()
-{
-	Status result;
-
-	mLastError = result;
-
-	return result;
-}
-
-//Status BDBScanIterator::SeekToPredicate(const TuplePredicate *inTuplePredicate)
-//{
-//	Status result;
-//
-//	if (inTuplePredicate)
-//	{
-//		
-//	}
-//	else
-//	{
-//		result = this->SeekToFirst();
-//	}
-//
-//	mLastError = result;
-//
-//	return result;
-//}
-
 Status BDBScanIterator::Next()
 {
 	Status result;
@@ -111,31 +83,7 @@ Status BDBScanIterator::Prev()
 	return result;
 }
 
-Status BDBScanIterator::InsertValue(const TupleData &inTuple)
-{
-	Status result;
-
-	return result;
-}
-
-Status BDBScanIterator::UpdateValue(const TupleData &inTuple)
-{
-	Status result;
-
-	//Don't allow update
-	PDASSERT(0);
-	
-	return result;
-}
-
-Status BDBScanIterator::DeleteValue()
-{
-	Status result;
-
-	return result;
-}
-
-Status BDBScanIterator::GetValue(TupleData *o_tuple) const
+Status BDBScanIterator::GetValue(ValueList *o_valueList) const
 {
 	Status result;
 
@@ -166,7 +114,7 @@ Status BDBScanIterator::GetValue(TupleData *o_tuple) const
 		std::string rowString;	
 		rowString.append((const char *)data.data, data.size);
 		
-		StringToTuple(mpTupleDesc, rowString, o_tuple);
+		TupleStringToValueList(mColumnDefList, rowString, o_valueList);
 	}
 
 	mLastError = result;

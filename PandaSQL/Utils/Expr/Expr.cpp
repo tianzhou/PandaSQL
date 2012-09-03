@@ -7,6 +7,18 @@
 namespace PandaSQL
 {
 
+Expr::Expr()
+:
+mExprType(kExprUnknown)
+{
+}
+
+Expr::Expr(ExprType inExprType)
+:
+mExprType(inExprType)
+{
+}
+
 void Expr::Eval(TupleDescElement inDescElement, TupleDataElement *io_data) const
 {
 	//TODO: No coercing at this point
@@ -48,6 +60,13 @@ void Expr::EvalExprList(const ExprList &inExprList, const TupleDesc &inTupleDesc
 bool Expr::IsTrue(ExprContext *io_exprContext) const
 {
 	return true;
+}
+
+Status Expr::GetValue(ExprContext *io_exprContext, Value *io_value) const
+{
+	Status result;
+
+	return result;
 }
 
 }	// PandaSQL
