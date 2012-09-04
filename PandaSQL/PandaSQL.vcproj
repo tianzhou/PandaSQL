@@ -1023,6 +1023,66 @@
 					RelativePath=".\Optimizer\Node.h"
 					>
 				</File>
+				<Filter
+					Name="Plan"
+					>
+					<File
+						RelativePath=".\Optimizer\Plan\NestLoopNode.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Optimizer\Plan\NestLoopNode.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Optimizer\Plan\Planner.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Optimizer\Plan\Planner.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Optimizer\Plan\PlanNode.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Optimizer\Plan\PlanNode.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Optimizer\Plan\SeqScanNode.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Optimizer\Plan\SeqScanNode.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Path"
+					>
+					<File
+						RelativePath=".\Optimizer\Path\JoinPath.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Optimizer\Path\JoinPath.h"
+						>
+					</File>
+				</Filter>
+			</Filter>
+			<Filter
+				Name="Executor"
+				>
+				<File
+					RelativePath=".\Executor\Executor.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Executor\Executor.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter

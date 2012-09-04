@@ -3,6 +3,11 @@
 #include "Statement.h"
 
 #include "PandaDB.h"
+
+#include "Executor/Executor.h"
+#include "Optimizer/Plan/Planner.h"
+#include "Optimizer/Plan/PlanNode.h"
+
 #include "Utils/Debug.h"
 
 #include <iostream>
@@ -194,8 +199,17 @@ Status Statement::Execute(bool loadTable)
 			//mJoinList.push_back(join1);
 			//mJoinList.push_back(join2);
 
-			TuplePredicate tuplePredicate;
-			result = mpDB->SelectData(mTableRefs, mJoinList, mColumnDefs, mpWhereExpr);
+			Planner thePlanner(*this);
+
+			PlanNode *thePlan = thePlanner.GeneratePlan();
+
+			Executor theExecutor;
+			result = theExecutor.ExecutePlan(*thePlan);
+
+			delete thePlan;
+
+			//TuplePredicate tuplePredicate;
+			//result = mpDB->SelectData(mTableRefs, mJoinList, mColumnDefs, mpWhereExpr);
 			break;
 		}
 	case kStmtDelete:

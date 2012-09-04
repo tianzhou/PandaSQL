@@ -77,8 +77,9 @@ public:
 private:
 
 	friend class ParserDriver;
+	friend class Planner;
 
-	const Table::TableRefList GetTableRefList() const { return mTableRefs; }
+	const Table::TableRefList& GetTableRefList() const { return mTableRefs; }
 
 	PandaDB *mpDB;
 
