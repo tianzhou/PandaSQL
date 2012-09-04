@@ -1070,6 +1070,10 @@
 			>
 		</File>
 		<File
+			RelativePath=".\select_join.txt"
+			>
+		</File>
+		<File
 			RelativePath=".\select_where.txt"
 			>
 		</File>

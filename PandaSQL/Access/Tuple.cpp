@@ -186,17 +186,21 @@ void ProjectTuple(const ColumnDefList &inAllColDefList, const ColumnDefList &inP
 
 	o_projectTupleValue->clear();
 
+	size_t index;
 	for (; projectIter != inProjectColDefList.end(); projectIter++)
 	{
 		allColIter = inAllColDefList.begin();
 
+		index = 0;
 		for (; allColIter != inAllColDefList.end(); allColIter++)
 		{
-			PDASSERT(projectIter->qualifiedName.tableName == allColIter->qualifiedName.tableName);
-			if (projectIter->qualifiedName.columnName == allColIter->qualifiedName.columnName)
+			if (projectIter->qualifiedName.tableName == allColIter->qualifiedName.tableName
+				&& projectIter->qualifiedName.columnName == allColIter->qualifiedName.columnName)
 			{
-				o_projectTupleValue->push_back(inTupleValue[allColIter->index]);
+				o_projectTupleValue->push_back(inTupleValue[index]);
 			}
+
+			index++;
 		}
 	}
 }

@@ -217,73 +217,88 @@ Status PandaDB::SelectData(const Table::TableRefList &tableList, const JoinList 
 	}
 	else if (tableList.size() == 2)
 	{
-		//Table *outerTable = NULL;
-		//Table *innerTable = NULL;
+		Table *outerTable = NULL;
+		Table *innerTable = NULL;
 
-		//result = this->GetTableByName(joinList[0].tableName, &outerTable);
+		result = this->GetTableByName(tableList[0], &outerTable);
 
-		//if (result.OK())
-		//{
-		//	result = this->GetTableByName(joinList[1].tableName, &innerTable);
+		if (result.OK())
+		{
+			result = this->GetTableByName(tableList[1], &innerTable);
 
-		//	if (result.OK())
-		//	{
-		//		Iterator *outerScan = outerTable->CreateScanIterator();
+			if (result.OK())
+			{
+				const ColumnDefList &outerTableAllColumnList = outerTable->GetAllColumns();
+				const ColumnDefList &innerTableAllColumnList = innerTable->GetAllColumns();
+				ColumnDefList allColumnList = outerTableAllColumnList;
+				allColumnList.insert(allColumnList.end(), innerTableAllColumnList.begin(), innerTableAllColumnList.end());
 
-		//		PDASSERT(outerScan);
+				TupleIterator *outerScan = mpBackend->CreateScanIterator(tableList[0], outerTableAllColumnList, NULL);
 
-		//		while (outerScan->Valid())
-		//		{
-		//			TupleData outerTuple;
+				PDASSERT(outerScan);
 
-		//			result = outerScan->GetValue(&outerTuple);
+				ValueList projectTupleValue;
+				ExprContext exprContext;
+				while (outerScan->Valid())
+				{
+					ValueList outerTupleValue;
+					ValueList outerProjectTupleValue;
 
-		//			if (!result.OK())
-		//			{
-		//				break;
-		//			}
+					result = outerScan->GetValue(&outerTupleValue);
 
-		//			std::vector<TupleEntry> tupleContext;
-		//			TupleEntry outerTupleEntry = {outerTable->GetName(), outerTuple};
-		//			tupleContext.push_back(outerTupleEntry);
+					if (!result.OK())
+					{
+						break;
+					}
 
-		//			Iterator *innerScan = innerTable->CreateScanIterator();
+					exprContext.UpdateTupleValue(outerTableAllColumnList, outerTupleValue);
 
-		//			PDASSERT(innerScan);
+					TupleIterator *innerScan = mpBackend->CreateScanIterator(tableList[1], innerTableAllColumnList, NULL);
 
-		//			while (innerScan->Valid())
-		//			{
-		//				TupleData innerTuple;
+					PDASSERT(innerScan);
 
-		//				result = innerScan->GetValue(&innerTuple);
+					while (innerScan->Valid())
+					{
+						ValueList innerTupleValue;
+						ValueList innerProjectTupleValue;
 
-		//				if (!result.OK())
-		//				{
-		//					break;
-		//				}
+						result = innerScan->GetValue(&innerTupleValue);
 
-		//				//if (!inTuplePredicate
-		//				//	|| inTuplePredicate->Eval(tupleContext))
-		//				//{
-		//				//	std::cout << outerTuple.ToString() << std::endl;
-		//				//}
+						if (!result.OK())
+						{
+							break;
+						}
 
-		//				innerScan->Next();
-		//			}
+						exprContext.UpdateTupleValue(innerTableAllColumnList, innerTupleValue);
 
-		//			delete innerScan;
+						if (!inWhereExpr || inWhereExpr->IsTrue(&exprContext))
+						{
+							//TODO: This is slow when doing every time
+							ValueList allTupleValue = outerTupleValue;
+							allTupleValue.insert(allTupleValue.end(), innerTupleValue.begin(), innerTupleValue.end());
 
-		//			if (!result.OK())
-		//			{
-		//				break;
-		//			}
+							ProjectTuple(allColumnList, projectColumnList, allTupleValue, &projectTupleValue);		
+#ifdef PDDEBUG
+							PrintTuple(projectTupleValue);
+#endif
+						}
 
-		//			outerScan->Next();
-		//		}
+						innerScan->Next();
+					}
 
-		//		delete outerScan;
-		//	}
-		//}
+					delete innerScan;
+
+					if (!result.OK())
+					{
+						break;
+					}
+
+					outerScan->Next();
+				}
+
+				delete outerScan;
+			}
+		}
 	}
 	else
 	{
