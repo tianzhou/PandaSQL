@@ -1023,6 +1023,14 @@
 					RelativePath=".\Optimizer\Node.h"
 					>
 				</File>
+				<File
+					RelativePath=".\Optimizer\RelNode.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Optimizer\RelNode.h"
+					>
+				</File>
 				<Filter
 					Name="Plan"
 					>
@@ -1032,6 +1040,14 @@
 					</File>
 					<File
 						RelativePath=".\Optimizer\Plan\NestLoopNode.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Optimizer\Plan\PlanContext.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Optimizer\Plan\PlanContext.h"
 						>
 					</File>
 					<File

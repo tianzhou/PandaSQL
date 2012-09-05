@@ -11,6 +11,8 @@ Status Executor::ExecutePlan(const PlanNode &inPlanNode)
 {
 	Status result;
 
+	inPlanNode.ExecutePlan();
+
 	return result;
 }
 

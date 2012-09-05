@@ -5,9 +5,9 @@
 namespace PandaSQL
 {
 
-Node::Node()
+Node::Node(NodeType inNodeType)
 :
-mType(kUnknownNode)
+mType(inNodeType)
 {
 }
 

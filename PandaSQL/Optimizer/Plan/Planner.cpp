@@ -6,7 +6,10 @@
 #include "NestLoopNode.h"
 #include "SeqScanNode.h"
 
+#include "PandaDB.h"
+
 #include "Optimizer/Path/JoinPath.h"
+#include "Optimizer/RelNode.h"
 
 #include "Parser/Statement.h"
 
@@ -25,26 +28,49 @@ PlanNode* Planner::GeneratePlan()
 {
 	PlanNode *newPlanNode = NULL;
 
-	const Table::TableRefList &joinList = mStatement.GetTableRefList();
+	const PandaDB *pDB = mStatement.GetDB();
+	Table *theTable = NULL;
+	const RelNode *theRelNode = NULL;
 
-	if (joinList.size() == 1)
+	const Table::TableRefList &allTableRef = mStatement.GetTableRefList();
+
+	Table::TableRefList::const_iterator iter = allTableRef.begin();
+
+	for(; iter != allTableRef.end(); iter++)
 	{
-		SeqScanNode *seqScanNode = new SeqScanNode();
+		pDB->GetTableByName(*iter, &theTable);
+		theRelNode = new RelNode(theTable);
+		mPlanContext.mRelList.push_back(theRelNode);
+	}
 
+	if (mPlanContext.mRelList.size() == 1)
+	{
+		SeqScanNode *seqScanNode = new SeqScanNode(&mPlanContext, 0);
 
 		newPlanNode = seqScanNode;
 	}
-	else if (joinList.size() > 1)
+	else if (mPlanContext.mRelList.size() > 1)
 	{
-		JoinPath *joinPath = new JoinPath();
+		JoinPath theJoinPath;
 
-		NestLoopNode *nestLoopNode = new NestLoopNode(*joinPath);
+		for (size_t i = 0; i < mPlanContext.mRelList.size(); i++)
+		{
+			theJoinPath.push_back(i);
+		}
 
-		newPlanNode = nestLoopNode;
+		PlanNode *innerNode = new SeqScanNode(&mPlanContext, theJoinPath[0]);
+		PlanNode *outerNode = new SeqScanNode(&mPlanContext, theJoinPath[1]);
+
+		for (size_t i = 2; i < theJoinPath.size(); i++)
+		{
+			innerNode = new NestLoopNode(&mPlanContext, *outerNode, *innerNode);
+			outerNode = new SeqScanNode(&mPlanContext, theJoinPath[i]); 		
+		}
+
+		newPlanNode = new NestLoopNode(&mPlanContext, *outerNode, *innerNode);
 	}
 	else
 	{
-		Table::TableRefList::const_iterator iter = joinList.begin();
 		PDASSERT(0);
 	}
 

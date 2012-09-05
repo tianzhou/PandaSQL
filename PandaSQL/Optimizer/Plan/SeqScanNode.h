@@ -6,15 +6,20 @@
 namespace PandaSQL
 {
 
+class RelNode;
+
 class SeqScanNode : public PlanNode
 {
 
 public:
 
+	SeqScanNode(PlanContext *inPlanContext, uint32_t inRelIndex);
+
+	virtual void ExecutePlan() const;
 
 private:
 
-
+	uint32_t mRelIndex;
 };
 
 }	// namespace PandaSQL

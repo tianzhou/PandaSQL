@@ -13,10 +13,22 @@ public:
 
 	enum NodeType
 	{
-		kUnknownNode = 0,
+		kNodeUnknown = 0,
+
+		//Plan node
+		kNodeSeqScan = 1,
+		kNodeNestLoop = 2,
+
+		//Object node
+		kNodeRelation = 100,
 	};
-	Node();
+
+	Node(NodeType inNodeType);
 	~Node();
+
+	NodeType GetNodeType() const { return mType; }
+
+protected:
 
 	NodeType mType;
 

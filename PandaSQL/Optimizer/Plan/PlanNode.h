@@ -6,14 +6,20 @@
 namespace PandaSQL
 {
 
+struct PlanContext;
+
 class PlanNode : public Node
 {
 
 public:
 
+	PlanNode(NodeType inNodeType, PlanContext *inPlanContext);
 
-private:
+	virtual void ExecutePlan() const;
 
+protected:
+
+	PlanContext *mpPlanContext;
 
 };
 

@@ -80,6 +80,7 @@ private:
 	friend class Planner;
 
 	const Table::TableRefList& GetTableRefList() const { return mTableRefs; }
+	const PandaDB* GetDB() const { return mpDB; }
 
 	PandaDB *mpDB;
 

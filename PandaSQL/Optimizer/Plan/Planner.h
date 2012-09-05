@@ -1,6 +1,8 @@
 #ifndef PANDASQL_PLANNER_H
 #define PANDASQL_PLANNER_H
 
+#include "Optimizer/Plan/PlanContext.h"
+
 namespace PandaSQL
 {
 
@@ -19,6 +21,7 @@ public:
 private:
 
 	const Statement &mStatement;
+	PlanContext mPlanContext;
 
 };
 

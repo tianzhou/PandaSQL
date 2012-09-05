@@ -6,21 +6,23 @@
 namespace PandaSQL
 {
 
-class JoinPath;
-
 class NestLoopNode : public PlanNode
 {
 
 public:
 
-	NestLoopNode(const JoinPath &inJoinPath);
+	NestLoopNode(PlanContext *inPlanContext, const PlanNode &inOuterNode, const PlanNode &inInnerNode);
 
 	const PlanNode& GetOuterNode() const;
+	
 	const PlanNode& GetInnerNode() const;
+
+	virtual void ExecutePlan() const;
 
 private:
 
-
+	const PlanNode &mOuterNode;
+	const PlanNode &mInnerNode;
 };
 
 }	// namespace PandaSQL
