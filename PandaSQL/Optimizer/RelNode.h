@@ -3,6 +3,8 @@
 
 #include "Optimizer/Node.h"
 
+#include "Utils/Value.h"
+
 namespace PandaSQL
 {
 
@@ -16,9 +18,13 @@ public:
 	RelNode(const Table *inTable);
 	~RelNode();
 
+	const Table* GetTable() const { return mpTable; }
+	ValueList* GetTupleValue() { return &mTupleValueList; }
+
 private:
 
 	const Table *mpTable;
+	ValueList mTupleValueList;
 
 
 };

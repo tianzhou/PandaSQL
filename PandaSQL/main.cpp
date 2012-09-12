@@ -83,9 +83,9 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		//result = ReadSQLScript("./insert.txt", pVFS, &parserDriver);
 
-		//result = ReadSQLScript("./select.txt", pVFS, &parserDriver);
+		result = ReadSQLScript("./select.txt", pVFS, &parserDriver);
 
-		result = ReadSQLScript("./select_join.txt", pVFS, &parserDriver);
+		//result = ReadSQLScript("./select_join.txt", pVFS, &parserDriver);
 
 		//result = ReadSQLScript("./select_where.txt", pVFS, &parserDriver);
 #else

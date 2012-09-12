@@ -29,6 +29,16 @@ namespace PandaSQL
 //
 //};
 
+class TupleFunctor
+{
+
+public:
+
+	TupleFunctor();
+
+	virtual void operator()(const ValueList &inValueList);
+};
+
 class TupleDescElement
 {
 public:

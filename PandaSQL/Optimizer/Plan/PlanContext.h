@@ -7,10 +7,12 @@ namespace PandaSQL
 {
 
 class RelNode;
+class PandaDB;
 
 struct PlanContext
 {
 	std::vector<const RelNode*> mRelList;
+	PandaDB *mpDB;
 };
 
 }	// namespace PandaSQL

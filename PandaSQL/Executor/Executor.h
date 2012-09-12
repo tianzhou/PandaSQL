@@ -13,7 +13,7 @@ class Executor
 
 public:
 
-	Status ExecutePlan(const PlanNode &inPlanNode);
+	Status ExecutePlan(PlanNode *io_pRootPlanNode);
 
 private:
 

@@ -24,7 +24,7 @@ public:
 	};
 
 	Node(NodeType inNodeType);
-	~Node();
+	virtual ~Node();
 
 	NodeType GetNodeType() const { return mType; }
 

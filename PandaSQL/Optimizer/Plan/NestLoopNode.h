@@ -17,8 +17,6 @@ public:
 	
 	const PlanNode& GetInnerNode() const;
 
-	virtual void ExecutePlan() const;
-
 private:
 
 	const PlanNode &mOuterNode;

@@ -3,6 +3,8 @@
 
 #include "Optimizer/Node.h"
 
+#include "Utils/Status.h"
+
 namespace PandaSQL
 {
 
@@ -13,13 +15,19 @@ class PlanNode : public Node
 
 public:
 
-	PlanNode(NodeType inNodeType, PlanContext *inPlanContext);
+	PlanNode(NodeType inNodeType, PlanContext *io_pPlanContext);
+	virtual ~PlanNode();
 
-	virtual void ExecutePlan() const;
+	virtual	void	Start();
+	virtual	bool	Step();
+	virtual	void	End();
+
+	Status	GetLastStatus() const { return mLastStatus; }
 
 protected:
 
 	PlanContext *mpPlanContext;
+	Status mLastStatus;
 
 };
 

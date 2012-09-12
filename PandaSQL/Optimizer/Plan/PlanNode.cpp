@@ -5,17 +5,30 @@
 namespace PandaSQL
 {
 
-PlanNode::PlanNode(NodeType inNodeType, PlanContext *inPlanContext)
+PlanNode::PlanNode(NodeType inNodeType, PlanContext *io_pPlanContext)
 :
 Node(inNodeType)
-,mpPlanContext(inPlanContext)
+,mpPlanContext(io_pPlanContext)
 {
 }
 
-
-void PlanNode::ExecutePlan() const
+PlanNode::~PlanNode()
 {
 }
 
+void PlanNode::Start()
+{
+
+}
+
+bool PlanNode::Step()
+{
+	return false;
+}
+
+void PlanNode::End()
+{
+
+}
 
 }	// PandaSQL

@@ -20,10 +20,10 @@ public:
 	virtual ~TupleIterator() = 0 {}
 
 	virtual bool Valid() const = 0;
-	virtual Status SeekToFirst() = 0;
-	virtual Status Next() = 0;
-	virtual Status Prev() = 0;
-	virtual Status GetValue(ValueList *o_valueList) const = 0;
+	virtual void Reset() = 0;
+	virtual bool Next() = 0;
+	virtual bool Prev() = 0;
+	virtual bool GetValue(ValueList *o_valueList) const = 0;
 
 	Status GetLastError() const { return mLastError; }
 

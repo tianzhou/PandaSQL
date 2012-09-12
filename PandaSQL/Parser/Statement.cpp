@@ -199,12 +199,12 @@ Status Statement::Execute(bool loadTable)
 			//mJoinList.push_back(join1);
 			//mJoinList.push_back(join2);
 
-			Planner thePlanner(*this);
+			Planner thePlanner(*this, mpDB);
 
 			PlanNode *thePlan = thePlanner.GeneratePlan();
 
 			Executor theExecutor;
-			result = theExecutor.ExecutePlan(*thePlan);
+			result = theExecutor.ExecutePlan(thePlan);
 
 			delete thePlan;
 

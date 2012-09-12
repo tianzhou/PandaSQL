@@ -18,17 +18,17 @@ public:
 	virtual ~BDBScanIterator();
 
 	virtual bool Valid() const;
-	virtual Status SeekToFirst();
-	virtual Status Next();
-	virtual Status Prev();
-	virtual Status GetValue(ValueList *o_valueList) const;
+	virtual void Reset();
+	virtual bool Next();
+	virtual bool Prev();
+	virtual bool GetValue(ValueList *o_valueList) const;
 
 protected:
  
 	BDBScanIterator(const BDBScanIterator &rhs);
 	BDBScanIterator& operator=(const BDBScanIterator &rhs);
 
-	Status MoveCursor_Private(u_int32_t flags);
+	bool MoveCursor_Private(u_int32_t flags);
 
 private:
 	

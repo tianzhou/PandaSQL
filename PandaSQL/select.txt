@@ -2,6 +2,6 @@ SELECT *
 FROM Master
 ;
 
-SELECT detail_id
+SELECT *
 FROM Detail
 ;

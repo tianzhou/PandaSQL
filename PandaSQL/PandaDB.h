@@ -17,6 +17,7 @@ class BooleanExpr;
 class File;
 class IDBBackend;
 class IVFS;
+class TupleIterator;
 
 class PandaDB
 {
@@ -51,6 +52,7 @@ public:
 
 	Status GetColumnDefFromQualifiedName(const Table::TableRefList &inTableRefList, const ColumnQualifiedName &inQualifiedName, ColumnDef *io_columnDef) const;
 
+	TupleIterator* CreateTupleIteratorForTable(const Table &inTable);
 private:
 
 	typedef std::map<std::string, Table*> TableMap;

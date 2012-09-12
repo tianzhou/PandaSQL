@@ -25,8 +25,4 @@ const PlanNode& NestLoopNode::GetInnerNode() const
 	return mInnerNode;
 }
 
-void NestLoopNode::ExecutePlan() const
-{
-}
-
 }	// PandaSQL

@@ -190,9 +190,7 @@ Status PandaDB::SelectData(const Table::TableRefList &tableList, const JoinList 
 
 			while (theIter->Valid())
 			{
-				result = theIter->GetValue(&tupleValue);
-
-				if (!result.OK())
+				if (!theIter->GetValue(&tupleValue))
 				{
 					break;
 				}
@@ -244,9 +242,7 @@ Status PandaDB::SelectData(const Table::TableRefList &tableList, const JoinList 
 					ValueList outerTupleValue;
 					ValueList outerProjectTupleValue;
 
-					result = outerScan->GetValue(&outerTupleValue);
-
-					if (!result.OK())
+					if (!outerScan->GetValue(&outerTupleValue))
 					{
 						break;
 					}
@@ -262,9 +258,7 @@ Status PandaDB::SelectData(const Table::TableRefList &tableList, const JoinList 
 						ValueList innerTupleValue;
 						ValueList innerProjectTupleValue;
 
-						result = innerScan->GetValue(&innerTupleValue);
-
-						if (!result.OK())
+						if (!innerScan->GetValue(&innerTupleValue))
 						{
 							break;
 						}
@@ -373,6 +367,15 @@ Status PandaDB::GetColumnDefFromQualifiedName(const Table::TableRefList &inTable
 	}
 
 	return result;
+}
+
+TupleIterator* PandaDB::CreateTupleIteratorForTable(const Table &inTable)
+{
+	const ColumnDefList &allColumnList = inTable.GetAllColumns();
+
+	TupleIterator *theIter = mpBackend->CreateScanIterator(inTable.GetName(), allColumnList, NULL);
+
+	return theIter;
 }
 
 Status PandaDB::GetTableByName(const std::string &name, Table **o_table) const

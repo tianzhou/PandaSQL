@@ -7,13 +7,17 @@
 namespace PandaSQL
 {
 
-Status Executor::ExecutePlan(const PlanNode &inPlanNode)
+Status Executor::ExecutePlan(PlanNode *io_pRootPlanNode)
 {
 	Status result;
 
-	inPlanNode.ExecutePlan();
+	io_pRootPlanNode->Start();
+	
+	while(io_pRootPlanNode->Step());
 
-	return result;
+	io_pRootPlanNode->End();
+
+	return io_pRootPlanNode->GetLastStatus();;
 }
 
 }	// PandaSQL

@@ -15,7 +15,6 @@ BDBScanIterator::BDBScanIterator(const ColumnDefList &inColumnDefList, DB *io_db
 ,mpDBTable(io_dbTable)
 ,mpDBCursor(NULL)
 {
-	this->SeekToFirst();
 }
 
 BDBScanIterator::~BDBScanIterator()
@@ -33,10 +32,8 @@ bool BDBScanIterator::Valid() const
 	return mpDBCursor && mLastError.OK();
 }
 
-Status BDBScanIterator::SeekToFirst()
+void BDBScanIterator::Reset()
 {
-	Status result;
-
 	DBC *dbcp = NULL;
 	int ret;
 
@@ -47,45 +44,29 @@ Status BDBScanIterator::SeekToFirst()
 		if (ret != 0)
 		{
 			PDDebugOutputVerbose(db_strerror(ret));
-			result = Status::kInternalError;
+			mLastError = Status::kInternalError;
 		}
 	}
+}
 
-	if (result.OK())
+bool BDBScanIterator::Next()
+{
+	return MoveCursor_Private(DB_NEXT);
+}
+
+bool BDBScanIterator::Prev()
+{	
+	return MoveCursor_Private(DB_PREV);
+}
+
+bool BDBScanIterator::GetValue(ValueList *o_valueList) const
+{
+	if (!mLastError.OK())
 	{
-		result = MoveCursor_Private(DB_FIRST);
+		return false;
 	}
 
-	mLastError = result;
-
-	return result;
-}
-
-Status BDBScanIterator::Next()
-{
-	Status result;
-
-	result = MoveCursor_Private(DB_NEXT);
-
-	mLastError = result;
-
-	return result;
-}
-
-Status BDBScanIterator::Prev()
-{
-	Status result;
-	
-	result = MoveCursor_Private(DB_PREV);
-
-	mLastError = result;
-
-	return result;
-}
-
-Status BDBScanIterator::GetValue(ValueList *o_valueList) const
-{
-	Status result;
+	bool result = true;
 
 	PDASSERT(mpDBCursor);
 
@@ -99,15 +80,13 @@ Status BDBScanIterator::GetValue(ValueList *o_valueList) const
 
 	if (ret != 0)
 	{
-		if (ret == DB_NOTFOUND)
-		{
-			result = Status::kEOF;
-		}
-		else
+		if (ret != DB_NOTFOUND)
 		{
 			PDDebugOutputVerbose(db_strerror(ret));
-			result = Status::kInternalError;
+			mLastError = Status::kInternalError;
 		}
+
+		result = false;
 	}
 	else
 	{
@@ -117,14 +96,12 @@ Status BDBScanIterator::GetValue(ValueList *o_valueList) const
 		TupleStringToValueList(mColumnDefList, rowString, o_valueList);
 	}
 
-	mLastError = result;
-
 	return result;
 }
 
-Status BDBScanIterator::MoveCursor_Private(u_int32_t flags)
+bool BDBScanIterator::MoveCursor_Private(u_int32_t flags)
 {
-	Status result;
+	bool result = true;
 
 	PDASSERT(mpDBCursor);
 
@@ -138,15 +115,13 @@ Status BDBScanIterator::MoveCursor_Private(u_int32_t flags)
 
 	if (ret != 0)
 	{
-		if (ret == DB_NOTFOUND)
-		{
-			result = Status::kEOF;
-		}
-		else
+		if (ret != DB_NOTFOUND)
 		{
 			PDDebugOutputVerbose(db_strerror(ret));
-			result = Status::kInternalError;
+			mLastError = Status::kInternalError;
 		}
+
+		result = false;
 	}
 
 	return result;
