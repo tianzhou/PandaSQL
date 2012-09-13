@@ -60,13 +60,20 @@ PlanNode* Planner::GeneratePlan()
 			theJoinPath.push_back(i);
 		}
 
-		PlanNode *innerNode = new SeqScanNode(&mPlanContext, theJoinPath[0], NULL);
-		PlanNode *outerNode = new SeqScanNode(&mPlanContext, theJoinPath[1], NULL);
+		// Construct left tree
+		//		A
+		//	   / \
+		//    /\  \
+		//   B  C  D
+		//  /\ 
+		// E  F
+		PlanNode *outerNode = new SeqScanNode(&mPlanContext, theJoinPath[0], NULL);
+		PlanNode *innerNode = new SeqScanNode(&mPlanContext, theJoinPath[1], NULL);	
 
 		for (size_t i = 2; i < theJoinPath.size(); i++)
 		{
-			innerNode = new NestLoopNode(&mPlanContext, *outerNode, *innerNode);
-			outerNode = new SeqScanNode(&mPlanContext, theJoinPath[i], NULL); 		
+			outerNode = new NestLoopNode(&mPlanContext, *outerNode, *innerNode);
+			innerNode = new SeqScanNode(&mPlanContext, theJoinPath[i], NULL); 		
 		}
 
 		newPlanNode = new NestLoopNode(&mPlanContext, *outerNode, *innerNode);

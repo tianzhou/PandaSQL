@@ -17,7 +17,7 @@ Status Executor::ExecutePlan(PlanNode *io_pRootPlanNode)
 
 	io_pRootPlanNode->End();
 
-	return io_pRootPlanNode->GetLastStatus();;
+	return io_pRootPlanNode->GetLastStatus();
 }
 
 }	// PandaSQL

@@ -11,16 +11,21 @@ class NestLoopNode : public PlanNode
 
 public:
 
-	NestLoopNode(PlanContext *inPlanContext, const PlanNode &inOuterNode, const PlanNode &inInnerNode);
+	NestLoopNode(PlanContext *inPlanContext, PlanNode &inOuterNode, PlanNode &inInnerNode);
 
 	const PlanNode& GetOuterNode() const;
 	
 	const PlanNode& GetInnerNode() const;
 
+	virtual	void	Start();
+	virtual	bool	Step();
+	virtual	void	End();
+
 private:
 
-	const PlanNode &mOuterNode;
-	const PlanNode &mInnerNode;
+	PlanNode &mOuterNode;
+	PlanNode &mInnerNode;
+	bool mNeedStepOuterNode;
 };
 
 }	// namespace PandaSQL
