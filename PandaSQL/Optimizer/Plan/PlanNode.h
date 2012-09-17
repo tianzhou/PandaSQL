@@ -9,6 +9,7 @@ namespace PandaSQL
 {
 
 struct PlanContext;
+class PlanResultFunctor;
 
 class PlanNode : public Node
 {
@@ -23,11 +24,14 @@ public:
 	virtual	void	End();
 
 	Status	GetLastStatus() const { return mLastStatus; }
+	void SetResultFunctor(PlanResultFunctor *io_resultFunctor) { mpResultFunctor = io_resultFunctor; }
 
 protected:
 
 	PlanContext *mpPlanContext;
 	Status mLastStatus;
+
+	PlanResultFunctor *mpResultFunctor;
 
 };
 

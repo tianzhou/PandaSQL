@@ -80,6 +80,8 @@ private:
 	friend class Planner;
 
 	const Table::TableRefList& GetTableRefList() const { return mTableRefs; }
+	const ColumnDefList& GetTargetColumnDefList() const { return mColumnDefs; }
+	const BooleanExpr* GetWhereExpr() const { return mpWhereExpr; }
 	const PandaDB* GetDB() const { return mpDB; }
 
 	PandaDB *mpDB;

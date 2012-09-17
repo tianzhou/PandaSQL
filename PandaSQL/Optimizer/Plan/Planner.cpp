@@ -14,6 +14,7 @@
 #include "Parser/Statement.h"
 
 #include "Utils/Debug.h"
+#include "Utils/Expr/BooleanExpr.h"
 
 namespace PandaSQL
 {
@@ -35,6 +36,18 @@ PlanNode* Planner::GeneratePlan()
 	const RelNode *theRelNode = NULL;
 
 	const Table::TableRefList &allTableRef = mStatement.GetTableRefList();
+	const ColumnDefList &targetColumnDefList = mStatement.GetTargetColumnDefList();
+	const BooleanExpr *whereExpr = mStatement.GetWhereExpr();
+	mPlanContext.mpPredicateExpr = whereExpr;
+
+	JoinInfo joinInfo;
+	if (whereExpr)
+	{
+		for (size_t i = 0; i < whereExpr->GetBooleanList().size(); i++)
+		{
+			joinInfo.mPredicateIndexList.push_back(i);
+		}
+	}
 
 	Table::TableRefList::const_iterator iter = allTableRef.begin();
 
@@ -72,11 +85,11 @@ PlanNode* Planner::GeneratePlan()
 
 		for (size_t i = 2; i < theJoinPath.size(); i++)
 		{
-			outerNode = new NestLoopNode(&mPlanContext, *outerNode, *innerNode);
+			outerNode = new NestLoopNode(&mPlanContext, joinInfo, *outerNode, *innerNode);
 			innerNode = new SeqScanNode(&mPlanContext, theJoinPath[i], NULL); 		
 		}
 
-		newPlanNode = new NestLoopNode(&mPlanContext, *outerNode, *innerNode);
+		newPlanNode = new NestLoopNode(&mPlanContext, joinInfo, *outerNode, *innerNode);
 	}
 	else
 	{

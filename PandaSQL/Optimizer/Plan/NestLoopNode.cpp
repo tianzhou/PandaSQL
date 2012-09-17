@@ -2,18 +2,56 @@
 
 #include "NestLoopNode.h"
 
-#include "Optimizer/Plan/PlanContext.h"
+#include "PlanContext.h"
+
+#include "Utils/Debug.h"
+#include "Utils/Expr/BooleanExpr.h"
+#include "Utils/Expr/ExprContext.h"
 
 namespace PandaSQL
 {
 
-NestLoopNode::NestLoopNode(PlanContext *inPlanContext, PlanNode &inOuterNode, PlanNode &inInnerNode)
+NestLoopResultFunctor::NestLoopResultFunctor()
 :
-PlanNode(kNodeNestLoop, inPlanContext)
+mpNestLoopNode(NULL)
+{
+}
+
+NestLoopResultFunctor::~NestLoopResultFunctor()
+{
+}
+
+void
+NestLoopResultFunctor::operator()(const ColumnDefList &inColumnList, const ValueList &inValueList, const PlanNode &inPlanNode)
+{
+	if (&inPlanNode == &(mpNestLoopNode->GetOuterNode()))
+	{
+		mpNestLoopNode->mOuterNodeCurrentValueList = inValueList;
+		mpNestLoopNode->mOuterColumnDefList = inColumnList;
+	}
+	else if (&inPlanNode == &(mpNestLoopNode->GetInnerNode()))
+	{
+		mpNestLoopNode->mInnerNodeCurrentValueList = inValueList;
+		mpNestLoopNode->mInnerColumnDefList = inColumnList;
+	}
+	else
+	{
+		PDASSERT(0);
+	}
+}
+
+NestLoopNode::NestLoopNode(PlanContext *io_pPlanContext, const JoinInfo &inJoinInfo, PlanNode &inOuterNode, PlanNode &inInnerNode)
+:
+PlanNode(kNodeNestLoop, io_pPlanContext)
+,mJoinInfo(inJoinInfo)
+,mNextLoopResultFunctor()
 ,mOuterNode(inOuterNode)
 ,mInnerNode(inInnerNode)
 ,mNeedStepOuterNode(false)
 {
+	mNextLoopResultFunctor.SetNestLoopNode(this);
+	mOuterNode.SetResultFunctor(&mNextLoopResultFunctor);
+	mInnerNode.SetResultFunctor(&mNextLoopResultFunctor);
 }
 
 const PlanNode& NestLoopNode::GetOuterNode() const
@@ -36,7 +74,7 @@ void NestLoopNode::Start()
 		mInnerNode.Start();
 		mLastStatus = mInnerNode.GetLastStatus();
 
-		if (mLastStatus.OK())
+		if (mLastStatus.OK()) 
 		{
 			mNeedStepOuterNode = true;
 		}
@@ -50,31 +88,65 @@ bool NestLoopNode::Step()
 		return false;
 	}
 
-	bool result = true;
+	bool hasNext = false;
 
-	if (mNeedStepOuterNode)
+	while (1)
 	{
-		if (!mOuterNode.Step())
+		if (mNeedStepOuterNode)
 		{
-			result = false;
+			if (!mOuterNode.Step())
+			{
+				break;
+			} 
+
+			mNeedStepOuterNode = false;
 		}
-		
-		mNeedStepOuterNode = false;
+
+		do
+		{
+			if (mInnerNode.Step())
+			{
+				if (MatchJoinPred())
+			 	{
+					ValueList theList;
+					ColumnDefList theColumnDefList;
+					
+					(*mpResultFunctor)(theColumnDefList, theList, *this);
+					hasNext = true;
+				}
+			}
+			else
+			{
+				mNeedStepOuterNode = true;
+			}
+		}while (hasNext || mNeedStepOuterNode);
 	}
 
-	if (result)
-	{
-		if (!mOuterNode.Step())
-		{
-			mNeedStepOuterNode = true;
-		}
-	}
-
-	return result;
+	return hasNext;
 }
 
 void NestLoopNode::End()
 {
+}
+
+bool NestLoopNode::MatchJoinPred()
+{
+	bool result = true;
+	const BooleanExpr::BooleanList &predList = mpPlanContext->mpPredicateExpr->GetBooleanList();
+
+	ExprContext exprContext;
+	exprContext.UpdateTupleValue(mOuterColumnDefList, mOuterNodeCurrentValueList);
+	exprContext.UpdateTupleValue(mInnerColumnDefList, mInnerNodeCurrentValueList);
+	for (size_t i = 0; i < mJoinInfo.mPredicateIndexList.size(); i++)
+	{
+		if (!predList[mJoinInfo.mPredicateIndexList[i]]->IsTrue(&exprContext))
+		{
+			result = false;
+			break;
+		}
+	}
+
+	return result;
 }
 
 }	// PandaSQL

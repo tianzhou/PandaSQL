@@ -8,11 +8,13 @@ namespace PandaSQL
 
 class RelNode;
 class PandaDB;
+class BooleanExpr;
 
 struct PlanContext
 {
 	std::vector<const RelNode*> mRelList;
 	PandaDB *mpDB;
+	const BooleanExpr *mpPredicateExpr;
 };
 
 }	// namespace PandaSQL

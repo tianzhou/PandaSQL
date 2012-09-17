@@ -3,6 +3,7 @@
 #include "SeqScanNode.h"
 
 #include "PlanContext.h"
+#include "PlanResult.h"
 
 #include "PandaDB.h"
 
@@ -77,7 +78,9 @@ bool SeqScanNode::Step()
 		ValueList theValueList;
 		if (mpTupleIterator->GetValue(&theValueList))
 		{
-			(*mpTupleFunctor)(theValueList);
+			const RelNode *pRelNode = mpPlanContext->mRelList[mRelIndex];
+			const Table *pTable = pRelNode->GetTable();
+			(*mpResultFunctor)(pTable->GetAllColumns(), theValueList, *this);
 			result = true;
 		}
 	}
