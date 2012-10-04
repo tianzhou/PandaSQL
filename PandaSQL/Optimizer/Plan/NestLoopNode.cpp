@@ -94,7 +94,7 @@ bool NestLoopNode::Step()
 
 	bool hasNext = false;
 
-	while (1)
+	while (!hasNext)
 	{
 		if (mNeedStepOuterNode)
 		{
@@ -106,7 +106,7 @@ bool NestLoopNode::Step()
 			mNeedStepOuterNode = false;
 		}
 
-		do
+		while (!mNeedStepOuterNode && !hasNext)
 		{
 			if (mpInnerNode->Step())
 			{
@@ -116,6 +116,7 @@ bool NestLoopNode::Step()
 					ColumnDefList theColumnDefList;
 					
 					(*mpResultFunctor)(theColumnDefList, theList, *this);
+				
 					hasNext = true;
 				}
 			}
@@ -123,7 +124,7 @@ bool NestLoopNode::Step()
 			{
 				mNeedStepOuterNode = true;
 			}
-		}while (hasNext || mNeedStepOuterNode);
+		}
 	}
 
 	return hasNext;
