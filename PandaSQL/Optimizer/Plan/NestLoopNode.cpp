@@ -40,39 +40,43 @@ NestLoopResultFunctor::operator()(const ColumnDefList &inColumnList, const Value
 	}
 }
 
-NestLoopNode::NestLoopNode(PlanContext *io_pPlanContext, const JoinInfo &inJoinInfo, PlanNode &inOuterNode, PlanNode &inInnerNode)
+NestLoopNode::NestLoopNode(PlanContext *io_pPlanContext, const JoinInfo &inJoinInfo, PlanNode *io_outerNode, PlanNode *io_innerNode)
 :
 PlanNode(kNodeNestLoop, io_pPlanContext)
 ,mJoinInfo(inJoinInfo)
-,mNextLoopResultFunctor()
-,mOuterNode(inOuterNode)
-,mInnerNode(inInnerNode)
+,mNestLoopResultFunctor()
+,mpOuterNode(io_outerNode)
+,mpInnerNode(io_innerNode)
 ,mNeedStepOuterNode(false)
 {
-	mNextLoopResultFunctor.SetNestLoopNode(this);
-	mOuterNode.SetResultFunctor(&mNextLoopResultFunctor);
-	mInnerNode.SetResultFunctor(&mNextLoopResultFunctor);
+	mNestLoopResultFunctor.SetNestLoopNode(this);
+	mpOuterNode->SetResultFunctor(&mNestLoopResultFunctor);
+	mpInnerNode->SetResultFunctor(&mNestLoopResultFunctor);
+}
+
+NestLoopNode::~NestLoopNode()
+{
 }
 
 const PlanNode& NestLoopNode::GetOuterNode() const
 {
-	return mOuterNode;
+	return *mpOuterNode;
 }
 	
 const PlanNode& NestLoopNode::GetInnerNode() const
 {
-	return mInnerNode;
+	return *mpInnerNode;
 }
 
 void NestLoopNode::Start()
 {
-	mOuterNode.Start();
-	mLastStatus = mOuterNode.GetLastStatus();
+	mpOuterNode->Start();
+	mLastStatus = mpOuterNode->GetLastStatus();
 
 	if (mLastStatus.OK())
 	{
-		mInnerNode.Start();
-		mLastStatus = mInnerNode.GetLastStatus();
+		mpInnerNode->Start();
+		mLastStatus = mpInnerNode->GetLastStatus();
 
 		if (mLastStatus.OK()) 
 		{
@@ -94,7 +98,7 @@ bool NestLoopNode::Step()
 	{
 		if (mNeedStepOuterNode)
 		{
-			if (!mOuterNode.Step())
+			if (!mpOuterNode->Step())
 			{
 				break;
 			} 
@@ -104,7 +108,7 @@ bool NestLoopNode::Step()
 
 		do
 		{
-			if (mInnerNode.Step())
+			if (mpInnerNode->Step())
 			{
 				if (MatchJoinPred())
 			 	{

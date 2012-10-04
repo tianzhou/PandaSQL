@@ -30,14 +30,12 @@ void TupleFunctor::operator()(const ValueList &inValueList)
 #endif
 }
 
-SeqScanNode::SeqScanNode(PlanContext *io_pPlanContext, uint32_t inRelIndex, TupleFunctor *io_pTupleFunctor)
+SeqScanNode::SeqScanNode(PlanContext *io_pPlanContext, uint32_t inRelIndex)
 :
 PlanNode(kNodeSeqScan, io_pPlanContext)
 ,mRelIndex(inRelIndex)
-,mpTupleFunctor(io_pTupleFunctor)
 ,mpTupleIterator(NULL)
 {
-	PDASSERT(mpTupleFunctor);
 }
 
 SeqScanNode::~SeqScanNode()

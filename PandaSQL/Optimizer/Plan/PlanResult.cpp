@@ -5,4 +5,18 @@
 namespace PandaSQL
 {
 
+FinalResultFunctor::FinalResultFunctor()
+{
+}
+
+FinalResultFunctor::~FinalResultFunctor()
+{
+}
+
+void
+FinalResultFunctor::operator()(const ColumnDefList &inColumnList, const ValueList &inValueList, const PlanNode &inPlanNode)
+{
+
+}
+
 }	// PandaSQL

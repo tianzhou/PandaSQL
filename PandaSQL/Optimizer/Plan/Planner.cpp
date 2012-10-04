@@ -60,8 +60,7 @@ PlanNode* Planner::GeneratePlan()
 
 	if (mPlanContext.mRelList.size() == 1)
 	{
-		SeqScanNode *seqScanNode = new SeqScanNode(&mPlanContext, 0, NULL);
-
+		SeqScanNode *seqScanNode = new SeqScanNode(&mPlanContext, 0);
 		newPlanNode = seqScanNode;
 	}
 	else if (mPlanContext.mRelList.size() > 1)
@@ -80,21 +79,23 @@ PlanNode* Planner::GeneratePlan()
 		//   B  C  D
 		//  /\ 
 		// E  F
-		PlanNode *outerNode = new SeqScanNode(&mPlanContext, theJoinPath[0], NULL);
-		PlanNode *innerNode = new SeqScanNode(&mPlanContext, theJoinPath[1], NULL);	
+		PlanNode *outerNode = new SeqScanNode(&mPlanContext, theJoinPath[0]);
+		PlanNode *innerNode = new SeqScanNode(&mPlanContext, theJoinPath[1]);	
 
 		for (size_t i = 2; i < theJoinPath.size(); i++)
 		{
-			outerNode = new NestLoopNode(&mPlanContext, joinInfo, *outerNode, *innerNode);
-			innerNode = new SeqScanNode(&mPlanContext, theJoinPath[i], NULL); 		
+			outerNode = new NestLoopNode(&mPlanContext, joinInfo, outerNode, innerNode);
+			innerNode = new SeqScanNode(&mPlanContext, theJoinPath[i]); 		
 		}
 
-		newPlanNode = new NestLoopNode(&mPlanContext, joinInfo, *outerNode, *innerNode);
+		newPlanNode = new NestLoopNode(&mPlanContext, joinInfo, outerNode, innerNode);
 	}
 	else
 	{
 		PDASSERT(0);
 	}
+
+	newPlanNode->SetResultFunctor(&mPlanContext.mFinalResultFunctor);
 
 	return newPlanNode;
 }

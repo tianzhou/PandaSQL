@@ -1067,14 +1067,6 @@
 						>
 					</File>
 					<File
-						RelativePath=".\Optimizer\Plan\PlanResult.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Optimizer\Plan\PlanResult.h"
-						>
-					</File>
-					<File
 						RelativePath=".\Optimizer\Plan\SeqScanNode.cpp"
 						>
 					</File>
@@ -1082,6 +1074,18 @@
 						RelativePath=".\Optimizer\Plan\SeqScanNode.h"
 						>
 					</File>
+					<Filter
+						Name="Result"
+						>
+						<File
+							RelativePath=".\Optimizer\Plan\PlanResult.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Optimizer\Plan\PlanResult.h"
+							>
+						</File>
+					</Filter>
 				</Filter>
 				<Filter
 					Name="Path"

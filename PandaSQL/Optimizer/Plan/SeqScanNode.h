@@ -9,7 +9,6 @@ namespace PandaSQL
 {
 
 class RelNode;
-class TupleFunctor;
 class TupleIterator;
 
 class SeqScanNode : public PlanNode
@@ -17,7 +16,7 @@ class SeqScanNode : public PlanNode
 
 public:
 
-	SeqScanNode(PlanContext *io_pPlanContext, uint32_t inRelIndex, TupleFunctor *io_pTupleFunctor);
+	SeqScanNode(PlanContext *io_pPlanContext, uint32_t inRelIndex);
 	virtual ~SeqScanNode();
 
 	virtual void Start();
@@ -27,7 +26,6 @@ public:
 private:
 
 	uint32_t mRelIndex;
-	TupleFunctor *mpTupleFunctor;
 	TupleIterator *mpTupleIterator;
 };
 

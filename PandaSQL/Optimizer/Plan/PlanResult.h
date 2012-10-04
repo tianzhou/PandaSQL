@@ -26,6 +26,21 @@ private:
 
 };
 
+class FinalResultFunctor : public PlanResultFunctor
+{
+
+public:
+
+	FinalResultFunctor();
+
+	virtual ~FinalResultFunctor();
+
+	virtual void operator()(const ColumnDefList &inColumnList, const ValueList &inValueList, const PlanNode &inPlanNode);
+
+private:
+	
+};
+
 }	// namespace PandaSQL
 
 #endif	// PANDASQL_PLAN_RESULT_H

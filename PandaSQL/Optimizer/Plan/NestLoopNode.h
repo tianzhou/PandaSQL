@@ -35,7 +35,10 @@ class NestLoopNode : public PlanNode
 
 public:
 
-	NestLoopNode(PlanContext *io_pPlanContext, const JoinInfo &inJoinInfo, PlanNode &inOuterNode, PlanNode &inInnerNode);
+	//Take the ownership of outer and inner node
+	NestLoopNode(PlanContext *io_pPlanContext, const JoinInfo &inJoinInfo, PlanNode *io_outerNode, PlanNode *io_innerNode);
+
+	virtual ~NestLoopNode();
 
 	const PlanNode& GetOuterNode() const;
 	
@@ -52,9 +55,9 @@ private:
 	friend class NestLoopResultFunctor;
 
 	const JoinInfo &mJoinInfo;
-	NestLoopResultFunctor mNextLoopResultFunctor;
-	PlanNode &mOuterNode;
-	PlanNode &mInnerNode;
+	NestLoopResultFunctor mNestLoopResultFunctor;
+	PlanNode *mpOuterNode;
+	PlanNode *mpInnerNode;
 	ColumnDefList mOuterColumnDefList;	
 	ColumnDefList mInnerColumnDefList;
 	ValueList mOuterNodeCurrentValueList;

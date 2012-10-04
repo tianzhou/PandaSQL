@@ -3,6 +3,8 @@
 
 #include <vector>
 
+#include "PlanResult.h"
+
 namespace PandaSQL
 {
 
@@ -15,6 +17,7 @@ struct PlanContext
 	std::vector<const RelNode*> mRelList;
 	PandaDB *mpDB;
 	const BooleanExpr *mpPredicateExpr;
+	FinalResultFunctor mFinalResultFunctor;
 };
 
 }	// namespace PandaSQL
