@@ -14,6 +14,7 @@ BDBScanIterator::BDBScanIterator(const ColumnDefList &inColumnDefList, DB *io_db
 :TupleIterator(inColumnDefList)
 ,mpDBTable(io_dbTable)
 ,mpDBCursor(NULL)
+,mJustReset(false)
 {
 }
 
@@ -47,11 +48,25 @@ void BDBScanIterator::Reset()
 			mLastError = Status::kInternalError;
 		}
 	}
+
+	mJustReset = true;
 }
 
 bool BDBScanIterator::Next()
 {
-	return MoveCursor_Private(DB_NEXT);
+	bool result;
+
+	if (mJustReset)
+	{
+		mJustReset = false;
+		result = MoveCursor_Private(DB_FIRST);
+	}
+	else
+	{
+		result = MoveCursor_Private(DB_NEXT);
+	}
+
+	return result;
 }
 
 bool BDBScanIterator::Prev()

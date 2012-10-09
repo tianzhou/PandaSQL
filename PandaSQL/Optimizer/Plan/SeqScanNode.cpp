@@ -16,6 +16,8 @@
 
 #include "Utils/Debug.h"
 
+#include <algorithm>
+
 namespace PandaSQL
 {
 
@@ -43,7 +45,7 @@ SeqScanNode::~SeqScanNode()
 	PDASSERT(!mpTupleIterator);
 }
 
-void SeqScanNode::Start()
+void SeqScanNode::Reset()
 {
 	PDASSERT(mRelIndex >= 0 && mRelIndex < mpPlanContext->mRelList.size());
 
@@ -94,6 +96,32 @@ void SeqScanNode::End()
 
 	delete mpTupleIterator;
 	mpTupleIterator = NULL;
+}
+
+void SeqScanNode::SetupProjection(const TableAndColumnSetMap &inRequiredColumns)
+{
+	PDASSERT(mProjectionList.empty());
+
+	const RelNode *pRelNode = mpPlanContext->mRelList[mRelIndex];
+	const Table *pTable = pRelNode->GetTable();
+	TableAndColumnSetMap::const_iterator table_column_map_iter = inRequiredColumns.find(pTable->GetName());
+
+	if (table_column_map_iter != inRequiredColumns.end())
+	{
+		const ColumnDefList &allColumns = pTable->GetAllColumns();
+	
+		ColumnDefList::const_iterator columnIter = allColumns.begin();
+
+		for (; columnIter != allColumns.end(); columnIter++)
+		{
+			if (table_column_map_iter->second.find(columnIter->qualifiedName.columnName) != table_column_map_iter->second.end())
+			{
+				mProjectionList.push_back(columnIter->index);
+			}
+		}
+	}
+
+	std::sort(mProjectionList.begin(), mProjectionList.end());
 }
 
 }	// PandaSQL

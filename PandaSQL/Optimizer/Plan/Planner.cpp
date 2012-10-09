@@ -40,14 +40,9 @@ PlanNode* Planner::GeneratePlan()
 	const BooleanExpr *whereExpr = mStatement.GetWhereExpr();
 	mPlanContext.mpPredicateExpr = whereExpr;
 
-	JoinInfo joinInfo;
-	if (whereExpr)
-	{
-		for (size_t i = 0; i < whereExpr->GetBooleanList().size(); i++)
-		{
-			joinInfo.mPredicateIndexList.push_back(i);
-		}
-	}
+	//TODO: The second one might be unnecessary.
+	mPlanContext.mFinalResultFunctor.SetProjectionList(targetColumnDefList);	
+	mPlanContext.mpFinalProjectionList = &targetColumnDefList;
 
 	Table::TableRefList::const_iterator iter = allTableRef.begin();
 
@@ -66,13 +61,14 @@ PlanNode* Planner::GeneratePlan()
 	else if (mPlanContext.mRelList.size() > 1)
 	{
 		JoinPath theJoinPath;
+		JoinInfo joinInfo;
 
 		for (size_t i = 0; i < mPlanContext.mRelList.size(); i++)
 		{
 			theJoinPath.push_back(i);
 		}
 
-		// Construct left tree
+		// Construct left deep tree
 		//		A
 		//	   / \
 		//    /\  \
@@ -94,6 +90,33 @@ PlanNode* Planner::GeneratePlan()
 	{
 		PDASSERT(0);
 	}
+
+	ProjectionIndexList rootProjectionList;
+	for (size_t i = 0; i < mPlanContext.mpFinalProjectionList->size(); i++)
+	{
+		rootProjectionList.push_back(i);
+	}
+
+	ColumnDefList::const_iterator final_projection_iter = mPlanContext.mpFinalProjectionList->begin();
+
+	for (; final_projection_iter != mPlanContext.mpFinalProjectionList->end(); final_projection_iter++)
+	{
+		AddOneColumnToMap(final_projection_iter->qualifiedName, &mPlanContext.mRequiredColumns);	
+	}
+
+	mPlanContext.mpPredicateExpr->GetDependentColumns(&mPlanContext.mRequiredColumns);
+	
+
+	PredicateIndexList rootPredicateList;
+	if (mPlanContext.mpPredicateExpr)
+	{
+		for (size_t i = 0; i < mPlanContext.mpPredicateExpr->GetBooleanList().size(); i++)
+		{
+			rootPredicateList.push_back(i);
+		}
+	}
+
+	newPlanNode->SetupProjection(mPlanContext.mRequiredColumns);
 
 	newPlanNode->SetResultFunctor(&mPlanContext.mFinalResultFunctor);
 

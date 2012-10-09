@@ -16,7 +16,7 @@ PlanNode::~PlanNode()
 {
 }
 
-void PlanNode::Start()
+void PlanNode::Reset()
 {
 
 }
@@ -29,6 +29,10 @@ bool PlanNode::Step()
 void PlanNode::End()
 {
 
+}
+
+void PlanNode::SetupProjection(const TableAndColumnSetMap &inRequiredColumns)
+{
 }
 
 }	// PandaSQL

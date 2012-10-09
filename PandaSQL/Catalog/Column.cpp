@@ -17,6 +17,13 @@ tableName(inTableName)
 {
 }
 
+bool ColumnQualifiedName::operator==(const ColumnQualifiedName &rhs) const
+{
+	return this->tableName == rhs.tableName
+		&& this->columnName == rhs.columnName
+		;
+}
+
 bool ColumnQualifiedName::operator<(const ColumnQualifiedName &rhs) const
 {
 	if (this->tableName == rhs.tableName)
@@ -35,6 +42,31 @@ qualifiedName()
 ,constraintType(kConstraintNone)
 {
 	
+}
+
+bool ColumnDef::operator==(const ColumnDef &rhs) const
+{
+	return this->qualifiedName == rhs.qualifiedName
+		&& this->index == rhs.index
+		&& this->dataType == rhs.dataType
+		&& this->constraintType == rhs.constraintType
+		;
+}
+
+void AddOneColumnToMap(const ColumnQualifiedName &inColumnQualifiedName, TableAndColumnSetMap *io_tableAndColumnSetMap)
+{
+	TableAndColumnSetMap::iterator iter = io_tableAndColumnSetMap->find(inColumnQualifiedName.tableName);
+
+	if (iter == io_tableAndColumnSetMap->end())
+	{
+		ColumnNameSet newColumnSet;
+		newColumnSet.insert(inColumnQualifiedName.columnName);
+		(*io_tableAndColumnSetMap)[inColumnQualifiedName.tableName] = newColumnSet;
+	}
+	else
+	{
+		iter->second.insert(inColumnQualifiedName.columnName);
+	}
 }
 
 }	// PandaSQL

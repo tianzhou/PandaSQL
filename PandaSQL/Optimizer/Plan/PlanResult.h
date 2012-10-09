@@ -37,7 +37,11 @@ public:
 
 	virtual void operator()(const ColumnDefList &inColumnList, const ValueList &inValueList, const PlanNode &inPlanNode);
 
+	void SetProjectionList(const ColumnDefList &inResultProjectionList);
+
 private:
+
+	const ColumnDefList *mpResultProjectionList;
 	
 };
 

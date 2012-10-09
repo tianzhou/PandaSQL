@@ -34,6 +34,8 @@ private:
 	
 	DB *mpDBTable;
 	DBC *mpDBCursor;
+
+	bool mJustReset;
 };
 
 }	// PandaSQL

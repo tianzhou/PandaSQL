@@ -11,7 +11,7 @@ Status Executor::ExecutePlan(PlanNode *io_pRootPlanNode)
 {
 	Status result;
 
-	io_pRootPlanNode->Start();
+	io_pRootPlanNode->Reset();
 	
 	while(io_pRootPlanNode->Step());
 

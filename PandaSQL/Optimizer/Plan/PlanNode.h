@@ -3,12 +3,13 @@
 
 #include "Optimizer/Node.h"
 
+#include "Optimizer/Plan/PlanContext.h"
+
 #include "Utils/Status.h"
 
 namespace PandaSQL
 {
 
-struct PlanContext;
 class PlanResultFunctor;
 
 class PlanNode : public Node
@@ -19,9 +20,12 @@ public:
 	PlanNode(NodeType inNodeType, PlanContext *io_pPlanContext);
 	virtual ~PlanNode();
 
-	virtual	void	Start();
+	virtual	void	Reset();
 	virtual	bool	Step();
 	virtual	void	End();
+
+	//Recursively setup projection
+	virtual void SetupProjection(const TableAndColumnSetMap &inRequiredColumns);
 
 	Status	GetLastStatus() const { return mLastStatus; }
 	void SetResultFunctor(PlanResultFunctor *io_resultFunctor) { mpResultFunctor = io_resultFunctor; }
@@ -32,7 +36,7 @@ protected:
 	Status mLastStatus;
 
 	PlanResultFunctor *mpResultFunctor;
-
+	PredicateIndexList mPredicateIndexListInTermsOfPlanContext;
 };
 
 }	// namespace PandaSQL

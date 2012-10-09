@@ -42,4 +42,9 @@ Status ColumnExpr::GetValue(ExprContext *io_exprContext, Value *io_value) const
 	return result;
 }
 
+void ColumnExpr::GetDependentColumns(TableAndColumnSetMap *io_tableAndColumnSetMap) const
+{
+	AddOneColumnToMap(mQualifiedColumnName, io_tableAndColumnSetMap);
+}
+
 }	// PandaSQL

@@ -8,6 +8,8 @@
 #include "Utils/Expr/BooleanExpr.h"
 #include "Utils/Expr/ExprContext.h"
 
+#include <algorithm>
+
 namespace PandaSQL
 {
 
@@ -68,14 +70,14 @@ const PlanNode& NestLoopNode::GetInnerNode() const
 	return *mpInnerNode;
 }
 
-void NestLoopNode::Start()
+void NestLoopNode::Reset()
 {
-	mpOuterNode->Start();
+	mpOuterNode->Reset();
 	mLastStatus = mpOuterNode->GetLastStatus();
 
 	if (mLastStatus.OK())
 	{
-		mpInnerNode->Start();
+		mpInnerNode->Reset();
 		mLastStatus = mpInnerNode->GetLastStatus();
 
 		if (mLastStatus.OK()) 
@@ -104,6 +106,8 @@ bool NestLoopNode::Step()
 			} 
 
 			mNeedStepOuterNode = false;
+
+			mpInnerNode->Reset();
 		}
 
 		while (!mNeedStepOuterNode && !hasNext)
@@ -111,11 +115,15 @@ bool NestLoopNode::Step()
 			if (mpInnerNode->Step())
 			{
 				if (MatchJoinPred())
-			 	{
-					ValueList theList;
-					ColumnDefList theColumnDefList;
+				{
+					//TODO: This is quite in-efficient
+					ColumnDefList theColumnDefList = mOuterColumnDefList;
+					theColumnDefList.insert(theColumnDefList.end(), mInnerColumnDefList.begin(), mInnerColumnDefList.end());
 					
-					(*mpResultFunctor)(theColumnDefList, theList, *this);
+					ValueList theValueList = mOuterNodeCurrentValueList;
+					theValueList.insert(theValueList.end(), mInnerNodeCurrentValueList.begin(), mInnerNodeCurrentValueList.end());
+
+					(*mpResultFunctor)(theColumnDefList, theValueList, *this);
 				
 					hasNext = true;
 				}
@@ -134,17 +142,24 @@ void NestLoopNode::End()
 {
 }
 
+void NestLoopNode::SetupProjection(const TableAndColumnSetMap &inRequiredColumns)
+{
+	mpOuterNode->SetupProjection(inRequiredColumns);
+	mpInnerNode->SetupProjection(inRequiredColumns);
+}
+
 bool NestLoopNode::MatchJoinPred()
 {
+	return true;
 	bool result = true;
 	const BooleanExpr::BooleanList &predList = mpPlanContext->mpPredicateExpr->GetBooleanList();
 
 	ExprContext exprContext;
 	exprContext.UpdateTupleValue(mOuterColumnDefList, mOuterNodeCurrentValueList);
 	exprContext.UpdateTupleValue(mInnerColumnDefList, mInnerNodeCurrentValueList);
-	for (size_t i = 0; i < mJoinInfo.mPredicateIndexList.size(); i++)
+	for (size_t i = 0; i < mPredicateIndexListInTermsOfPlanContext.size(); i++)
 	{
-		if (!predList[mJoinInfo.mPredicateIndexList[i]]->IsTrue(&exprContext))
+		if (!predList[mPredicateIndexListInTermsOfPlanContext[i]]->IsTrue(&exprContext))
 		{
 			result = false;
 			break;

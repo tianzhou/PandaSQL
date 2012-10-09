@@ -1,4 +1,4 @@
-SELECT master_id, name, detail_id, course
+SELECT detail_id, name, course
 FROM Master, Detail
 WHERE master_id = detail_id
 ;

@@ -69,4 +69,9 @@ Status Expr::GetValue(ExprContext *io_exprContext, Value *io_value) const
 	return result;
 }
 
+void Expr::GetDependentColumns(TableAndColumnSetMap *io_tableAndColumnSetMap) const
+{
+
+}
+
 }	// PandaSQL

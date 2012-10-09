@@ -44,9 +44,11 @@ public:
 	
 	const PlanNode& GetInnerNode() const;
 
-	virtual	void	Start();
+	virtual	void	Reset();
 	virtual	bool	Step();
 	virtual	void	End();
+
+	virtual void SetupProjection(const TableAndColumnSetMap &inRequiredColumns);
 
 private:
 

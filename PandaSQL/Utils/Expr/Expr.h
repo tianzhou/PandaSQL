@@ -52,6 +52,7 @@ public:
 	virtual bool IsTrue(ExprContext *io_exprContext) const;
 	virtual Status GetValue(ExprContext *io_exprContext, Value *io_value) const;
 
+	virtual void GetDependentColumns(TableAndColumnSetMap *io_tableAndColumnSetMap) const;
 
 	ExprType mExprType;
 

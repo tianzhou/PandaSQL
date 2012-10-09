@@ -7,6 +7,8 @@
 
 #include <string>
 #include <vector>
+#include <map>
+#include <set>
 
 namespace PandaSQL
 {
@@ -29,6 +31,7 @@ struct ColumnQualifiedName
 
 	ColumnQualifiedName();
 	ColumnQualifiedName(const std::string inTableName, const std::string inColumnName);
+	bool operator==(const ColumnQualifiedName &rhs) const;
 	bool operator<(const ColumnQualifiedName &rhs) const;
 };
 
@@ -39,10 +42,19 @@ struct ColumnDef
 	DataType dataType;
 	ConstraintType constraintType;
 	ColumnDef();
+
+	bool operator==(const ColumnDef &rhs) const;
 };
 
 typedef std::vector<ColumnDef> ColumnDefList;
+typedef std::vector<uint32_t> ColumnIndexList;
+
+typedef std::set<std::string> ColumnNameSet;
+//<TableName, ColumnSet>
+typedef std::map<std::string, ColumnNameSet> TableAndColumnSetMap;
+
+void AddOneColumnToMap(const ColumnQualifiedName &inColumnQualifiedName, TableAndColumnSetMap *io_tableAndColumnSetMap);
 
 }	// PandaSQL
 
-#endif	// PANDASQL_TABLE_H
+#endif	// PANDASQL_TABLE_H	
