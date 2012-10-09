@@ -53,6 +53,7 @@ PlanNode* Planner::GeneratePlan()
 		mPlanContext.mRelList.push_back(theRelNode);
 	}
 
+	JoinInfoList joinInfoList;
 	if (mPlanContext.mRelList.size() == 1)
 	{
 		SeqScanNode *seqScanNode = new SeqScanNode(&mPlanContext, 0);
@@ -66,6 +67,17 @@ PlanNode* Planner::GeneratePlan()
 		for (size_t i = 0; i < mPlanContext.mRelList.size(); i++)
 		{
 			theJoinPath.push_back(i);
+			
+			//if (i > 0)
+			//{
+			//	GenerateJoinInfo(
+			//		*mPlanContext.mRelList[i-1]
+			//		, *mPlanContext.mRelList[i]
+			//		, *mPlanContext.mpPredicateExpr
+			//		, &joinInfo);
+
+			//	joinInfoList.push_back(joinInfo);
+			//}
 		}
 
 		// Construct left deep tree

@@ -36,7 +36,6 @@ protected:
 	Status mLastStatus;
 
 	PlanResultFunctor *mpResultFunctor;
-	PredicateIndexList mPredicateIndexListInTermsOfPlanContext;
 };
 
 }	// namespace PandaSQL

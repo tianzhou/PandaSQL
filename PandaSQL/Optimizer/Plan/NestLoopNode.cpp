@@ -150,23 +150,11 @@ void NestLoopNode::SetupProjection(const TableAndColumnSetMap &inRequiredColumns
 
 bool NestLoopNode::MatchJoinPred()
 {
-	return true;
-	bool result = true;
-	const BooleanExpr::BooleanList &predList = mpPlanContext->mpPredicateExpr->GetBooleanList();
-
 	ExprContext exprContext;
 	exprContext.UpdateTupleValue(mOuterColumnDefList, mOuterNodeCurrentValueList);
 	exprContext.UpdateTupleValue(mInnerColumnDefList, mInnerNodeCurrentValueList);
-	for (size_t i = 0; i < mPredicateIndexListInTermsOfPlanContext.size(); i++)
-	{
-		if (!predList[mPredicateIndexListInTermsOfPlanContext[i]]->IsTrue(&exprContext))
-		{
-			result = false;
-			break;
-		}
-	}
-
-	return result;
+	
+	return mpPlanContext->mpPredicateExpr->IsTrue(&exprContext);
 }
 
 }	// PandaSQL
