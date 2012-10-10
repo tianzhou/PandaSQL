@@ -3,8 +3,30 @@ Master:
 2, "Peter"
 3, "Mary"
 
-
 Detail:
-2, "Math"
-2, "Physics"
-3, "History"
+1, "Math", 1
+2, "Math", 3
+3, "Physics", 1
+4, "History", 1
+5, "History", 2
+6, "History", 3
+
+Detail_Detail:
+1, 90, 3
+2, 80, 4
+3, 70, 2
+4, 60, 5
+5, 20, 1
+6, 100, 6
+
+Bob:
+Math: 20
+Physics: 90
+History: 80
+
+Peter:
+History: 60
+
+Mary:
+Math: 70
+History: 100

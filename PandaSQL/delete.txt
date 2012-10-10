@@ -1,3 +1,5 @@
 DELETE FROM Master;
 
 DELETE FROM Detail;
+
+DELETE FROM Detail_Detail;

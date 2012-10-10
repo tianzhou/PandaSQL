@@ -112,8 +112,11 @@ PlanNode* Planner::GeneratePlan()
 	{
 		AddOneColumnToMap(final_projection_iter->qualifiedName, &mPlanContext.mRequiredColumns);	
 	}
-	mPlanContext.mpPredicateExpr->PopulateDependentColumns(&mPlanContext.mRequiredColumns);
-	
+
+	if (mPlanContext.mpPredicateExpr)
+	{
+		mPlanContext.mpPredicateExpr->PopulateDependentColumns(&mPlanContext.mRequiredColumns);
+	}
 
 	newPlanNode->SetupProjection(mPlanContext.mRequiredColumns);
 

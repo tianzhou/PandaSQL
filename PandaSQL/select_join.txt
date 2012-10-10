@@ -1,4 +1,5 @@
-SELECT detail_id, name, course
-FROM Master, Detail
-WHERE master_id = detail_id
+SELECT name, course, grade
+FROM Master, Detail, Detail_Detail
+WHERE master_id = master_id_fk
+and detail_id = detail_id_fk
 ;

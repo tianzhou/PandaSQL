@@ -64,16 +64,26 @@ bool BinaryExpr::IsTrue(ExprContext *io_exprContext) const
 		mpLeftOperand->GetValue(io_exprContext, &leftValue);
 		mpRightOperand->GetValue(io_exprContext, &rightValue);
 
-		switch (mOpType)
+		// If the current context doesn't include the value for the operand,
+		// We just assume it is true, which means it's too early to evaluate.
+		if (leftValue.GetType() == kUnknownType
+			|| rightValue.GetType() == kUnknownType)
 		{
-		case kBinaryEqual:
+			result = true;
+		}
+		else
+		{
+			switch (mOpType)
 			{
-				result = (leftValue == rightValue);
+			case kBinaryEqual:
+				{
+					result = (leftValue == rightValue);
+					break;
+				}
+			default:
+				PDASSERT(0);
 				break;
 			}
-		default:
-			PDASSERT(0);
-			break;
 		}
 	}
 

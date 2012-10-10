@@ -15,6 +15,8 @@ public:
 	Value();
 	bool operator==(const Value &rhs) const;
 
+	DataType GetType() const { return mValueType; }
+
 	int32_t GetAsNumber() const;
 	void SetAsNumber(int32_t inNumber);
 

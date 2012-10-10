@@ -44,7 +44,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	PandaSQL::PandaDB db(PandaSQL::kBDB);
 	PandaSQL::PandaDB::Options openOptions;
 	openOptions.create_if_missing = true;
-	result = db.Open("C:\\Users\\Tianzhou\\Desktop\\PD_Data\\testDB", openOptions);
+	result = db.Open("C:\\Users\\Tianzhou\\Desktop\\PD_Data\\testDB\\BDB", openOptions);
 
 	if (result.OK())
 	{
