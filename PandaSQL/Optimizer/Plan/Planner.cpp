@@ -38,14 +38,15 @@ PlanNode* Planner::GeneratePlan()
 	const Table::TableRefList &allTableRef = mStatement.GetTableRefList();
 	const ColumnDefList &targetColumnDefList = mStatement.GetTargetColumnDefList();
 	const BooleanExpr *whereExpr = mStatement.GetWhereExpr();
+	
+	//Setup plan predicate expression
 	mPlanContext.mpPredicateExpr = whereExpr;
 
-	//TODO: The second one might be unnecessary.
-	mPlanContext.mFinalResultFunctor.SetProjectionList(targetColumnDefList);	
-	mPlanContext.mpFinalProjectionList = &targetColumnDefList;
+	//Setup final projection list
+	mPlanContext.mFinalResultFunctor.SetProjectionList(targetColumnDefList);
 
+	//Populate base relation list
 	Table::TableRefList::const_iterator iter = allTableRef.begin();
-
 	for(; iter != allTableRef.end(); iter++)
 	{
 		pDB->GetTableByName(*iter, &theTable);
@@ -53,6 +54,7 @@ PlanNode* Planner::GeneratePlan()
 		mPlanContext.mRelList.push_back(theRelNode);
 	}
 
+	//Generate Plan
 	JoinInfoList joinInfoList;
 	if (mPlanContext.mRelList.size() == 1)
 	{
@@ -61,6 +63,7 @@ PlanNode* Planner::GeneratePlan()
 	}
 	else if (mPlanContext.mRelList.size() > 1)
 	{
+		//Setup join order
 		JoinPath theJoinPath;
 		JoinInfo joinInfo;
 
@@ -103,30 +106,14 @@ PlanNode* Planner::GeneratePlan()
 		PDASSERT(0);
 	}
 
-	ProjectionIndexList rootProjectionList;
-	for (size_t i = 0; i < mPlanContext.mpFinalProjectionList->size(); i++)
-	{
-		rootProjectionList.push_back(i);
-	}
-
-	ColumnDefList::const_iterator final_projection_iter = mPlanContext.mpFinalProjectionList->begin();
-
-	for (; final_projection_iter != mPlanContext.mpFinalProjectionList->end(); final_projection_iter++)
+	//Setup all required columns
+	ColumnDefList::const_iterator final_projection_iter = targetColumnDefList.begin();
+	for (; final_projection_iter != targetColumnDefList.end(); final_projection_iter++)
 	{
 		AddOneColumnToMap(final_projection_iter->qualifiedName, &mPlanContext.mRequiredColumns);	
 	}
-
-	mPlanContext.mpPredicateExpr->GetDependentColumns(&mPlanContext.mRequiredColumns);
+	mPlanContext.mpPredicateExpr->PopulateDependentColumns(&mPlanContext.mRequiredColumns);
 	
-
-	PredicateIndexList rootPredicateList;
-	if (mPlanContext.mpPredicateExpr)
-	{
-		for (size_t i = 0; i < mPlanContext.mpPredicateExpr->GetBooleanList().size(); i++)
-		{
-			rootPredicateList.push_back(i);
-		}
-	}
 
 	newPlanNode->SetupProjection(mPlanContext.mRequiredColumns);
 

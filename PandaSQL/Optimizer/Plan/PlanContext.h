@@ -25,7 +25,6 @@ struct PlanContext
 	FinalResultFunctor mFinalResultFunctor;
 
 	//For select
-	const ColumnDefList *mpFinalProjectionList;
 	TableAndColumnSetMap mRequiredColumns;
 };
 
