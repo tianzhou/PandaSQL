@@ -1158,7 +1158,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\select_join.txt"
+			RelativePath=".\select_join_2table.txt"
+			>
+		</File>
+		<File
+			RelativePath=".\select_join_3table.txt"
 			>
 		</File>
 		<File

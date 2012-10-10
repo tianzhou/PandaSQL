@@ -33,7 +33,7 @@ public:
 	const BooleanList& GetBooleanList() const;
 	void AddExpr(const Expr *inExpr); 
 
-	virtual bool IsTrue(ExprContext *io_exprContext) const;
+	virtual bool IsTrue(const ExprContext &inExprContext) const;
 
 protected:
 	

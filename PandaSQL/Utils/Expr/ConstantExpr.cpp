@@ -37,12 +37,12 @@ void ConstantExpr::SetText(const std::string inTextValue)
 	mConstantValue.SetAsString(inTextValue);
 }
 
-bool ConstantExpr::IsTrue(ExprContext *io_exprContext) const
+bool ConstantExpr::IsTrue(const ExprContext &inExprContext) const
 {
 	return true;
 }
 
-Status ConstantExpr::GetValue(ExprContext *io_exprContext, Value *io_value) const
+Status ConstantExpr::GetValue(const ExprContext &inExprContext, Value *io_value) const
 {
 	Status result;
 

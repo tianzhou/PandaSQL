@@ -1,0 +1,4 @@
+SELECT name, course
+FROM Master, Detail
+WHERE master_id = master_id_fk
+;

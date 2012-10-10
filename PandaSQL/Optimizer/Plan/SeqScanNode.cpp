@@ -81,6 +81,7 @@ bool SeqScanNode::Step()
 			const RelNode *pRelNode = mpPlanContext->mRelList[mRelIndex];
 			const Table *pTable = pRelNode->GetTable();
 			(*mpResultFunctor)(pTable->GetAllColumns(), theValueList, *this);
+			mpPlanContext->mExprContext.UpdateTupleValue(pTable->GetAllColumns(), theValueList);
 			result = true;
 		}
 	}

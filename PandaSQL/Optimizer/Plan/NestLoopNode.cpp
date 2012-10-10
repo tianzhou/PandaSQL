@@ -26,6 +26,8 @@ NestLoopResultFunctor::~NestLoopResultFunctor()
 void
 NestLoopResultFunctor::operator()(const ColumnDefList &inColumnList, const ValueList &inValueList, const PlanNode &inPlanNode)
 {
+	//mpPlanContext->mExprContext.UpdateTupleValue(inColumnList, inValueList);
+
 	if (&inPlanNode == &(mpNestLoopNode->GetOuterNode()))
 	{
 		mpNestLoopNode->mOuterNodeCurrentValueList = inValueList;
@@ -154,7 +156,7 @@ bool NestLoopNode::MatchJoinPred()
 	exprContext.UpdateTupleValue(mOuterColumnDefList, mOuterNodeCurrentValueList);
 	exprContext.UpdateTupleValue(mInnerColumnDefList, mInnerNodeCurrentValueList);
 	
-	return mpPlanContext->mpPredicateExpr->IsTrue(&exprContext);
+	return mpPlanContext->mpPredicateExpr->IsTrue(mpPlanContext->mExprContext);
 }
 
 }	// PandaSQL

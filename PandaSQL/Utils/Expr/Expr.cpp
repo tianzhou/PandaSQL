@@ -57,12 +57,12 @@ void Expr::EvalExprList(const ExprList &inExprList, const TupleDesc &inTupleDesc
 	}
 }
 
-bool Expr::IsTrue(ExprContext *io_exprContext) const
+bool Expr::IsTrue(const ExprContext &inExprContext) const
 {
 	return true;
 }
 
-Status Expr::GetValue(ExprContext *io_exprContext, Value *io_value) const
+Status Expr::GetValue(const ExprContext &inExprContext, Value *io_value) const
 {
 	Status result;
 

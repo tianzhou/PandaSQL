@@ -18,8 +18,8 @@ public:
 	ColumnQualifiedName GetQualifiedColumnName() const;
 	void SetQualifiedColumnName(const ColumnQualifiedName &inQualifiedColumnName);
 
-	virtual bool IsTrue(ExprContext *io_exprContext) const;
-	virtual Status GetValue(ExprContext *io_exprContext, Value *io_value) const;
+	virtual bool IsTrue(const ExprContext &inExprContext) const;
+	virtual Status GetValue(const ExprContext &inExprContext, Value *io_value) const;
 
 	virtual void PopulateDependentColumns(TableAndColumnSetMap *io_tableAndColumnSetMap) const;
 

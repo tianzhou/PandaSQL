@@ -30,8 +30,8 @@ public:
 	std::string GetText() const;
 	void SetText(const std::string inTextValue);
 
-	virtual bool IsTrue(ExprContext *io_exprContext) const;
-	virtual Status GetValue(ExprContext *io_exprContext, Value *io_value) const;
+	virtual bool IsTrue(const ExprContext &inExprContext) const;
+	virtual Status GetValue(const ExprContext &inExprContext, Value *io_value) const;
 
 private:
 

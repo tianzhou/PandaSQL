@@ -197,7 +197,7 @@ Status PandaDB::SelectData(const Table::TableRefList &tableList, const JoinList 
 
 				exprContext.UpdateTupleValue(allColumnList, tupleValue);
 
-				if (!inWhereExpr || inWhereExpr->IsTrue(&exprContext))
+				if (!inWhereExpr || inWhereExpr->IsTrue(exprContext))
 				{
 					//TODO: This is slow when doing every time
 					ProjectTuple(allColumnList, projectColumnList, tupleValue, &projectTupleValue);			
@@ -265,7 +265,7 @@ Status PandaDB::SelectData(const Table::TableRefList &tableList, const JoinList 
 
 						exprContext.UpdateTupleValue(innerTableAllColumnList, innerTupleValue);
 
-						if (!inWhereExpr || inWhereExpr->IsTrue(&exprContext))
+						if (!inWhereExpr || inWhereExpr->IsTrue(exprContext))
 						{
 							//TODO: This is slow when doing every time
 							ValueList allTupleValue = outerTupleValue;

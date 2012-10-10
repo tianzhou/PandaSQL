@@ -39,7 +39,7 @@ void BooleanExpr::AddExpr(const Expr *inExpr)
 	mBooleanList.push_back(inExpr);
 }
 
-bool BooleanExpr::IsTrue(ExprContext *io_exprContext) const
+bool BooleanExpr::IsTrue(const ExprContext &inExprContext) const
 {
 	bool result = true;
 
@@ -52,7 +52,7 @@ bool BooleanExpr::IsTrue(ExprContext *io_exprContext) const
 			BooleanList::const_iterator iter = mBooleanList.begin();
 			for (; iter != mBooleanList.end(); iter++)
 			{
-				if (!(*iter)->IsTrue(io_exprContext))
+				if (!(*iter)->IsTrue(inExprContext))
 				{
 					break;
 				}
@@ -76,7 +76,7 @@ bool BooleanExpr::IsTrue(ExprContext *io_exprContext) const
 			BooleanList::const_iterator iter = mBooleanList.begin();
 			for (; iter != mBooleanList.end(); iter++)
 			{
-				if ((*iter)->IsTrue(io_exprContext))
+				if ((*iter)->IsTrue(inExprContext))
 				{
 					break;
 				}
@@ -97,7 +97,7 @@ bool BooleanExpr::IsTrue(ExprContext *io_exprContext) const
 		{
 			PDASSERT(mBooleanList.size() == 1);
 
-			result = mBooleanList[0]->IsTrue(io_exprContext);
+			result = mBooleanList[0]->IsTrue(inExprContext);
 			break;
 		}
 	case kBooleanUnknown:

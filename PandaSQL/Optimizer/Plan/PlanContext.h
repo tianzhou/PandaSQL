@@ -5,6 +5,8 @@
 
 #include "Catalog/Column.h"
 
+#include "Utils/Expr/ExprContext.h"
+
 #include <vector>
 
 namespace PandaSQL
@@ -23,6 +25,9 @@ struct PlanContext
 	PandaDB *mpDB;
 	const BooleanExpr *mpPredicateExpr;
 	FinalResultFunctor mFinalResultFunctor;
+
+	//For expression evaluation
+	ExprContext mExprContext;
 
 	//For select
 	TableAndColumnSetMap mRequiredColumns;

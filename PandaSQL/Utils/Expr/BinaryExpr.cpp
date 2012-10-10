@@ -51,7 +51,7 @@ void BinaryExpr::SetRightOperand(const Expr *inRightOperand)
 	mpRightOperand = inRightOperand;
 }
 
-bool BinaryExpr::IsTrue(ExprContext *io_exprContext) const
+bool BinaryExpr::IsTrue(const ExprContext &inExprContext) const
 {
 	bool result = true;
 
@@ -61,8 +61,8 @@ bool BinaryExpr::IsTrue(ExprContext *io_exprContext) const
 	{
 		Value leftValue, rightValue;
 		
-		mpLeftOperand->GetValue(io_exprContext, &leftValue);
-		mpRightOperand->GetValue(io_exprContext, &rightValue);
+		mpLeftOperand->GetValue(inExprContext, &leftValue);
+		mpRightOperand->GetValue(inExprContext, &rightValue);
 
 		// If the current context doesn't include the value for the operand,
 		// We just assume it is true, which means it's too early to evaluate.

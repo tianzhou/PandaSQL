@@ -28,16 +28,16 @@ void ColumnExpr::SetQualifiedColumnName(const ColumnQualifiedName &inQualifiedCo
 	mQualifiedColumnName = inQualifiedColumnName;
 }
 
-bool ColumnExpr::IsTrue(ExprContext *io_exprContext) const
+bool ColumnExpr::IsTrue(const ExprContext &inExprContext) const
 {
 	return true;
 }
 
-Status ColumnExpr::GetValue(ExprContext *io_exprContext, Value *io_value) const
+Status ColumnExpr::GetValue(const ExprContext &inExprContext, Value *io_value) const
 {
 	Status result;
 
-	io_exprContext->GetColumnValue(mQualifiedColumnName, io_value);
+	inExprContext.GetColumnValue(mQualifiedColumnName, io_value);
 
 	return result;
 }
