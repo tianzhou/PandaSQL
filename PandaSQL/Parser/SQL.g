@@ -277,11 +277,11 @@ string_value_expression
 	
 //6.35 <boolean value expression>
 bool_value_expression
-	:	boolean_term (KW_OR boolean_term)* -> ^(TOK_BOOLEAN_VALUE_EXPRESSION boolean_term+)
+	:	boolean_term (KW_OR boolean_term)* -> ^(TOK_BOOLEAN_VALUE_EXPRESSION KW_OR? boolean_term+)
 	;
 	
 boolean_term
-	:	boolean_factor (KW_AND boolean_factor)* -> ^(TOK_BOOLEAN_TERM boolean_factor+)
+	:	boolean_factor (KW_AND boolean_factor)* -> ^(TOK_BOOLEAN_TERM KW_AND? boolean_factor+)
 	;
 	
 boolean_factor

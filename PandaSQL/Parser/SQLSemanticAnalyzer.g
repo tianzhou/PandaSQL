@@ -387,14 +387,26 @@ bool_value_expression returns [PandaSQL::BooleanExpr *io_pBooleanExpr]
 @init
 {
 	PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-	$io_pBooleanExpr = pDriver->CreateExprForBooleanList(false);
+	bool isSingleItem = true;
+	$io_pBooleanExpr = NULL;
 }
-	:	^(TOK_BOOLEAN_VALUE_EXPRESSION
+	:	^(TOK_BOOLEAN_VALUE_EXPRESSION 
+			(KW_OR { isSingleItem = false; })?
 			(bt=boolean_term
 			{
-				//Or list
-				$io_pBooleanExpr->AddExpr($bt.io_pBooleanExpr);
-				
+				if (isSingleItem)
+				{
+					$io_pBooleanExpr = $bt.io_pBooleanExpr;
+				}
+				else
+				{
+					//Or list
+					if (!$io_pBooleanExpr)
+					{
+						$io_pBooleanExpr = pDriver->CreateExprForBooleanOrList();
+					}
+					$io_pBooleanExpr->AddExpr($bt.io_pBooleanExpr);
+				}				
 			})+)
 	;
 	
@@ -402,13 +414,27 @@ boolean_term returns [PandaSQL::BooleanExpr *io_pBooleanExpr]
 @init
 {
 	PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-	$io_pBooleanExpr = pDriver->CreateExprForBooleanList(true);
+	bool isSingleItem = true;
+	$io_pBooleanExpr = NULL;
 }
 	:	^(TOK_BOOLEAN_TERM
+			(KW_AND { isSingleItem = false; })?
 			(bf=boolean_factor
 			{
-				//And list
-				$io_pBooleanExpr->AddExpr($bf.io_pBooleanExpr);
+				if (isSingleItem)
+				{
+					$io_pBooleanExpr = $bf.io_pBooleanExpr;
+				}
+				else
+				{
+					//And list
+					if (!$io_pBooleanExpr)
+					{
+						$io_pBooleanExpr = pDriver->CreateExprForBooleanAndList();
+					
+					}
+					$io_pBooleanExpr->AddExpr($bf.io_pBooleanExpr);
+				}
 			}
 			)+)
 	;

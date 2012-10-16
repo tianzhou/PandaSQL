@@ -48,7 +48,8 @@ public:
 	Expr* CreateExprForBinaryOp(const ANTLR3_STRING &inOpString, const Expr &inLeftOperand, const Expr &inRightOperand);
 	Expr* CreateExprForColumnReference(const ColumnQualifiedName &inColumnQualifiedName);
 	BooleanExpr* CreateExprForBooleanPrimary(const Expr &inSubExpr);
-	BooleanExpr* CreateExprForBooleanList(bool isAndList);
+	BooleanExpr* CreateExprForBooleanAndList();
+	BooleanExpr* CreateExprForBooleanOrList();
 
 privileged:
 

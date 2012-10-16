@@ -408,18 +408,20 @@ BooleanExpr* ParserDriver::CreateExprForBooleanPrimary(const Expr &inSubExpr)
 	return pBooleanExpr;
 }
 
-BooleanExpr* ParserDriver::CreateExprForBooleanList(bool isAndList)
+BooleanExpr* ParserDriver::CreateExprForBooleanAndList()
 {
 	BooleanExpr *pBooleanExpr = new BooleanExpr();
 
-	if (isAndList)
-	{
-		pBooleanExpr->SetType(BooleanExpr::kBooleanAndList);
-	}
-	else
-	{
-		pBooleanExpr->SetType(BooleanExpr::kBooleanOrList);
-	}
+	pBooleanExpr->SetType(BooleanExpr::kBooleanAndList);
+
+	return pBooleanExpr;
+}
+
+BooleanExpr* ParserDriver::CreateExprForBooleanOrList()
+{
+	BooleanExpr *pBooleanExpr = new BooleanExpr();
+
+	pBooleanExpr->SetType(BooleanExpr::kBooleanOrList);
 
 	return pBooleanExpr;
 }
