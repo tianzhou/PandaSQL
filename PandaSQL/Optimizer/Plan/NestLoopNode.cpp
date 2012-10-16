@@ -156,7 +156,9 @@ bool NestLoopNode::MatchJoinPred()
 	exprContext.UpdateTupleValue(mOuterColumnDefList, mOuterNodeCurrentValueList);
 	exprContext.UpdateTupleValue(mInnerColumnDefList, mInnerNodeCurrentValueList);
 	
-	return mpPlanContext->mpPredicateExpr->IsTrue(mpPlanContext->mExprContext);
+	//TODO: Change to use global context
+	return mpPlanContext->mpPredicateExpr->IsTrue(exprContext);
+	//return mpPlanContext->mpPredicateExpr->IsTrue(mpPlanContext->mExprContext);
 }
 
 }	// PandaSQL
