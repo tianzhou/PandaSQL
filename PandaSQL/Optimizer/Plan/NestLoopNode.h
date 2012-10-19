@@ -48,11 +48,15 @@ public:
 	virtual	bool	Step();
 	virtual	void	End();
 
-	virtual void SetupProjection(const TableAndColumnSetMap &inRequiredColumns);
+	virtual void	SetupProjection(const TableAndColumnSetMap &inRequiredColumns);
+	virtual void	SetupPredicate_Recursive(const BooleanExpr &inPredicateExpr, Bitmask *io_tableMask);
+
+protected:
+
 
 private:
 
-	bool MatchJoinPred();
+	bool MatchPredicate() const;
 
 	friend class NestLoopResultFunctor;
 

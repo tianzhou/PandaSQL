@@ -19,6 +19,10 @@ Expr(kExprBinary)
 
 BinaryExpr::~BinaryExpr()
 {
+	delete mpLeftOperand;
+	mpLeftOperand = NULL;
+	delete mpRightOperand;
+	mpRightOperand = NULL;
 }
 
 BinaryExpr::BinaryOpType BinaryExpr::GetOpType() const
@@ -64,12 +68,13 @@ bool BinaryExpr::IsTrue(const ExprContext &inExprContext) const
 		mpLeftOperand->GetValue(inExprContext, &leftValue);
 		mpRightOperand->GetValue(inExprContext, &rightValue);
 
-		// If the current context doesn't include the value for the operand,
-		// We just assume it is true, which means it's too early to evaluate.
 		if (leftValue.GetType() == kUnknownType
 			|| rightValue.GetType() == kUnknownType)
 		{
-			result = true;
+			// It's a logic error if the current context doesn't include
+			// the value for the operand, this means predicate(probably pushdown)
+			// is not setup properly
+			PDASSERT(0);
 		}
 		else
 		{
@@ -85,6 +90,81 @@ bool BinaryExpr::IsTrue(const ExprContext &inExprContext) const
 				break;
 			}
 		}
+	}
+
+	return result;
+}
+
+Expr* BinaryExpr::CreateSubExprForPushdown(const std::vector<std::string> &inTableNameList) const
+{
+	PDASSERT(mpLeftOperand && mpRightOperand);
+
+	Expr *result = NULL;
+
+	Expr *leftExpr = NULL;
+	if (mpLeftOperand)
+	{
+		leftExpr = mpLeftOperand->CreateSubExprForPushdown(inTableNameList);
+	}
+
+	if (leftExpr)
+	{
+		Expr *rightExpr = NULL;
+
+		if (mpRightOperand)
+		{
+			rightExpr = mpRightOperand->CreateSubExprForPushdown(inTableNameList);
+		}
+
+		if (rightExpr)
+		{
+			BinaryExpr *newBinaryExpr = new BinaryExpr();
+			
+			newBinaryExpr->SetOpType(this->GetOpType());
+			newBinaryExpr->SetLeftOperand(leftExpr);
+			newBinaryExpr->SetRightOperand(rightExpr);
+
+			result = newBinaryExpr;
+		}
+		else
+		{
+			delete leftExpr;
+			leftExpr = NULL;
+		}
+	}
+
+	return result;
+}
+
+void BinaryExpr::Walk(ExprWalker *io_walker) const
+{
+	PDASSERT(mpLeftOperand && mpRightOperand);
+
+	if (mpLeftOperand)
+	{
+		mpLeftOperand->Walk(io_walker);
+	}
+	
+	if (mpRightOperand)
+	{
+		mpRightOperand->Walk(io_walker);
+	}
+}
+
+Expr* BinaryExpr::Clone() const
+{
+	BinaryExpr *result = new BinaryExpr();
+
+	result->mOpType = mOpType;
+
+	if (mpLeftOperand)
+	{
+		result->mpLeftOperand = mpLeftOperand->Clone();
+	}
+
+	if (mpRightOperand)
+	{
+		result->mpRightOperand = mpRightOperand->Clone();
 	}
 
 	return result;

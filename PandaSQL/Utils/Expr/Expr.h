@@ -10,9 +10,12 @@
 namespace PandaSQL
 {
 
+class Bitmask;
+class Expr;
 class ExprContext;
+class ExprWalker;
 class Value;
-	
+
 enum ExprType
 {
 	kExprUnknown = 0,
@@ -20,8 +23,6 @@ enum ExprType
 	kExprText = 2,
 	kExprColumnDef = 3
 };
-
-class Expr;
 
 typedef std::vector<Expr> ExprList;
 
@@ -45,6 +46,10 @@ public:
 
 	Expr(ExprType inExprType);
 
+	~Expr();
+
+	ExprType GetType() const { return mExprType; }
+
 	void Eval(TupleDescElement inDescElement, TupleDataElement *io_data) const;
 
 	static void EvalExprList(const ExprList &inExprList, const TupleDesc &inTupleDesc, TupleData *io_tupleData);
@@ -52,7 +57,12 @@ public:
 	virtual bool IsTrue(const ExprContext &inExprContext) const;
 	virtual Status GetValue(const ExprContext &inExprContext, Value *io_value) const;
 
-	virtual void PopulateDependentColumns(TableAndColumnSetMap *io_tableAndColumnSetMap) const;
+	//We are only interested in those expressions referencing any table names in <<tableNameList>>
+	//This is useful for predicate pushdown
+	virtual Expr* CreateSubExprForPushdown(const std::vector<std::string> &inTableNameList) const;
+
+	virtual void Walk(ExprWalker *io_walker) const;
+	virtual Expr* Clone() const;
 
 	ExprType mExprType;
 

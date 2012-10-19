@@ -464,6 +464,14 @@
 				Name="Utils"
 				>
 				<File
+					RelativePath=".\Utils\Bitmask.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Utils\Bitmask.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Utils\Common.cpp"
 					>
 				</File>
@@ -576,6 +584,14 @@
 					</File>
 					<File
 						RelativePath=".\Utils\Expr\ExprContext.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Utils\Expr\ExprWalker.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Utils\Expr\ExprWalker.h"
 						>
 					</File>
 				</Filter>

@@ -21,7 +21,10 @@ public:
 	virtual bool IsTrue(const ExprContext &inExprContext) const;
 	virtual Status GetValue(const ExprContext &inExprContext, Value *io_value) const;
 
-	virtual void PopulateDependentColumns(TableAndColumnSetMap *io_tableAndColumnSetMap) const;
+	virtual Expr* CreateSubExprForPushdown(const std::vector<std::string> &inTableNameList) const;
+
+	virtual void Walk(ExprWalker *io_walker) const;
+	virtual Expr* Clone() const;
 
 private:
 	

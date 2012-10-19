@@ -14,6 +14,8 @@
 
 #include "Catalog/Table.h"
 
+#include "Utils/Bitmask.h"
+#include "Utils/Expr/BooleanExpr.h"
 #include "Utils/Debug.h"
 
 #include <algorithm>
@@ -73,16 +75,24 @@ bool SeqScanNode::Step()
 
 	PDASSERT(mpTupleIterator);
 
-	if (mpTupleIterator->Next())
+	while (mpTupleIterator->Next())
 	{
 		ValueList theValueList;
 		if (mpTupleIterator->GetValue(&theValueList))
 		{
 			const RelNode *pRelNode = mpPlanContext->mRelList[mRelIndex];
 			const Table *pTable = pRelNode->GetTable();
-			(*mpResultFunctor)(pTable->GetAllColumns(), theValueList, *this);
+			
 			mpPlanContext->mExprContext.UpdateTupleValue(pTable->GetAllColumns(), theValueList);
-			result = true;
+
+			//If no applicable predicate for this node at this point(may be evaluated on higher level)
+			//OR predicate evals to true
+			if (!mpLocalPredicateExpr || mpLocalPredicateExpr->IsTrue(mpPlanContext->mExprContext))
+			{
+				(*mpResultFunctor)(pTable->GetAllColumns(), theValueList, *this);
+				result = true;
+				break;
+			}		
 		}
 	}
 
@@ -123,6 +133,29 @@ void SeqScanNode::SetupProjection(const TableAndColumnSetMap &inRequiredColumns)
 	}
 
 	std::sort(mProjectionList.begin(), mProjectionList.end());
+}
+
+void SeqScanNode::SetupPredicate_Recursive(const BooleanExpr &inPredicateExpr, Bitmask *io_tableMask)
+{
+	//The leaf node shouldn't have any table mask set
+	PDASSERT(io_tableMask->IsClear());
+
+	io_tableMask->SetBit(mRelIndex, true);
+
+	std::vector<std::string> tableNameList;
+
+	for (uint32_t i = 0; i < io_tableMask->GetLength(); i++)
+	{
+		if (io_tableMask->GetBit(i))
+		{
+			const RelNode *pRelNode = mpPlanContext->mRelList[i];
+			const Table *pTable = pRelNode->GetTable();
+
+			tableNameList.push_back(pTable->GetName());
+		}
+	}
+
+	mpLocalPredicateExpr = inPredicateExpr.CreateSubExprForPushdown(tableNameList);
 }
 
 }	// PandaSQL

@@ -10,6 +10,8 @@
 namespace PandaSQL
 {
 
+class Bitmask;
+class Expr;
 class PlanResultFunctor;
 
 class PlanNode : public Node
@@ -26,15 +28,17 @@ public:
 
 	//Recursively setup projection
 	virtual void SetupProjection(const TableAndColumnSetMap &inRequiredColumns);
+	virtual void SetupPredicate_Recursive(const BooleanExpr &inPredicateExpr, Bitmask *io_tableMask);
 
 	Status	GetLastStatus() const { return mLastStatus; }
 	void SetResultFunctor(PlanResultFunctor *io_resultFunctor) { mpResultFunctor = io_resultFunctor; }
 
 protected:
 
-	PlanContext *mpPlanContext;
+	mutable PlanContext *mpPlanContext;
 	Status mLastStatus;
 
+	Expr	*mpLocalPredicateExpr;
 	PlanResultFunctor *mpResultFunctor;
 };
 

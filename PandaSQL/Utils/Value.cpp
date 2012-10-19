@@ -98,5 +98,28 @@ void Value::SetAsString(const std::string inString)
 	mText = inString;
 }
 
+bool Value::GetAsBool() const
+{
+	bool result = false;
+
+	switch (mValueType)
+	{
+	case kInt:
+		{
+			result = mNumber != 0;
+			break;
+		}
+	case kText:
+		{
+			result = !mText.empty();
+			break;
+		}
+	default:
+		break;
+	}
+
+	return result;
+}
+
 
 }	// PandaSQL

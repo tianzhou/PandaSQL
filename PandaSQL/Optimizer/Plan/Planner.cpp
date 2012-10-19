@@ -13,8 +13,10 @@
 
 #include "Parser/Statement.h"
 
+#include "Utils/Bitmask.h"
 #include "Utils/Debug.h"
 #include "Utils/Expr/BooleanExpr.h"
+#include "Utils/Expr/ExprWalker.h"
 
 namespace PandaSQL
 {
@@ -56,6 +58,8 @@ PlanNode* Planner::GeneratePlan()
 
 	//Generate Plan
 	JoinInfoList joinInfoList;
+	JoinPath joinPath;
+
 	if (mPlanContext.mRelList.size() == 1)
 	{
 		SeqScanNode *seqScanNode = new SeqScanNode(&mPlanContext, 0);
@@ -64,12 +68,11 @@ PlanNode* Planner::GeneratePlan()
 	else if (mPlanContext.mRelList.size() > 1)
 	{
 		//Setup join order
-		JoinPath theJoinPath;
 		JoinInfo joinInfo;
 
 		for (size_t i = 0; i < mPlanContext.mRelList.size(); i++)
 		{
-			theJoinPath.push_back(i);
+			joinPath.push_back(i);
 			
 			//if (i > 0)
 			//{
@@ -90,13 +93,13 @@ PlanNode* Planner::GeneratePlan()
 		//   B  C  D
 		//  /\ 
 		// E  F
-		PlanNode *outerNode = new SeqScanNode(&mPlanContext, theJoinPath[0]);
-		PlanNode *innerNode = new SeqScanNode(&mPlanContext, theJoinPath[1]);	
+		PlanNode *outerNode = new SeqScanNode(&mPlanContext, joinPath[0]);
+		PlanNode *innerNode = new SeqScanNode(&mPlanContext, joinPath[1]);	
 
-		for (size_t i = 2; i < theJoinPath.size(); i++)
+		for (size_t i = 2; i < joinPath.size(); i++)
 		{
 			outerNode = new NestLoopNode(&mPlanContext, joinInfo, outerNode, innerNode);
-			innerNode = new SeqScanNode(&mPlanContext, theJoinPath[i]); 		
+			innerNode = new SeqScanNode(&mPlanContext, joinPath[i]); 		
 		}
 
 		newPlanNode = new NestLoopNode(&mPlanContext, joinInfo, outerNode, innerNode);
@@ -115,7 +118,12 @@ PlanNode* Planner::GeneratePlan()
 
 	if (mPlanContext.mpPredicateExpr)
 	{
-		mPlanContext.mpPredicateExpr->PopulateDependentColumns(&mPlanContext.mRequiredColumns);
+		DependentColumnListWalker walker(&mPlanContext.mRequiredColumns);
+		mPlanContext.mpPredicateExpr->Walk(&walker);
+
+		//Initial mask is clear, which means no table info is available
+		Bitmask tableMask(joinPath.size());
+		newPlanNode->SetupPredicate_Recursive(*mPlanContext.mpPredicateExpr, &tableMask);
 	}
 
 	newPlanNode->SetupProjection(mPlanContext.mRequiredColumns);

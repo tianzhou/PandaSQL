@@ -3,6 +3,7 @@
 #include "ColumnExpr.h"
 
 #include "Utils/Expr/ExprContext.h"
+#include "Utils/Expr/ExprWalker.h"
 #include "Utils/Debug.h"
 
 namespace PandaSQL
@@ -30,7 +31,27 @@ void ColumnExpr::SetQualifiedColumnName(const ColumnQualifiedName &inQualifiedCo
 
 bool ColumnExpr::IsTrue(const ExprContext &inExprContext) const
 {
-	return true;
+	bool result;
+
+	Value columnValue;
+		
+	this->GetValue(inExprContext, &columnValue);
+
+	if (columnValue.GetType() == kUnknownType)
+	{
+		// It's a logic error if the current context doesn't include
+		// the value for the operand, this means predicate(probably pushdown)
+		// is not setup properly
+		PDASSERT(0);
+
+		result = false;
+	}
+	else
+	{
+		result = columnValue.GetAsBool();
+	}
+
+	return result;
 }
 
 Status ColumnExpr::GetValue(const ExprContext &inExprContext, Value *io_value) const
@@ -42,9 +63,35 @@ Status ColumnExpr::GetValue(const ExprContext &inExprContext, Value *io_value) c
 	return result;
 }
 
-void ColumnExpr::PopulateDependentColumns(TableAndColumnSetMap *io_tableAndColumnSetMap) const
+Expr* ColumnExpr::CreateSubExprForPushdown(const std::vector<std::string> &inTableNameList) const
 {
-	AddOneColumnToMap(mQualifiedColumnName, io_tableAndColumnSetMap);
+	Expr *result = NULL;
+
+	std::vector<std::string>::const_iterator iter = inTableNameList.begin();
+	for (; iter != inTableNameList.end(); iter++)
+	{
+		if (mQualifiedColumnName.tableName == *iter)
+		{
+			result = this->Clone();
+			break;
+		}
+	}
+
+	return result;
+}
+
+void ColumnExpr::Walk(ExprWalker *io_walker) const
+{
+	io_walker->Visit(this);
+}
+
+Expr* ColumnExpr::Clone() const
+{
+	ColumnExpr *result = new ColumnExpr();
+
+	result->mQualifiedColumnName = mQualifiedColumnName;
+
+	return result;
 }
 
 }	// PandaSQL

@@ -24,6 +24,7 @@ public:
 	virtual void End();
 
 	virtual void SetupProjection(const TableAndColumnSetMap &inRequiredColumns);
+	virtual void SetupPredicate_Recursive(const BooleanExpr &inPredicateExpr, Bitmask *io_tableMask);
 
 private:
 

@@ -19,6 +19,11 @@ mExprType(inExprType)
 {
 }
 
+Expr::~Expr()
+{
+	mExprType = kExprUnknown;
+}
+
 void Expr::Eval(TupleDescElement inDescElement, TupleDataElement *io_data) const
 {
 	//TODO: No coercing at this point
@@ -69,9 +74,22 @@ Status Expr::GetValue(const ExprContext &inExprContext, Value *io_value) const
 	return result;
 }
 
-void Expr::PopulateDependentColumns(TableAndColumnSetMap *io_tableAndColumnSetMap) const
+Expr* Expr::CreateSubExprForPushdown(const std::vector<std::string> &inTableNameList) const
+{
+	//TODO: Should never get called if we exclude this before doing pushdown
+	return this->Clone();
+}
+
+void Expr::Walk(ExprWalker *io_walker) const
 {
 
+}
+
+Expr* Expr::Clone() const
+{
+	Expr *result = new Expr(this->GetType());
+
+	return result;
 }
 
 }	// PandaSQL

@@ -32,6 +32,10 @@ public:
 
 	virtual bool IsTrue(const ExprContext &inExprContext) const;
 	virtual Status GetValue(const ExprContext &inExprContext, Value *io_value) const;
+	
+	virtual Expr* CreateSubExprForPushdown(const std::vector<std::string> &inTableNameList) const;
+
+	virtual Expr* Clone() const;
 
 private:
 

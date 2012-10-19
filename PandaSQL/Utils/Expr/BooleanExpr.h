@@ -31,9 +31,14 @@ public:
 	void SetType(BooleanType inType);
 
 	const BooleanList& GetBooleanList() const;
-	void AddExpr(const Expr *inExpr); 
+	void AddExpr(const Expr *inExpr);
 
 	virtual bool IsTrue(const ExprContext &inExprContext) const;
+	
+	virtual Expr* CreateSubExprForPushdown(const std::vector<std::string> &inTableNameList) const;
+
+	virtual void Walk(ExprWalker *io_walker) const;
+	virtual Expr* Clone() const;
 
 protected:
 	

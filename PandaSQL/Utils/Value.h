@@ -23,6 +23,8 @@ public:
 	std::string GetAsString() const;
 	void SetAsString(const std::string inString);
 
+	bool GetAsBool() const;
+
 private:
 
 	DataType mValueType;

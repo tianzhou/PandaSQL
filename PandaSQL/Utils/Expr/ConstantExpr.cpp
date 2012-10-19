@@ -39,7 +39,9 @@ void ConstantExpr::SetText(const std::string inTextValue)
 
 bool ConstantExpr::IsTrue(const ExprContext &inExprContext) const
 {
-	return true;
+	PDASSERT(mConstantValue.GetType() != kUnknownType);
+
+	return mConstantValue.GetAsBool();
 }
 
 Status ConstantExpr::GetValue(const ExprContext &inExprContext, Value *io_value) const
@@ -47,6 +49,21 @@ Status ConstantExpr::GetValue(const ExprContext &inExprContext, Value *io_value)
 	Status result;
 
 	*io_value = mConstantValue;
+
+	return result;
+}
+
+Expr* ConstantExpr::CreateSubExprForPushdown(const std::vector<std::string> &inTableNameList) const
+{
+	return this->Clone();
+}
+
+Expr* ConstantExpr::Clone() const
+{
+	ConstantExpr *result = new ConstantExpr();
+
+	result->mConstantType = mConstantType;
+	result->mConstantValue = mConstantValue;
 
 	return result;
 }

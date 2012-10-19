@@ -4,6 +4,11 @@
 
 #include "PlanContext.h"
 
+#include "Optimizer/RelNode.h"
+
+#include "Catalog/Table.h"
+
+#include "Utils/Bitmask.h"
 #include "Utils/Debug.h"
 #include "Utils/Expr/BooleanExpr.h"
 #include "Utils/Expr/ExprContext.h"
@@ -116,7 +121,7 @@ bool NestLoopNode::Step()
 		{
 			if (mpInnerNode->Step())
 			{
-				if (MatchJoinPred())
+				if (this->MatchPredicate())
 				{
 					//TODO: This is quite in-efficient
 					ColumnDefList theColumnDefList = mOuterColumnDefList;
@@ -144,21 +149,51 @@ void NestLoopNode::End()
 {
 }
 
+bool NestLoopNode::MatchPredicate() const
+{	
+	//ExprContext exprContext;
+	//exprContext.UpdateTupleValue(mOuterColumnDefList, mOuterNodeCurrentValueList);
+	//exprContext.UpdateTupleValue(mInnerColumnDefList, mInnerNodeCurrentValueList);
+	//
+	////TODO: Change to use global context
+	//return mpPlanContext->mpPredicateExpr->IsTrue(exprContext);
+	
+	mpPlanContext->mExprContext.UpdateTupleValue(mOuterColumnDefList, mOuterNodeCurrentValueList);
+	mpPlanContext->mExprContext.UpdateTupleValue(mInnerColumnDefList, mInnerNodeCurrentValueList);
+	return !mpLocalPredicateExpr
+		|| mpLocalPredicateExpr->IsTrue(mpPlanContext->mExprContext);
+}
+
 void NestLoopNode::SetupProjection(const TableAndColumnSetMap &inRequiredColumns)
 {
 	mpOuterNode->SetupProjection(inRequiredColumns);
 	mpInnerNode->SetupProjection(inRequiredColumns);
 }
 
-bool NestLoopNode::MatchJoinPred()
+void NestLoopNode::SetupPredicate_Recursive(const BooleanExpr &inPredicateExpr, Bitmask *io_tableMask)
 {
-	ExprContext exprContext;
-	exprContext.UpdateTupleValue(mOuterColumnDefList, mOuterNodeCurrentValueList);
-	exprContext.UpdateTupleValue(mInnerColumnDefList, mInnerNodeCurrentValueList);
-	
-	//TODO: Change to use global context
-	return mpPlanContext->mpPredicateExpr->IsTrue(exprContext);
-	//return mpPlanContext->mpPredicateExpr->IsTrue(mpPlanContext->mExprContext);
+	Bitmask outerMask(io_tableMask->GetLength());
+	mpOuterNode->SetupPredicate_Recursive(inPredicateExpr, &outerMask);
+
+	Bitmask innerMask(io_tableMask->GetLength());
+	mpInnerNode->SetupPredicate_Recursive(inPredicateExpr, &innerMask);
+
+	io_tableMask->Union(outerMask, innerMask);
+
+	std::vector<std::string> tableNameList;
+
+	for (uint32_t i = 0; i < io_tableMask->GetLength(); i++)
+	{
+		if (io_tableMask->GetBit(i))
+		{
+			const RelNode *pRelNode = mpPlanContext->mRelList[i];
+			const Table *pTable = pRelNode->GetTable();
+
+			tableNameList.push_back(pTable->GetName());
+		}
+	}
+
+	mpLocalPredicateExpr = inPredicateExpr.CreateSubExprForPushdown(tableNameList);
 }
 
 }	// PandaSQL
