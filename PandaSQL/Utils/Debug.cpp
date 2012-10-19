@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "Debug.h"
+#include "Utils/Debug.h"
 
 #include <iostream>
 

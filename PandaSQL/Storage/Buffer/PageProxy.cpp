@@ -1,8 +1,9 @@
 #include "stdafx.h"
 
-#include "PageProxy.h"
-#include "BufMgr.h"
-#include "Page.h"
+#include "Storage/Buffer/PageProxy.h"
+
+#include "Storage/Buffer/BufMgr.h"
+#include "Storage/Buffer/Page.h"
 
 namespace PandaSQL
 {

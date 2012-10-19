@@ -1,9 +1,10 @@
 #ifndef PANDASQL_NEST_LOOP_NODE_H
 #define PANDASQL_NEST_LOOP_NODE_H
 
-#include "PlanNode.h"
-#include "PlanResult.h"
+#include "Node/PlanNode.h"
+
 #include "Optimizer/Path/JoinPath.h"
+#include "Optimizer/Plan/PlanResult.h"
 
 namespace PandaSQL
 {

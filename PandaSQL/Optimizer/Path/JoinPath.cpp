@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
-#include "JoinPath.h"
+#include "Optimizer/Path/JoinPath.h"
 
-#include "Optimizer/RelNode.h"
+#include "Node/RelNode.h"
 
 namespace PandaSQL
 {

@@ -1,12 +1,15 @@
 #ifndef PANDASQL_PREDICATE_H
 #define PANDASQL_PREDICATE_H
 
-#include "Catalog/Table.h"
-#include "Access/Tuple.h"
-#include "Utils/Expr/Expr.h"
-#include "Utils/Types.h"
-
 #include <vector>
+
+#include "Access/Tuple.h"
+
+#include "Catalog/Table.h"
+
+#include "Expr/Expr.h"
+
+#include "Utils/Types.h"
 
 namespace PandaSQL
 {

@@ -1,7 +1,7 @@
 #ifndef PANDASQL_REL_NODE_H
 #define PANDASQL_REL_NODE_H
 
-#include "Optimizer/Node.h"
+#include "Node/Node.h"
 
 #include "Utils/Value.h"
 

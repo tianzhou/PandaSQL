@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "BDBScanIterator.h"
+#include "Storage/BerkeleyDB/BDBScanIterator.h"
 
 #include "Utils/Debug.h"
 #include "Utils/Predicate.h"

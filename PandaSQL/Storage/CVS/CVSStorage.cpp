@@ -1,13 +1,16 @@
 #include "stdafx.h"
 
-#include "CVSStorage.h"
-#include "CVSScanIterator.h"
-#include "HeapStore.h"
-#include "Access/Tuple.h"
+#include "Storage/CVS/CVSStorage.h"
+
+#include "Storage/CVS/CVSScanIterator.h"
+#include "Storage/CVS/HeapStore.h"
+
 #include "Storage/Buffer/PageProxy.h"
 
-#include "VFS/IVFS.h"
+#include "Access/Tuple.h"
+
 #include "VFS/File.h"
+#include "VFS/IVFS.h"
 
 #include "Utils/Debug.h"
 

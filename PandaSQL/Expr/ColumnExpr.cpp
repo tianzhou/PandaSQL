@@ -1,9 +1,10 @@
 #include "stdafx.h"
 
-#include "ColumnExpr.h"
+#include "Expr/ColumnExpr.h"
 
-#include "Utils/Expr/ExprContext.h"
-#include "Utils/Expr/ExprWalker.h"
+#include "Expr/ExprContext.h"
+#include "Expr/ExprWalker.h"
+
 #include "Utils/Debug.h"
 
 namespace PandaSQL

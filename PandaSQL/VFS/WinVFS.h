@@ -1,7 +1,7 @@
 #ifndef PANDASQL_WINVFS_H
 #define PANDASQL_WINVFS_H
 
-#include "IVFS.h"
+#include "VFS/IVFS.h"
 
 #include "Utils/Status.h"
 

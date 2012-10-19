@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
-#include "ExprWalker.h"
+#include "Expr/ExprWalker.h"
 
-#include "ColumnExpr.h"
+#include "Expr/ColumnExpr.h"
 
 #include "Utils/Debug.h"
 

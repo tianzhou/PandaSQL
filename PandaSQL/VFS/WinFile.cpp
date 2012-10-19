@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "WinFile.h"
+#include "VFS/WinFile.h"
 
 #include <io.h>
 #include <sys/stat.h>

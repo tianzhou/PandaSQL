@@ -1,7 +1,7 @@
 #ifndef PANDASQL_SEQ_SCAN_NODE_H
 #define PANDASQL_SEQ_SCAN_NODE_H
 
-#include "Optimizer/Plan/PlanNode.h"
+#include "Node/PlanNode.h"
 
 #include "Utils/Value.h"
 

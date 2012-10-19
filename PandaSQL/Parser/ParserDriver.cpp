@@ -1,26 +1,26 @@
 #include "stdafx.h"
 
-#include "ParserDriver.h"
+#include "Parser/ParserDriver.h"
+
+#include <fstream>
+#include <iostream>
+#include <sstream>
 
 #include "Parser/SQLLexer.h"
 #include "Parser/SQLParser.h"
 #include "Parser/SQLSemanticAnalyzer.h"
 
+#include "Expr/BinaryExpr.h"
+#include "Expr/BooleanExpr.h"
+#include "Expr/ColumnExpr.h"
+#include "Expr/ConstantExpr.h"
+
 #include "Storage/IStorage.h"
 
 #include "Utils/Common.h"
 #include "Utils/Debug.h"
-#include "Utils/Expr/BinaryExpr.h"
-#include "Utils/Expr/BooleanExpr.h"
-#include "Utils/Expr/ColumnExpr.h"
-#include "Utils/Expr/ConstantExpr.h"
 #include "Utils/Status.h"
 #include "Utils/Types.h"
-
-
-#include <fstream>
-#include <sstream>
-#include <iostream>
 
 namespace PandaSQL
 {

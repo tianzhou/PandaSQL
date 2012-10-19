@@ -1,8 +1,11 @@
 #include "stdafx.h"
 
-#include "IStorage.h"
-#include "CVS/CVSStorage.h"
-#include "BerkeleyDB/BDBStorage.h"
+#include "Storage/IStorage.h"
+
+#include "Storage/BerkeleyDB/BDBStorage.h"
+
+#include "Storage/CVS/CVSStorage.h"
+
 
 namespace PandaSQL
 {

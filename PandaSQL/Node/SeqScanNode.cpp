@@ -1,24 +1,25 @@
 #include "stdafx.h"
 
-#include "SeqScanNode.h"
+#include "Node/SeqScanNode.h"
 
-#include "PlanContext.h"
-#include "PlanResult.h"
+#include <algorithm>
 
-#include "PandaDB.h"
-
-#include "Optimizer/RelNode.h"
+#include "Node/RelNode.h"
 
 #include "Access/Tuple.h"
 #include "Access/TupleIterator.h"
 
 #include "Catalog/Table.h"
 
-#include "Utils/Bitmask.h"
-#include "Utils/Expr/BooleanExpr.h"
-#include "Utils/Debug.h"
+#include "Expr/BooleanExpr.h"
 
-#include <algorithm>
+#include "Optimizer/Plan/PlanContext.h"
+#include "Optimizer/Plan/PlanResult.h"
+
+#include "PandaDB.h"
+
+#include "Utils/Bitmask.h"
+#include "Utils/Debug.h"
 
 namespace PandaSQL
 {

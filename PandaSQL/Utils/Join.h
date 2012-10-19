@@ -1,11 +1,11 @@
 #ifndef PANDASQL_JOIN_H
 #define PANDASQL_JOIN_H
 
+#include <vector>
+
 #include "Catalog/Column.h"
 
 #include "Utils/Types.h"
-
-#include <vector>
 
 namespace PandaSQL
 {

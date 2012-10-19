@@ -2,7 +2,7 @@
 #define PANDASQL_WINFILE_H
 
 
-#include "File.h"
+#include "VFS/File.h"
 
 #include "Utils/Status.h"
 

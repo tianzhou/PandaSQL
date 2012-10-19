@@ -1,16 +1,18 @@
 #include "stdafx.h"
 
-#include "Statement.h"
+#include "Parser/Statement.h"
+
+#include <iostream>
+
+#include "Executor/Executor.h"
+
+#include "Node/PlanNode.h"
+
+#include "Optimizer/Plan/Planner.h"
 
 #include "PandaDB.h"
 
-#include "Executor/Executor.h"
-#include "Optimizer/Plan/Planner.h"
-#include "Optimizer/Plan/PlanNode.h"
-
 #include "Utils/Debug.h"
-
-#include <iostream>
 
 namespace PandaSQL
 {

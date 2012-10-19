@@ -1,12 +1,12 @@
 #ifndef PANDASQL_EXPR_CONTEXT_H
 #define PANDASQL_EXPR_CONTEXT_H
 
+#include <map>
+#include <string>
+
 #include "Catalog/Column.h"
 
 #include "Utils/Value.h"
-
-#include <map>
-#include <string>
 
 namespace PandaSQL
 {

@@ -1,26 +1,27 @@
 #include "stdafx.h"
 
 #include "PandaDB.h"
-#include "Storage/IDBBackend.h"
 
-#include "Parser/ParserDriver.h"
-
-#include "Catalog/Table.h"
-
-#include "Storage/IStorage.h"
+#include <iostream>
 
 #include "Access/TupleIterator.h"
 #include "Access/Tuple.h"
+
+#include "Catalog/Table.h"
+
+#include "Expr/BooleanExpr.h"
+#include "Expr/ExprContext.h"
+
+#include "Parser/ParserDriver.h"
+
+#include "Storage/IDBBackend.h"
+#include "Storage/IStorage.h"
 
 #include "VFS/WinVFS.h"
 
 #include "Utils/Common.h"
 #include "Utils/Debug.h"
-#include "Utils/Expr/BooleanExpr.h"
-#include "Utils/Expr/ExprContext.h"
 #include "Utils/Predicate.h"
-
-#include <iostream>
 
 namespace PandaSQL
 {

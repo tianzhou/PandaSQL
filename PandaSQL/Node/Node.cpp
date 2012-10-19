@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "Node.h"
+#include "Node/Node.h"
 
 namespace PandaSQL
 {

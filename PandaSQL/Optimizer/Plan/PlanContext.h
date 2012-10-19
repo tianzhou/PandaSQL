@@ -1,13 +1,13 @@
 #ifndef PANDASQL_PLAN_CONTEXT_H
 #define PANDASQL_PLAN_CONTEXT_H
 
-#include "PlanResult.h"
+#include "Optimizer/Plan/PlanResult.h"
+
+#include <vector>
 
 #include "Catalog/Column.h"
 
-#include "Utils/Expr/ExprContext.h"
-
-#include <vector>
+#include "Expr/ExprContext.h"
 
 namespace PandaSQL
 {

@@ -1,7 +1,8 @@
 #include "stdafx.h"
 
-#include "BufMgr.h"
-#include "Page.h"
+#include "Storage/Buffer/BufMgr.h"
+
+#include "Storage/Buffer/Page.h"
 
 #include "VFS/File.h"
 

@@ -1,8 +1,9 @@
 #include "stdafx.h"
 
-#include "BooleanExpr.h"
+#include "Expr/BooleanExpr.h"
 
-#include "Utils/Expr/ExprWalker.h"
+#include "Expr/ExprWalker.h"
+
 #include "Utils/Debug.h"
 
 namespace PandaSQL

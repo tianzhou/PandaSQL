@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "RelNode.h"
+#include "Node/RelNode.h"
 
 #include "Catalog/Table.h"
 

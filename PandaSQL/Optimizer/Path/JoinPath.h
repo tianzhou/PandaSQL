@@ -1,9 +1,9 @@
 #ifndef PANDASQL_JOIN_PATH_H
 #define PANDASQL_JOIN_PATH_H
 
-#include "Utils/Types.h"
-
 #include <vector>
+
+#include "Utils/Types.h"
 
 namespace PandaSQL
 {

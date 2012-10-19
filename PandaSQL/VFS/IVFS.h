@@ -1,9 +1,9 @@
 #ifndef PANDASQL_IVFS_H
 #define PANDASQL_IVFS_H
 
-#include "Utils/Status.h"
-
 #include <string>
+
+#include "Utils/Status.h"
 
 namespace PandaSQL
 {

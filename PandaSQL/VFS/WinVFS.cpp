@@ -1,7 +1,8 @@
 #include "stdafx.h"
 
-#include "WinVFS.h"
-#include "WinFile.h"
+#include "VFS/WinVFS.h"
+
+#include "VFS/WinFile.h"
 
 #include "Utils/Debug.h"
 #include "Utils/WinUtils.h"

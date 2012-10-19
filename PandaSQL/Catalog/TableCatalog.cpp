@@ -1,7 +1,8 @@
 #include "stdafx.h"
 
-#include "TableCatalog.h"
-#include "Table.h"
+#include "Catalog/TableCatalog.h"
+
+#include "Catalog/Table.h"
 
 #include "Utils/Debug.h"
 

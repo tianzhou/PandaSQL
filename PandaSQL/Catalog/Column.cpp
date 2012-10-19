@@ -1,7 +1,6 @@
 #include "stdafx.h"
 
-#include "Column.h"
-
+#include "Catalog/Column.h"
 
 namespace PandaSQL
 {

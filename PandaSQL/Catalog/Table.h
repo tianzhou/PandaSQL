@@ -1,16 +1,17 @@
 #ifndef PANDASQL_TABLE_H
 #define PANDASQL_TABLE_H
 
-#include "Column.h"
+#include "Catalog/Column.h"
+
+#include <string>
+#include <vector>
+
+#include "Expr/Expr.h"
 
 #include "Storage/IStorage.h"
 
-#include "Utils/Expr/Expr.h"
 #include "Utils/Types.h"
 #include "Utils/Status.h"
-
-#include <vector>
-#include <string>
 
 namespace PandaSQL
 {

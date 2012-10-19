@@ -1,19 +1,19 @@
 #include "stdafx.h"
 
-#include "NestLoopNode.h"
+#include "Node/NestLoopNode.h"
+#include "Node/RelNode.h"
 
-#include "PlanContext.h"
-
-#include "Optimizer/RelNode.h"
+#include <algorithm>
 
 #include "Catalog/Table.h"
 
+#include "Expr/BooleanExpr.h"
+#include "Expr/ExprContext.h"
+
+#include "Optimizer/Plan/PlanContext.h"
+
 #include "Utils/Bitmask.h"
 #include "Utils/Debug.h"
-#include "Utils/Expr/BooleanExpr.h"
-#include "Utils/Expr/ExprContext.h"
-
-#include <algorithm>
 
 namespace PandaSQL
 {

@@ -3,14 +3,16 @@
 
 #include "stdafx.h"
 
-#include "Parser/ParserDriver.h"
+#include <iostream>
+
 #include "PandaDB.h"
+
+#include "Parser/ParserDriver.h"
+
 #include "VFS/IVFS.h"
 
 #include "Utils/Debug.h"
 #include "Utils/Status.h"
-
-#include <iostream>
 
 PandaSQL::Status ReadSQLScript(const char *filePath, PandaSQL::IVFS *io_VFS, PandaSQL::ParserDriver *io_parserDriver)
 {

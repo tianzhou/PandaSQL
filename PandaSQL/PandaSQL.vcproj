@@ -535,66 +535,6 @@
 					RelativePath=".\Utils\WinUtils.h"
 					>
 				</File>
-				<Filter
-					Name="Expr"
-					>
-					<File
-						RelativePath=".\Utils\Expr\BinaryExpr.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Utils\Expr\BinaryExpr.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Utils\Expr\BooleanExpr.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Utils\Expr\BooleanExpr.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Utils\Expr\ColumnExpr.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Utils\Expr\ColumnExpr.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Utils\Expr\ConstantExpr.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Utils\Expr\ConstantExpr.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Utils\Expr\Expr.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Utils\Expr\Expr.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Utils\Expr\ExprContext.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Utils\Expr\ExprContext.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Utils\Expr\ExprWalker.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Utils\Expr\ExprWalker.h"
-						>
-					</File>
-				</Filter>
 			</Filter>
 			<Filter
 				Name="Parser"
@@ -1031,33 +971,9 @@
 			<Filter
 				Name="Optimizer"
 				>
-				<File
-					RelativePath=".\Optimizer\Node.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Optimizer\Node.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Optimizer\RelNode.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Optimizer\RelNode.h"
-					>
-				</File>
 				<Filter
 					Name="Plan"
 					>
-					<File
-						RelativePath=".\Optimizer\Plan\NestLoopNode.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Optimizer\Plan\NestLoopNode.h"
-						>
-					</File>
 					<File
 						RelativePath=".\Optimizer\Plan\PlanContext.cpp"
 						>
@@ -1072,22 +988,6 @@
 					</File>
 					<File
 						RelativePath=".\Optimizer\Plan\Planner.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Optimizer\Plan\PlanNode.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Optimizer\Plan\PlanNode.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Optimizer\Plan\SeqScanNode.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Optimizer\Plan\SeqScanNode.h"
 						>
 					</File>
 					<Filter
@@ -1125,6 +1025,110 @@
 				</File>
 				<File
 					RelativePath=".\Executor\Executor.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Node"
+				>
+				<File
+					RelativePath=".\Node\NestLoopNode.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Node\NestLoopNode.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Node\Node.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Node\Node.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Node\PlanNode.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Node\PlanNode.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Node\RelNode.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Node\RelNode.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Node\SeqScanNode.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Node\SeqScanNode.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Expr"
+				>
+				<File
+					RelativePath=".\Expr\BinaryExpr.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Expr\BinaryExpr.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Expr\BooleanExpr.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Expr\BooleanExpr.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Expr\ColumnExpr.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Expr\ColumnExpr.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Expr\ConstantExpr.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Expr\ConstantExpr.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Expr\Expr.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Expr\Expr.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Expr\ExprContext.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Expr\ExprContext.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Expr\ExprWalker.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Expr\ExprWalker.h"
 					>
 				</File>
 			</Filter>

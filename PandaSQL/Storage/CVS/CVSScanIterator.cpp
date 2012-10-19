@@ -1,8 +1,10 @@
 #include "stdafx.h"
 
-#include "CVSScanIterator.h"
+#include "Storage/CVS/CVSScanIterator.h"
+
 #include "Storage/Buffer/PageProxy.h"
 #include "Storage/Buffer/Page.h"
+
 #include "Access/Tuple.h"
 
 #include "Utils/Debug.h"

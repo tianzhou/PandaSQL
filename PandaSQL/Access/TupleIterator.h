@@ -1,7 +1,7 @@
 #ifndef PANDASQL_TUPLE_ITERATOR_H
 #define PANDASQL_TUPLE_ITERATOR_H
 
-#include "Tuple.h"
+#include "Access/Tuple.h"
 
 #include "Catalog/Column.h"
 

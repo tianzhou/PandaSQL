@@ -1,12 +1,11 @@
 #ifndef PANDASQL_ITERATOR_H
 #define PANDASQL_ITERATOR_H
 
+#include <string>
 
 #include "Access/Tuple.h"
 
 #include "Utils/Status.h"
-
-#include <string>
 
 namespace PandaSQL
 {

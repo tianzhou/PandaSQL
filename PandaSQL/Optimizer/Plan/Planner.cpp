@@ -1,22 +1,23 @@
 #include "stdafx.h"
 
-#include "Planner.h"
-
-#include "PlanNode.h"
-#include "NestLoopNode.h"
-#include "SeqScanNode.h"
-
-#include "PandaDB.h"
+#include "Optimizer/Plan/Planner.h"
 
 #include "Optimizer/Path/JoinPath.h"
-#include "Optimizer/RelNode.h"
+
+#include "Expr/BooleanExpr.h"
+#include "Expr/ExprWalker.h"
+
+#include "Node/NestLoopNode.h"
+#include "Node/PlanNode.h"
+#include "Node/RelNode.h"
+#include "Node/SeqScanNode.h"
+
+#include "PandaDB.h"
 
 #include "Parser/Statement.h"
 
 #include "Utils/Bitmask.h"
 #include "Utils/Debug.h"
-#include "Utils/Expr/BooleanExpr.h"
-#include "Utils/Expr/ExprWalker.h"
 
 namespace PandaSQL
 {

@@ -1,9 +1,9 @@
 #ifndef PANDASQL_VALUE_H
 #define PANDASQL_VALUE_H
 
-#include "Utils/Types.h"
-
 #include <vector>
+
+#include "Utils/Types.h"
 
 namespace PandaSQL
 {

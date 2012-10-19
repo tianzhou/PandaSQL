@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
-#include "Executor.h"
+#include "Executor/Executor.h"
 
-#include "Optimizer/Plan/PlanNode.h"
+#include "Node/PlanNode.h"
 
 namespace PandaSQL
 {

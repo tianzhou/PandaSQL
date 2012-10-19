@@ -1,14 +1,16 @@
 #include "stdafx.h"
 
-#include "Predicate.h"
-#include "PandaDB.h"
-#include "Access/Tuple.h"
-
-#include "Utils/Debug.h"
-#include "Utils/Types.h"
-#include "Utils/Common.h"
+#include "Utils/Predicate.h"
 
 #include <iostream>
+
+#include "Access/Tuple.h"
+
+#include "PandaDB.h"
+
+#include "Utils/Common.h"
+#include "Utils/Debug.h"
+#include "Utils/Types.h"
 
 namespace PandaSQL
 {

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
-#include "PlanResult.h"
+#include "Optimizer/Plan/PlanResult.h"
+
 #include "Access/Tuple.h"
 
 #include "Utils/Debug.h"

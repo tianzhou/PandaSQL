@@ -3,7 +3,6 @@
 
 #include "Utils/Types.h"
 
-
 namespace PandaSQL
 {
 

@@ -1,11 +1,11 @@
 #ifndef PANDASQL_BDB_SCANITERATOR_H
 #define PANDASQL_BDB_SCANITERATOR_H
 
+#include <db_cxx.h>
+
 #include "Access/TupleIterator.h"
 
 #include "Utils/Types.h"
-
-#include <db_cxx.h>
 
 namespace PandaSQL
 {

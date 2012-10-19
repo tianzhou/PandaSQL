@@ -1,8 +1,9 @@
 #include "stdafx.h"
 
-#include "BDBBackend.h"
-#include "BDBScanIterator.h"
-#include "Transaction/BDBTransaction.h"
+#include "Storage/BerkeleyDB/BDBBackend.h"
+
+#include "Storage/BerkeleyDB/BDBScanIterator.h"
+#include "Storage/BerkeleyDB/Transaction/BDBTransaction.h"
 
 #include "Catalog/Table.h"
 

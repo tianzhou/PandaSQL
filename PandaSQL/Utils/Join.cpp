@@ -1,5 +1,6 @@
 #include "stdafx.h"
-#include "Join.h"
+
+#include "Utils/Join.h"
 
 namespace PandaSQL
 {

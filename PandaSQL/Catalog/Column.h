@@ -1,14 +1,13 @@
 #ifndef PANDASQL_COLUMN_H
 #define PANDASQL_COLUMN_H
 
-#include "Utils/Status.h"
-#include "Utils/Types.h"
-
-
-#include <string>
-#include <vector>
 #include <map>
 #include <set>
+#include <string>
+#include <vector>
+
+#include "Utils/Status.h"
+#include "Utils/Types.h"
 
 namespace PandaSQL
 {

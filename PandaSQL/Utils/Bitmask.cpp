@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
-#include "Bitmask.h"
+#include "Utils/Bitmask.h"
 
-#include "Debug.h"
+#include "Utils/Debug.h"
 
 namespace PandaSQL
 {

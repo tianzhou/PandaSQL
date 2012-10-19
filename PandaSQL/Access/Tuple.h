@@ -1,13 +1,13 @@
 #ifndef PANDASQL_TUPLE_H
 #define PANDASQL_TUPLE_H
 
+#include <vector>
+
 #include "Catalog/Column.h"
 
 #include "Utils/Status.h"
 #include "Utils/Types.h"
 #include "Utils/Value.h"
-
-#include <vector>
 
 namespace PandaSQL
 {
