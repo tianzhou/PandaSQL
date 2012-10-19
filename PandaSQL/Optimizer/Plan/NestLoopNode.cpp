@@ -150,14 +150,7 @@ void NestLoopNode::End()
 }
 
 bool NestLoopNode::MatchPredicate() const
-{	
-	//ExprContext exprContext;
-	//exprContext.UpdateTupleValue(mOuterColumnDefList, mOuterNodeCurrentValueList);
-	//exprContext.UpdateTupleValue(mInnerColumnDefList, mInnerNodeCurrentValueList);
-	//
-	////TODO: Change to use global context
-	//return mpPlanContext->mpPredicateExpr->IsTrue(exprContext);
-	
+{
 	mpPlanContext->mExprContext.UpdateTupleValue(mOuterColumnDefList, mOuterNodeCurrentValueList);
 	mpPlanContext->mExprContext.UpdateTupleValue(mInnerColumnDefList, mInnerNodeCurrentValueList);
 	return !mpLocalPredicateExpr
