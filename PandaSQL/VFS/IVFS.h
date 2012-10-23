@@ -14,7 +14,8 @@ class IVFS
 {
 public:
 
-	IVFS();
+	static IVFS* CreateVFS();
+
 	virtual ~IVFS() = 0 {}
 
 	//Always pass in the relative path according to inRootPath
@@ -22,6 +23,10 @@ public:
 	virtual Status CloseFile(File *file) = 0;
 	virtual Status CreateDir(const std::string &inPath) = 0;
 	virtual bool IsFileExist(const std::string &inPath) = 0;
+
+protected:
+
+	IVFS();
 
 private:
 	

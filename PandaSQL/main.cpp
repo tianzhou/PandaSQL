@@ -5,16 +5,15 @@
 
 #include <iostream>
 
-#include "PandaDB.h"
-
-#include "Parser/ParserDriver.h"
+#include "DB.h"
 
 #include "VFS/IVFS.h"
+#include "VFS/File.h"
 
 #include "Utils/Debug.h"
 #include "Utils/Status.h"
 
-PandaSQL::Status ReadSQLScript(const char *filePath, PandaSQL::IVFS *io_VFS, PandaSQL::ParserDriver *io_parserDriver)
+PandaSQL::Status ReadSQLScript(const char *filePath, PandaSQL::IVFS *io_VFS, PandaSQL::DB *io_db)
 {
 	PandaSQL::Status result;
 
@@ -24,9 +23,32 @@ PandaSQL::Status ReadSQLScript(const char *filePath, PandaSQL::IVFS *io_VFS, Pan
 
 	if (result.OK())
 	{
-		result = io_parserDriver->LoadFromFile(inputFile);
+		PandaSQL::File::Offset offset = 0;
+		PandaSQL::File::Size amount = 512;
+		PandaSQL::File::Size o_bytesRead = 0;
+		char buf[513]; //Add Null terminator
 
-		PDASSERT(result.OK());
+		do
+		{
+			result = inputFile->ReadToDelimiter(offset, 512, ";", true, buf, &o_bytesRead);
+
+			if (o_bytesRead > 0)
+			{
+				buf[o_bytesRead] = '\0';
+
+				std::string query(buf);
+
+				result = io_db->Execute(query);
+			}
+
+			offset += o_bytesRead;
+
+		}while (result.OK());
+
+		if (result.IsEOF())
+		{
+			result = PandaSQL::Status::kOK;
+		}
 
 		result = io_VFS->CloseFile(inputFile);
 
@@ -41,55 +63,45 @@ int _tmain(int argc, _TCHAR* argv[])
 	std::string inQueryString;
 	PandaSQL::Status result;
 
-	PandaSQL::IVFS *pVFS = PandaSQL::PandaDB::CreateVFS();
+	PandaSQL::IVFS *pVFS = PandaSQL::IVFS::CreateVFS();
 
-	PandaSQL::PandaDB db(PandaSQL::kBDB);
-	PandaSQL::PandaDB::Options openOptions;
+	PandaSQL::DB db(PandaSQL::kBDB);
+	PandaSQL::OpenOptions openOptions;
 	openOptions.create_if_missing = true;
 	result = db.Open("C:\\Users\\Tianzhou\\Desktop\\PD_Data\\testDB\\BDB", openOptions);
 
 	if (result.OK())
 	{
-		PandaSQL::ParserDriver parserDriver(&db);
-
 		char buf[1024];
 		while (0)
 		{
 			std::cout << "sql>";
 
 			std::cin.getline(buf, 1024);
-	
-			result = parserDriver.ParseQuery(buf);
+
+			std::string query(buf);
 
 			if (strcmp(buf, "q") == 0)
 			{
 				break;
 			}
 
-			if (result.OK())
-			{
-				result = parserDriver.Execute();
-
-				if (!result.OK())
-				{
-					std::cout << "error: " << result.GetCode() << std::endl;
-				}
-			}
+			db.Execute(query);
 		}
 
 #if 1
 
-		result = ReadSQLScript("./create_db.txt", pVFS, &parserDriver);		
+		result = ReadSQLScript("./create_db.txt", pVFS, &db);		
 
-		//result = ReadSQLScript("./delete.txt", pVFS, &parserDriver);
+		//result = ReadSQLScript("./delete.txt", pVFS, &db);
 
-		//result = ReadSQLScript("./insert.txt", pVFS, &parserDriver);
+		//result = ReadSQLScript("./insert.txt", pVFS, &db);
 
-		//result = ReadSQLScript("./select.txt", pVFS, &parserDriver);
+		//result = ReadSQLScript("./select.txt", pVFS, &db);
 
-		result = ReadSQLScript("./select_join_3table.txt", pVFS, &parserDriver);
+		result = ReadSQLScript("./select_join_3table.txt", pVFS, &db);
 
-		//result = ReadSQLScript("./select_where.txt", pVFS, &parserDriver);
+		//result = ReadSQLScript("./select_where.txt", pVFS, &db);
 #else
 
 		inQueryString = ("SELECT t1.field1, t2.field2 FROM t1;");

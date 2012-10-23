@@ -6,7 +6,7 @@
 
 #include "Access/Tuple.h"
 
-#include "PandaDB.h"
+#include "Database/DBImpl.h"
 
 #include "Utils/Common.h"
 #include "Utils/Debug.h"
@@ -190,7 +190,7 @@ void PredicateItem::Print(uint32_t level) const
 	//}
 }
 
-Status PredicateItem::Prepare(const PandaDB &inDB, const Table::TableRefList &inTableRefList)
+Status PredicateItem::Prepare(const DBImpl &inDB, const Table::TableRefList &inTableRefList)
 {
 	Status result;
 
@@ -506,7 +506,7 @@ void Predicate::Print(uint32_t level) const
 	}	
 }
 
-Status Predicate::Prepare(const PandaDB &inDB, const Table::TableRefList &inTableRefList)
+Status Predicate::Prepare(const DBImpl &inDB, const Table::TableRefList &inTableRefList)
 {
 	Status result;
 

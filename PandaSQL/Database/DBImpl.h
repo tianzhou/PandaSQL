@@ -1,7 +1,8 @@
-#ifndef PANDASQL_PANDADB_H
-#define PANDASQL_PANDADB_H
+#ifndef PANDASQL_DBIMPL_H
+#define PANDASQL_DBIMPL_H
 
 #include <map>
+#include <string>
 
 #include "Catalog/Column.h"
 #include "Catalog/Table.h"
@@ -15,27 +16,16 @@ namespace PandaSQL
 {
 
 class BooleanExpr;
-class File;
 class IDBBackend;
-class IVFS;
 class TupleIterator;
 
-class PandaDB
+class DBImpl
 {
 public:
 
-	struct Options
-	{
-		bool create_if_missing;
-
-		Options();
-	};
-
-	static IVFS* CreateVFS();
-
-	PandaDB(StorageType inStorageType);
-	~PandaDB();
-	Status Open(const std::string &inDBPath, const Options &inOptions);
+	DBImpl(StorageType inStorageType);
+	~DBImpl();
+	Status Open(const std::string &inDBPath, const OpenOptions &inOptions);
 	Status Close();
 	Status CreateTable(const std::string &tableName, const ColumnDefList &columnList);
 
@@ -54,13 +44,14 @@ public:
 	Status GetColumnDefFromQualifiedName(const Table::TableRefList &inTableRefList, const ColumnQualifiedName &inQualifiedName, ColumnDef *io_columnDef) const;
 
 	TupleIterator* CreateTupleIteratorForTable(const Table &inTable);
+
 private:
+
+	DBImpl(const DBImpl &rhs);
+	DBImpl& operator=(const DBImpl &rhs);
 
 	typedef std::map<std::string, Table*> TableMap;
 	typedef std::pair<std::string, Table*> TableMapEntry;
-
-	PandaDB(const PandaDB &rhs);
-	PandaDB& operator=(const PandaDB &rhs);
 
 	void	ClearTableMap_Private();
 
@@ -72,8 +63,9 @@ private:
 	TableMap mTableMap;
 
 	bool mIsOpen;
+	
 };
 
 }	// PandaSQL
 
-#endif	// PANDASQL_PANDADB_H
+#endif	// PANDASQL_DBIMPL_H

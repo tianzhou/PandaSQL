@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "PandaDB.h"
+#include "Database/DBImpl.h"
 
 #include <iostream>
 
@@ -12,12 +12,8 @@
 #include "Expr/BooleanExpr.h"
 #include "Expr/ExprContext.h"
 
-#include "Parser/ParserDriver.h"
-
 #include "Storage/IDBBackend.h"
 #include "Storage/IStorage.h"
-
-#include "VFS/WinVFS.h"
 
 #include "Utils/Common.h"
 #include "Utils/Debug.h"
@@ -26,20 +22,7 @@
 namespace PandaSQL
 {
 
-//static
-IVFS* PandaDB::CreateVFS()
-{
-	//Only have windows for now
-	return new WinVFS();
-}
-
-PandaDB::Options::Options()
-:
-create_if_missing(false)
-{
-}
-
-PandaDB::PandaDB(StorageType inStorageType)
+DBImpl::DBImpl(StorageType inStorageType)
 :
 mStorageType(inStorageType)
 ,mpBackend(NULL)
@@ -47,12 +30,12 @@ mStorageType(inStorageType)
 {
 }
 
-PandaDB::~PandaDB()
+DBImpl::~DBImpl()
 {
 	PDASSERT(!mpBackend);
 }
 
-Status PandaDB::Open(const std::string &inDBPath, const Options &inOptions)
+Status DBImpl::Open(const std::string &inDBPath, const OpenOptions &inOptions)
 {
 	Status result;
 
@@ -74,7 +57,7 @@ Status PandaDB::Open(const std::string &inDBPath, const Options &inOptions)
 	return result;
 }
 
-Status PandaDB::Close()
+Status DBImpl::Close()
 {
 	PDASSERT(mIsOpen);
 
@@ -90,7 +73,7 @@ Status PandaDB::Close()
 	return result;
 }
 
-Status PandaDB::CreateTable(const std::string &tableName, const ColumnDefList &columnList)
+Status DBImpl::CreateTable(const std::string &tableName, const ColumnDefList &columnList)
 {
 	Status result;
 
@@ -122,7 +105,7 @@ Status PandaDB::CreateTable(const std::string &tableName, const ColumnDefList &c
 	return result;
 }
 
-Status PandaDB::OpenTable(const std::string &tableName)
+Status DBImpl::OpenTable(const std::string &tableName)
 {
 	Status result;
 
@@ -131,7 +114,7 @@ Status PandaDB::OpenTable(const std::string &tableName)
 	return result;
 }
 
-Status PandaDB::InsertData(const std::string &tableName, const ColumnDefList &columnList, const ExprList &columnExprList)
+Status DBImpl::InsertData(const std::string &tableName, const ColumnDefList &columnList, const ExprList &columnExprList)
 {
 	Status result;
 
@@ -145,7 +128,7 @@ Status PandaDB::InsertData(const std::string &tableName, const ColumnDefList &co
 	return result;
 }
 
-Status PandaDB::DeleteData(const std::string &tableName, const BooleanExpr *inBooleanExpr /* = NULL */)
+Status DBImpl::DeleteData(const std::string &tableName, const BooleanExpr *inBooleanExpr /* = NULL */)
 {
 	Status result;
 
@@ -162,7 +145,7 @@ Status PandaDB::DeleteData(const std::string &tableName, const BooleanExpr *inBo
 	return result;
 }
 
-Status PandaDB::SelectData(const Table::TableRefList &tableList, const JoinList &joinList, const ColumnDefList &projectColumnList, const BooleanExpr *inWhereExpr /*= NULL*/)
+Status DBImpl::SelectData(const Table::TableRefList &tableList, const JoinList &joinList, const ColumnDefList &projectColumnList, const BooleanExpr *inWhereExpr /*= NULL*/)
 {
 	Status result;
 
@@ -303,7 +286,7 @@ Status PandaDB::SelectData(const Table::TableRefList &tableList, const JoinList 
 	return result;
 }
 
-Status PandaDB::GetColumnDefFromQualifiedName(const Table::TableRefList &inTableRefList, const ColumnQualifiedName &inQualifiedName, ColumnDef *io_columnDef) const
+Status DBImpl::GetColumnDefFromQualifiedName(const Table::TableRefList &inTableRefList, const ColumnQualifiedName &inQualifiedName, ColumnDef *io_columnDef) const
 {
 	PDASSERT(io_columnDef);
 
@@ -370,7 +353,7 @@ Status PandaDB::GetColumnDefFromQualifiedName(const Table::TableRefList &inTable
 	return result;
 }
 
-TupleIterator* PandaDB::CreateTupleIteratorForTable(const Table &inTable)
+TupleIterator* DBImpl::CreateTupleIteratorForTable(const Table &inTable)
 {
 	const ColumnDefList &allColumnList = inTable.GetAllColumns();
 
@@ -379,7 +362,7 @@ TupleIterator* PandaDB::CreateTupleIteratorForTable(const Table &inTable)
 	return theIter;
 }
 
-Status PandaDB::GetTableByName(const std::string &name, Table **o_table) const
+Status DBImpl::GetTableByName(const std::string &name, Table **o_table) const
 {
 	Status result;
 
@@ -399,7 +382,7 @@ Status PandaDB::GetTableByName(const std::string &name, Table **o_table) const
 	return result;
 }
 
-void PandaDB::ClearTableMap_Private()
+void DBImpl::ClearTableMap_Private()
 {
 	TableMap::iterator iter = mTableMap.begin();
 
@@ -411,26 +394,25 @@ void PandaDB::ClearTableMap_Private()
 	mTableMap.clear();
 }
 
-Table* PandaDB::GetTableByID(uint32_t inTableID) const
+Table* DBImpl::GetTableByID(uint32_t inTableID) const
 {
 	Table *result = NULL;
 
 	return result;
 }
 
-uint32_t PandaDB::GetTableIDByName(const std::string &inTableName) const
+uint32_t DBImpl::GetTableIDByName(const std::string &inTableName) const
 {
 	uint32_t result = kUnknownID;
 
 	return result;
 }
 
-uint32_t PandaDB::GetColumnIDByName(const std::string &inColumnName) const
+uint32_t DBImpl::GetColumnIDByName(const std::string &inColumnName) const
 {
 	uint32_t result = kUnknownID;
 
 	return result;
 }
 
-
-}	// PandaSQL
+}	// DBImpl

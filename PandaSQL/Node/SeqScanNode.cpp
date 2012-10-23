@@ -11,12 +11,12 @@
 
 #include "Catalog/Table.h"
 
+#include "Database/DBImpl.h"
+
 #include "Expr/BooleanExpr.h"
 
 #include "Optimizer/Plan/PlanContext.h"
 #include "Optimizer/Plan/PlanResult.h"
-
-#include "PandaDB.h"
 
 #include "Utils/Bitmask.h"
 #include "Utils/Debug.h"

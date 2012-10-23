@@ -413,15 +413,15 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\DB.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DB.h"
+				>
+			</File>
+			<File
 				RelativePath=".\main.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PandaDB.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PandaDB.h"
 				>
 			</File>
 			<File
@@ -537,14 +537,6 @@
 				</File>
 				<File
 					RelativePath=".\Parser\ParserDriver.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Parser\Statement.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Parser\Statement.h"
 					>
 				</File>
 				<Filter
@@ -1129,6 +1121,26 @@
 				</File>
 				<File
 					RelativePath=".\Expr\ExprWalker.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Database"
+				>
+				<File
+					RelativePath=".\Database\DBImpl.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Database\DBImpl.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Database\Statement.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Database\Statement.h"
 					>
 				</File>
 			</Filter>

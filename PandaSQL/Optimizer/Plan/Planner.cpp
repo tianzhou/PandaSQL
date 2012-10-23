@@ -4,6 +4,9 @@
 
 #include "Optimizer/Join/JoinPath.h"
 
+#include "Database/DBImpl.h"
+#include "Database/Statement.h"
+
 #include "Expr/BooleanExpr.h"
 #include "Expr/ExprWalker.h"
 
@@ -12,10 +15,6 @@
 #include "Node/RelNode.h"
 #include "Node/SeqScanNode.h"
 
-#include "PandaDB.h"
-
-#include "Parser/Statement.h"
-
 #include "Utils/Bitmask.h"
 #include "Utils/Debug.h"
 
@@ -23,18 +22,18 @@ namespace PandaSQL
 {
 
 //Although one can get PandaDB from inStatement, we want to get the non-const version PandaDB
-Planner::Planner(const Statement &inStatement, PandaDB *io_pPandaDB)
+Planner::Planner(const Statement &inStatement, DBImpl *io_dbImpl)
 :
 mStatement(inStatement)
 {
-	mPlanContext.mpDB = io_pPandaDB;
+	mPlanContext.mpDB = io_dbImpl;
 }
 
 PlanNode* Planner::GeneratePlan()
 {
 	PlanNode *newPlanNode = NULL;
 
-	const PandaDB *pDB = mStatement.GetDB();
+	const DBImpl *pDB = mStatement.GetDB();
 	Table *theTable = NULL;
 	const RelNode *theRelNode = NULL;
 

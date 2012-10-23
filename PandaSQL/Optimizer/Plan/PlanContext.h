@@ -13,7 +13,7 @@ namespace PandaSQL
 {
 
 class RelNode;
-class PandaDB;
+class DBImpl;
 class BooleanExpr;
 
 typedef std::vector<uint32_t> ProjectionIndexList;
@@ -22,7 +22,7 @@ typedef std::vector<uint32_t> PredicateIndexList;
 struct PlanContext
 {
 	std::vector<const RelNode*> mRelList;
-	PandaDB *mpDB;
+	DBImpl *mpDB;
 	const BooleanExpr *mpPredicateExpr;
 	FinalResultFunctor mFinalResultFunctor;
 

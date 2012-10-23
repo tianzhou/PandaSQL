@@ -40,9 +40,9 @@ void PrintASTTree(pANTLR3_BASE_TREE parentTree, uint32_t level)
 	if (children)
 	{
 		ANTLR3_UINT32 n = parentTree->children->size(parentTree->children);
-
+		
 		for	(ANTLR3_UINT32 i = 0; i < n; i++)
-		{   
+		{
 			pANTLR3_BASE_TREE child = (pANTLR3_BASE_TREE)parentTree->children->get(parentTree->children, i);
 
 			PrintASTTree(child, level + 1);
@@ -54,7 +54,7 @@ void PrintASTTree(pANTLR3_BASE_TREE parentTree, uint32_t level)
 **ParserDriver**
 ***************************************************/
 
-ParserDriver::ParserDriver(PandaDB *io_pDB)
+ParserDriver::ParserDriver(DBImpl *io_pDB)
 :
 mpDB(io_pDB)
 ,mpStmt(NULL)
@@ -85,38 +85,7 @@ void ParserDriver::ReleaseStatement()
 Status ParserDriver::LoadFromFile(File *inFile)
 {
 	Status result;
-	File::Offset offset = 0;
-	File::Size amount = 512;
-	File::Size o_bytesRead = 0;
-	char buf[513]; //Add Null terminator
 
-	do
-	{
-		result = inFile->ReadToDelimiter(offset, 512, ";", true, buf, &o_bytesRead);
-
-		if (o_bytesRead > 0)
-		{
-			this->CreateStatement();
-
-			buf[o_bytesRead] = '\0';
-			result = this->ParseQuery(buf);
-
-			if (result.OK())
-			{
-				result = this->Execute();
-			}
-
-			this->ReleaseStatement();
-		}
-
-		offset += o_bytesRead;
-
-	}while (result.OK());
-	
-	if (result.IsEOF())
-	{
-		result = Status::kOK;
-	}
 
 
 	return result;

@@ -6,14 +6,13 @@
 
 #include <antlr3.h>
 
-#include "Parser/Statement.h"
-
 #include "Catalog/Column.h"
+
+#include "Database/DBImpl.h"
+#include "Database/Statement.h"
 
 #include "Expr/BooleanExpr.h"
 #include "Expr/Expr.h"
-
-#include "PandaDB.h"
 
 #include "VFS/File.h"
 
@@ -26,7 +25,7 @@ namespace PandaSQL
 class ParserDriver
 {
 public:
-	ParserDriver(PandaDB *io_pDB);
+	ParserDriver(DBImpl *io_pDB);
 	~ParserDriver();
 
 	void CreateStatement();
@@ -71,7 +70,7 @@ private:
 	ParserDriver& operator=(const ParserDriver &rhs);
 
 
-	PandaDB *mpDB;
+	DBImpl *mpDB;
 	Statement *mpStmt;
 	
 	//True when we are reading statment from table file to load table def.

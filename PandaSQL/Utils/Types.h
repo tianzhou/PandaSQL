@@ -51,6 +51,13 @@ enum StorageType
 	kBDB
 };
 
+struct OpenOptions
+{
+	bool create_if_missing;
+
+	OpenOptions();
+};
+
 extern char *kNewLineSymbol; 
 
 extern uint32_t kUnknownID;

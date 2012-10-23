@@ -1,8 +1,10 @@
 #include "stdafx.h"
 
-#include "Parser/Statement.h"
+#include "Database/Statement.h"
 
 #include <iostream>
+
+#include "Database/DBImpl.h"
 
 #include "Executor/Executor.h"
 
@@ -10,14 +12,12 @@
 
 #include "Optimizer/Plan/Planner.h"
 
-#include "PandaDB.h"
-
 #include "Utils/Debug.h"
 
 namespace PandaSQL
 {
 
-Statement::Statement(PandaDB *io_pDB)
+Statement::Statement(DBImpl *io_pDB)
 :
 mpDB(io_pDB)
 ,mStmtType(kStmtUnknown)

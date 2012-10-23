@@ -10,13 +10,13 @@
 namespace PandaSQL
 {
 
-class PandaDB;
+class DBImpl;
 class BooleanExpr;
 
 class Statement
 {
 public:
-	Statement(PandaDB *io_pDB);
+	Statement(DBImpl *io_pDB);
 	~Statement();
 
 	enum StatementType
@@ -83,9 +83,9 @@ private:
 	const Table::TableRefList& GetTableRefList() const { return mTableRefs; }
 	const ColumnDefList& GetTargetColumnDefList() const { return mColumnDefs; }
 	const BooleanExpr* GetWhereExpr() const { return mpWhereExpr; }
-	const PandaDB* GetDB() const { return mpDB; }
+	const DBImpl* GetDB() const { return mpDB; }
 
-	PandaDB *mpDB;
+	DBImpl *mpDB;
 
 	std::string	mOrigStmtText;
 

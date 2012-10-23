@@ -46,7 +46,7 @@ public:
 
 	Expr(ExprType inExprType);
 
-	~Expr();
+	virtual ~Expr();
 
 	ExprType GetType() const { return mExprType; }
 

@@ -2,6 +2,8 @@
 
 #include "Node/PlanNode.h"
 
+#include "Expr/Expr.h"
+
 namespace PandaSQL
 {
 

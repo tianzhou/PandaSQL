@@ -6,7 +6,7 @@
 namespace PandaSQL
 {
 
-class PandaDB;
+class DBImpl;
 class PlanNode;
 class Statement;
 
@@ -15,7 +15,7 @@ class Planner
 
 public:
 
-	Planner(const Statement &inStatement, PandaDB *io_pPandaDB);
+	Planner(const Statement &inStatement, DBImpl *io_dbImpl);
 
 	PlanNode* GeneratePlan();
 
