@@ -39,6 +39,8 @@ public:
 
 private:
 
+	RelType mRelType;
+
 	const Table *mpTable;
 	ValueList mTupleValueList;
 

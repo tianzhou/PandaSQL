@@ -10,6 +10,7 @@ namespace PandaSQL
 RelNode::RelNode(const Table *inTable)
 :
 Node(kNodeRelation)
+,mRelType(kRelBase)
 ,mpTable(inTable)
 {
 }

@@ -25,6 +25,31 @@
 namespace PandaSQL
 {
 
+
+void PrintASTTree(pANTLR3_BASE_TREE parentTree, uint32_t level)
+{
+	for (uint32_t i = 0; i < level; i++)
+	{
+		std::cout<<"  ";
+	}
+
+	std::cout<<parentTree->toString(parentTree)->chars<<std::endl;
+
+	pANTLR3_VECTOR children = parentTree->children;
+
+	if (children)
+	{
+		ANTLR3_UINT32 n = parentTree->children->size(parentTree->children);
+
+		for	(ANTLR3_UINT32 i = 0; i < n; i++)
+		{   
+			pANTLR3_BASE_TREE child = (pANTLR3_BASE_TREE)parentTree->children->get(parentTree->children, i);
+
+			PrintASTTree(child, level + 1);
+		}
+	}
+}
+
 /**************************************************
 **ParserDriver**
 ***************************************************/
@@ -269,7 +294,8 @@ Status ParserDriver::ParseQuery(std::string inQueryString)
 
 			if (!this->IsLoadTable())
 			{
-				printf("\nParser OK: Nodes: %s\n", langAST.tree->toStringTree(langAST.tree)->chars);
+				PrintASTTree(langAST.tree, 0);
+				//printf("\nParser OK: Nodes: %s\n", langAST.tree->toStringTree(langAST.tree)->chars);
 			}
 
 			// Tree parsers are given a common tree node stream (or your override)
