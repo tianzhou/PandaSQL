@@ -6,7 +6,6 @@
 
 #include "Storage/CVS/CVSStorage.h"
 
-
 namespace PandaSQL
 {
 

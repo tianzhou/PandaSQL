@@ -1,10 +1,10 @@
 #ifndef PANDASQL_TABLE_H
 #define PANDASQL_TABLE_H
 
-#include "Catalog/Column.h"
-
 #include <string>
 #include <vector>
+
+#include "Catalog/Column.h"
 
 #include "Expr/Expr.h"
 

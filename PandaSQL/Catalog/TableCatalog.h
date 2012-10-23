@@ -1,14 +1,6 @@
 #ifndef PANDASQL_TABLE_CATALOG_H
 #define PANDASQL_TABLE_CATALOG_H
 
-//#include "VFS/IVFS.h"
-//
-//#include "Storage/IStorage.h"
-//
-//#include "Utils/Expr.h"
-//#include "Utils/Types.h"
-//#include "Utils/Status.h"
-//
 #include <map>
 
 namespace PandaSQL

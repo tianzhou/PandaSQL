@@ -1,14 +1,14 @@
 #ifndef PANDASQL_PANDADB_H
 #define PANDASQL_PANDADB_H
 
+#include <map>
+
 #include "Catalog/Column.h"
 #include "Catalog/Table.h"
 #include "Catalog/TableCatalog.h"
 
 #include "Utils/Join.h"
 #include "Utils/Status.h"
-
-#include <map>
 
 namespace PandaSQL
 {

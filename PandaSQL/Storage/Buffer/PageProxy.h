@@ -1,8 +1,6 @@
 #ifndef PANDASQL_PAGEPROXY_H
 #define PANDASQL_PAGEPROXY_H
 
-//#include "VFS/File.h"
-
 #include "Storage/StorageTypes.h"
 
 #include "Utils/Types.h"
