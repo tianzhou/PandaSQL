@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "Optimizer/Path/JoinPath.h"
+#include "Optimizer/Join/JoinPath.h"
 
 #include "Node/RelNode.h"
 

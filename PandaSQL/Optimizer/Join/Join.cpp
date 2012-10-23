@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "Utils/Join.h"
+#include "Optimizer/Join/Join.h"
 
 namespace PandaSQL
 {

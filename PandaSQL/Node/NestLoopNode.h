@@ -3,7 +3,7 @@
 
 #include "Node/PlanNode.h"
 
-#include "Optimizer/Path/JoinPath.h"
+#include "Optimizer/Join/JoinPath.h"
 #include "Optimizer/Plan/PlanResult.h"
 
 namespace PandaSQL

@@ -3,7 +3,8 @@
 
 #include "Catalog/Table.h"
 
-#include "Utils/Join.h"
+#include "Optimizer/Join/Join.h"
+
 #include "Utils/Predicate.h"
 
 namespace PandaSQL

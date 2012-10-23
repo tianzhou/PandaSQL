@@ -488,14 +488,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Utils\Join.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Utils\Join.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Utils\Predicate.cpp"
 					>
 				</File>
@@ -1002,18 +994,26 @@
 							>
 						</File>
 					</Filter>
-				</Filter>
-				<Filter
-					Name="Path"
-					>
-					<File
-						RelativePath=".\Optimizer\Path\JoinPath.cpp"
+					<Filter
+						Name="Join"
 						>
-					</File>
-					<File
-						RelativePath=".\Optimizer\Path\JoinPath.h"
-						>
-					</File>
+						<File
+							RelativePath=".\Optimizer\Join\Join.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Optimizer\Join\Join.h"
+							>
+						</File>
+						<File
+							RelativePath=".\Optimizer\Join\JoinPath.cpp"
+							>
+						</File>
+						<File
+							RelativePath=".\Optimizer\Join\JoinPath.h"
+							>
+						</File>
+					</Filter>
 				</Filter>
 			</Filter>
 			<Filter

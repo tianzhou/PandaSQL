@@ -2,7 +2,7 @@
 
 #include "Optimizer/Plan/Planner.h"
 
-#include "Optimizer/Path/JoinPath.h"
+#include "Optimizer/Join/JoinPath.h"
 
 #include "Expr/BooleanExpr.h"
 #include "Expr/ExprWalker.h"

@@ -6,7 +6,8 @@
 #include "Catalog/Column.h"
 #include "Catalog/Table.h"
 
-#include "Utils/Join.h"
+#include "Optimizer/Join/Join.h"
+
 #include "Utils/Status.h"
 #include "Utils/Types.h"
 

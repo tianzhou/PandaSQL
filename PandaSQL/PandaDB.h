@@ -7,7 +7,8 @@
 #include "Catalog/Table.h"
 #include "Catalog/TableCatalog.h"
 
-#include "Utils/Join.h"
+#include "Optimizer/Join/Join.h"
+
 #include "Utils/Status.h"
 
 namespace PandaSQL
