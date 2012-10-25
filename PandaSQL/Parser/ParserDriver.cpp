@@ -67,19 +67,15 @@ ParserDriver::~ParserDriver()
 
 }
 
-void ParserDriver::CreateStatement()
+void ParserDriver::PushNewStatement(Statement::StatementType inType)
 {
-	PDASSERT(mpStmt == NULL);
+	//TODO: support subquery
+	PDASSERT(!mpStmt);
 
-	mpStmt = new Statement(mpDB);
-}
-	
-void ParserDriver::ReleaseStatement()
-{
-	PDASSERT(mpStmt);
-
-	delete mpStmt;
-	mpStmt = NULL;
+	if (!mpStmt)
+	{
+		mpStmt = new Statement(inType, mpDB);
+	}
 }
 
 Status ParserDriver::LoadFromFile(File *inFile)
@@ -91,7 +87,7 @@ Status ParserDriver::LoadFromFile(File *inFile)
 	return result;
 }
 
-Status ParserDriver::ParseQuery(std::string inQueryString)
+Status ParserDriver::ParseQuery(std::string inQueryString, Statement **io_statement)
 {
 	printf("\nstmt: %s\n", inQueryString.c_str());
 
@@ -244,7 +240,7 @@ Status ParserDriver::ParseQuery(std::string inQueryString)
     // It also has the side advantage, if you are using an IDE such as VS2005 that can do it
     // that when you type ->, you will see a list of all the methods the object supports.
     //
-    langAST = psr->stmt(psr, this);
+    langAST = psr->stmt(psr);
 
     // If the parser ran correctly, we will have a tree to parse. In general I recommend
     // keeping your own flags as part of the error trapping, but here is how you can
@@ -287,7 +283,16 @@ Status ParserDriver::ParseQuery(std::string inQueryString)
 
 	if (result.OK())
 	{
-		result = this->GetStatement().Prepare();
+		result = this->GetRootStatement().Prepare();
+	}
+
+	if (result.OK())
+	{
+		*io_statement = &this->GetRootStatement();
+	}
+	else
+	{
+		*io_statement = NULL;
 	}
 	
 	return result;
@@ -296,11 +301,6 @@ Status ParserDriver::ParseQuery(std::string inQueryString)
 void ParserDriver::PrintCurrentState()
 {
 	printf("PrintCurrentState\n");
-}
-
-Status ParserDriver::Execute()
-{
-	return this->GetStatement().Execute(this->IsLoadTable());
 }
 
 void ParserDriver::GetString(ANTLR3_BASE_TREE *tree, std::string *o_str)
@@ -379,16 +379,9 @@ Expr* ParserDriver::CreateExprForBinaryOp(const ANTLR3_STRING &inOpString, const
 
 Expr* ParserDriver::CreateExprForColumnReference(const ColumnQualifiedName &inColumnQualifiedName)
 {
-	ColumnExpr *pColumnExpr = NULL;
-
-	ColumnDef theColumnDef;
-	Status result = mpDB->GetColumnDefFromQualifiedName(this->GetStatement().GetTableRefList(), inColumnQualifiedName, &theColumnDef);
-
-	if (result.OK())
-	{
-		pColumnExpr = new ColumnExpr();
-		pColumnExpr->SetQualifiedColumnName(theColumnDef.qualifiedName);
-	}
+	ColumnExpr *pColumnExpr = new ColumnExpr();
+	
+	pColumnExpr->SetQualifiedColumnName(inColumnQualifiedName);
 
 	return pColumnExpr;
 }

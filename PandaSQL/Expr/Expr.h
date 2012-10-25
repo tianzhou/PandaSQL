@@ -14,6 +14,7 @@ class Bitmask;
 class Expr;
 class ExprContext;
 class ExprWalker;
+class MutableExprWalker;
 class Value;
 
 enum ExprType
@@ -62,6 +63,8 @@ public:
 	virtual Expr* CreateSubExprForPushdown(const std::vector<std::string> &inTableNameList) const;
 
 	virtual void Walk(ExprWalker *io_walker) const;
+	virtual void MutableWalk(MutableExprWalker *io_walker);
+
 	virtual Expr* Clone() const;
 
 	ExprType mExprType;

@@ -61,7 +61,6 @@ TOK_WHERE;
 {
 
 #include "stdafx.h"
-#include "Parser/ParserDriver.h"
 
 }
 
@@ -71,25 +70,7 @@ TOK_WHERE;
 
 
 //Starting rule
-stmt[PandaSQL::ParserDriver *io_pDriver]
-scope
-{
-	PandaSQL::ParserDriver *pDriver;
-}
-@init
-{
-	$stmt::pDriver = io_pDriver;
-}
-@after
-{
-	if ($stmt.text)
-	{
-		std::string theStmt;
-		theStmt.assign((const char *)$stmt.text->chars);
-	
-		io_pDriver->GetStatement().SetOriginalStmtText(theStmt);
-	}
-}
+stmt
 	:	ddl_stmt^ SEMI!
 	|	dml_stmt^ SEMI!
 	|	EOF!

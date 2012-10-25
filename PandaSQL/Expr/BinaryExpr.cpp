@@ -151,6 +151,23 @@ void BinaryExpr::Walk(ExprWalker *io_walker) const
 	}
 }
 
+void BinaryExpr::MutableWalk(MutableExprWalker *io_walker)
+{
+	PDASSERT(mpLeftOperand && mpRightOperand);
+
+	#pragma message("Really non-constant cast?????????????")
+
+	if (mpLeftOperand)
+	{
+		const_cast<Expr *>(mpLeftOperand)->MutableWalk(io_walker);
+	}
+	
+	if (mpRightOperand)
+	{
+		const_cast<Expr *>(mpRightOperand)->MutableWalk(io_walker);
+	}
+}
+
 Expr* BinaryExpr::Clone() const
 {
 	BinaryExpr *result = new BinaryExpr();

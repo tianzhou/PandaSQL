@@ -19,6 +19,19 @@ public:
 	virtual void Visit(const Expr *io_expr) = 0;
 };
 
+class MutableExprWalker
+{
+
+public:
+
+	MutableExprWalker() {}
+	virtual ~MutableExprWalker() {}
+
+	virtual void Visit(const Expr *io_expr) = 0;
+	virtual void MutableVisit(Expr *io_expr) = 0;
+
+};
+
 class DependentColumnListWalker : public ExprWalker
 {
 
@@ -31,7 +44,23 @@ public:
 
 private:
 
-	TableAndColumnSetMap *pTableAndColumnSetMap;
+	TableAndColumnSetMap *mpTableAndColumnSetMap;
+};
+
+class AmendColumnWalker : public MutableExprWalker
+{
+
+public:
+
+	AmendColumnWalker(const TableAndColumnSetMap &inValidTableAndColumnSetMap);
+	virtual ~AmendColumnWalker();
+
+	virtual void Visit(const Expr *io_expr);
+	virtual void MutableVisit(Expr *io_expr);
+
+private:
+
+	const TableAndColumnSetMap &mTableAndColumnSetMap;
 };
 
 }	// PandaSQL

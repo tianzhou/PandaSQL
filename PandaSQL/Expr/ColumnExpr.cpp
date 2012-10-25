@@ -86,6 +86,11 @@ void ColumnExpr::Walk(ExprWalker *io_walker) const
 	io_walker->Visit(this);
 }
 
+void ColumnExpr::MutableWalk(MutableExprWalker *io_walker)
+{
+	io_walker->MutableVisit(this);
+}
+
 Expr* ColumnExpr::Clone() const
 {
 	ColumnExpr *result = new ColumnExpr();

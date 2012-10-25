@@ -261,6 +261,16 @@ void BooleanExpr::Walk(ExprWalker *io_walker) const
 	}
 }
 
+void BooleanExpr::MutableWalk(MutableExprWalker *io_walker)
+{
+	BooleanList::iterator iter = mBooleanList.begin();
+	for (; iter != mBooleanList.end(); iter++)
+	{
+		#pragma message("Really non-constant cast?????????????")
+		const_cast<Expr *>((*iter))->MutableWalk(io_walker);
+	}
+}
+
 Expr* BooleanExpr::Clone() const
 {
 	BooleanExpr *result = new BooleanExpr();

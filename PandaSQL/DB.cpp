@@ -9,6 +9,8 @@
 
 #include "Parser/ParserDriver.h"
 
+#include "Utils/Debug.h"
+
 namespace PandaSQL
 {
 
@@ -48,14 +50,15 @@ Status DB::Execute(const std::string &inQuery)
 
 	PandaSQL::ParserDriver parserDriver(mpDBImpl);
 
-	//TODO: Create/Release in better place
-	parserDriver.CreateStatement();
+	Statement *pTopStatement = NULL;
 
-	result = parserDriver.ParseQuery(inQuery);
+	result = parserDriver.ParseQuery(inQuery, &pTopStatement);
 
 	if (result.OK())
 	{
-		result = parserDriver.Execute();
+		PDASSERT(pTopStatement);
+
+		result = pTopStatement->Execute(false);
 
 		if (!result.OK())
 		{
@@ -63,8 +66,6 @@ Status DB::Execute(const std::string &inQuery)
 			std::cout << "ERROR: " << result.GetCode() << std::endl;
 		}
 	}
-
-	parserDriver.ReleaseStatement();
 	
 	return result;
 }

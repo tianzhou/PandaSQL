@@ -35,36 +35,23 @@ scope
 	
 ddl_stmt
 	:	create_table_stmt
-		{
-			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-			pDriver->GetStatement().SetStatementType(PandaSQL::Statement::kStmtCreateTable);
-		}
 	|	create_index_stmt
-		{
-			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-			pDriver->GetStatement().SetStatementType(PandaSQL::Statement::kStmtCreateIndex);
-		}
 	|	drop_table_stmt
-		{
-			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-			pDriver->GetStatement().SetStatementType(PandaSQL::Statement::kStmtDropTable);
-		}
 	|	drop_index_stmt
-		{
-			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-			pDriver->GetStatement().SetStatementType(PandaSQL::Statement::kStmtDropIndex);
-		}
 	;
 	
 create_table_stmt
 @init
 {
 	std::string tableRef;
+	
+	PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+	pDriver->PushNewStatement(PandaSQL::Statement::kStmtCreateTable);
 }
 	:	^(TOK_CREATE_TABLE_STMT table_ref[&tableRef] column_def_list)
 		{
 			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-			pDriver->GetStatement().AddTableRef(tableRef);
+			pDriver->GetCurrentStatement().AddTableRef(tableRef);
 		}
 	;
 	
@@ -88,7 +75,7 @@ column_def
 			columnDef.constraintType = $constraint.constraintType; 
 			
 			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-			pDriver->GetStatement().AddColumnDef(columnDef);
+			pDriver->GetCurrentStatement().AddColumnDef(columnDef);
 		}
 	;
 	
@@ -128,13 +115,16 @@ create_index_stmt
 	std::string indexRef;
 	std::string tableRef;
 	PandaSQL::ColumnQualifiedName qualifiedName;
+	
+	PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+	pDriver->PushNewStatement(PandaSQL::Statement::kStmtCreateIndex);
 }
 	:	^(TOK_CREATE_INDEX_STMT index_ref[&indexRef] table_ref[&tableRef] column_reference[&qualifiedName])
 		{
 			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-			pDriver->GetStatement().SetIndexRef(indexRef);
-			pDriver->GetStatement().AddTableRef(tableRef);
-			pDriver->GetStatement().AddColumnWithQualifiedName(qualifiedName);
+			pDriver->GetCurrentStatement().SetIndexRef(indexRef);
+			pDriver->GetCurrentStatement().AddTableRef(tableRef);
+			pDriver->GetCurrentStatement().AddColumnWithQualifiedName(qualifiedName);
 		}
 	;
 	
@@ -142,11 +132,14 @@ drop_table_stmt
 @init
 {
 	std::string tableRef;
+	
+	PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+	pDriver->PushNewStatement(PandaSQL::Statement::kStmtDropTable);
 }
 	:	^(TOK_DROP_TABLE table_ref[&tableRef])
 		{
 			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-			pDriver->GetStatement().AddTableRef(tableRef);
+			pDriver->GetCurrentStatement().AddTableRef(tableRef);
 		}
 	;
 	
@@ -154,41 +147,29 @@ drop_index_stmt
 @init
 {
 	std::string indexRef;
+	
+	PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+	pDriver->PushNewStatement(PandaSQL::Statement::kStmtDropIndex);
 }
 	:	^(TOK_DROP_INDEX index_ref[&indexRef])
 		{
 			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-			pDriver->GetStatement().SetIndexRef(indexRef);
+			pDriver->GetCurrentStatement().SetIndexRef(indexRef);
 		}
 	;
 	
 dml_stmt
 	:	select_stmt
-		{
-			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-			pDriver->GetStatement().SetStatementType(PandaSQL::Statement::kStmtSelect);
-		}
 	|	update_stmt
-		{
-			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-			pDriver->GetStatement().SetStatementType(PandaSQL::Statement::kStmtUpdate);
-		}
 	|	insert_stmt
-		{
-			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-			pDriver->GetStatement().SetStatementType(PandaSQL::Statement::kStmtInsert);
-		}
 	|	delete_stmt
-		{
-			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-			pDriver->GetStatement().SetStatementType(PandaSQL::Statement::kStmtDelete);
-		}
 	;
 	
 select_stmt
 @init
 {
-	
+	PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+	pDriver->PushNewStatement(PandaSQL::Statement::kStmtSelect);
 }
 @after
 {
@@ -220,13 +201,13 @@ select_list
 	:	^(TOK_SELECT_LIST TOK_ALL_COLUMNS)
 		{
 			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-			pDriver->GetStatement().AddAllColumns();
+			pDriver->GetCurrentStatement().AddAllColumns();
 		}
 	|	^(TOK_SELECT_LIST 
 			(column_reference[&qualifiedName]
 			{
 				PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-				pDriver->GetStatement().AddColumnWithQualifiedName(qualifiedName);
+				pDriver->GetCurrentStatement().AddColumnWithQualifiedName(qualifiedName);
 			}
 			)+
 		 )
@@ -243,7 +224,7 @@ from_clause
 			(table_ref[&tableRef]
 			{
 				PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-				pDriver->GetStatement().AddTableRef(tableRef);
+				pDriver->GetCurrentStatement().AddTableRef(tableRef);
 			}
 			)+
 		 )
@@ -345,7 +326,6 @@ column_reference[PandaSQL::ColumnQualifiedName *o_columnQualifiedName]
 {
 	std::string columnRef;
 	std::string tableRef;
-	bool hasTableRef = false;
 }
 	:	^(TOK_COLUMN_REF identifier[&columnRef] identifier[&tableRef]?)
 		{
@@ -515,11 +495,11 @@ where_clause
 }
 	:	^(TOK_WHERE predicate_list[predicate])
 		{
-			pDriver->GetStatement().SetPredicate(predicate);
+			pDriver->GetCurrentStatement().SetPredicate(predicate);
 		}
 	|	^(TOK_WHERE sc=search_condition)
 		{
-			pDriver->GetStatement().SetWhereClauseExpression($sc.io_pBooleanExpr);
+			pDriver->GetCurrentStatement().SetWhereClauseExpression($sc.io_pBooleanExpr);
 		}
 	;
 	
@@ -642,11 +622,11 @@ binary_op returns [PandaSQL::PredicateItem::PredicateComparisonType comparisonTy
 update_stmt
 @init
 {
-	printf("***update_statement begin***\n");
+	PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+	pDriver->PushNewStatement(PandaSQL::Statement::kStmtUpdate);
 }
 @after
 {
-	printf("***update_statement end***\n");
 }
 	:	^(TOK_UPDATE_STMT update_core)
 		{
@@ -662,7 +642,7 @@ update_core
 	:	^(TOK_UPDATE_CORE table_ref[&tableRef] set_clause_list where_clause?)
 		{
 			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-			pDriver->GetStatement().AddTableRef(tableRef);
+			pDriver->GetCurrentStatement().AddTableRef(tableRef);
 		}
 	;
 	
@@ -676,13 +656,13 @@ set_clause
 @init
 {
 	PandaSQL::ColumnQualifiedName qualifiedName;
-	PandaSQL::Expr theExpr;
+	PandaSQL::Expr valueExpr;
 }
-	:	^(TOK_UPDATE_SET column_reference[&qualifiedName] expr[&theExpr])
+	:	^(TOK_UPDATE_SET column_reference[&qualifiedName] expr[&valueExpr])
 		{
 			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-			pDriver->GetStatement().AddColumnWithQualifiedName(qualifiedName);
-			pDriver->GetStatement().AddExprRef(theExpr);
+			pDriver->GetCurrentStatement().AddColumnWithQualifiedName(qualifiedName);
+			pDriver->GetCurrentStatement().AddExprRef(valueExpr);
 		}
 	;
 	
@@ -691,24 +671,27 @@ insert_stmt
 {
 	std::string tableRef;
 	PandaSQL::ColumnQualifiedName qualifiedName;
-	PandaSQL::Expr theExpr;
+	PandaSQL::Expr valueExpr;
+	
+	PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+	pDriver->PushNewStatement(PandaSQL::Statement::kStmtInsert);
 }
 	:	^(TOK_INSERT_STMT
 			(table_ref[&tableRef]
 			{
 				PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-				pDriver->GetStatement().AddTableRef(tableRef);
+				pDriver->GetCurrentStatement().AddTableRef(tableRef);
 			})
 			(column_reference[&qualifiedName]
 			{
 				PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-				pDriver->GetStatement().AddColumnWithQualifiedName(qualifiedName);
+				pDriver->GetCurrentStatement().AddColumnWithQualifiedName(qualifiedName);
 			})+
 			TOK_INSERT_VALUES
-			(expr[&theExpr]
+			(expr[&valueExpr]
 			{
 				PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-				pDriver->GetStatement().AddExprRef(theExpr);
+				pDriver->GetCurrentStatement().AddExprRef(valueExpr);
 			})+)
 	;
 	
@@ -716,11 +699,14 @@ delete_stmt
 @init
 {
 	std::string tableRef;
+	
+	PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+	pDriver->PushNewStatement(PandaSQL::Statement::kStmtDelete);
 }
 	:	^(TOK_DELETE_STMT table_ref[&tableRef] where_clause?)
 		{
 			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-			pDriver->GetStatement().AddTableRef(tableRef);
+			pDriver->GetCurrentStatement().AddTableRef(tableRef);
 		}
 	;
 	
@@ -786,6 +772,6 @@ expr[PandaSQL::Expr *o_expr]
 	|	column_reference[&qualifiedName]
 		{
 			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-			pDriver->GetStatement().AddColumnWithQualifiedName(qualifiedName);
+			pDriver->GetCurrentStatement().AddColumnWithQualifiedName(qualifiedName);
 		}
 	;

@@ -16,9 +16,6 @@ class BooleanExpr;
 class Statement
 {
 public:
-	Statement(DBImpl *io_pDB);
-	~Statement();
-
 	enum StatementType
 	{
 		kStmtUnknown = 0,
@@ -32,11 +29,13 @@ public:
 		kStmtDropIndex = 8,
 	};
 
+	Statement(StatementType inStmtType, DBImpl *io_pDB);
+	~Statement();
+
 	void Clear();
 
 	void SetOriginalStmtText(const std::string inStmtText);
 
-	void SetStatementType(StatementType inStmtType) { mStmtType = inStmtType; }
 	StatementType GetStatementType() const { return mStmtType; }
 
 	//For create_table_stmt, created table[1]
@@ -73,7 +72,8 @@ public:
 	Status Execute(bool loadTable);
 	void PrintStatement();
 
-	void SetWhereClauseExpression(const BooleanExpr *inWhereExpr);
+	#pragma message("Really non-constant cast?????????????")
+	void SetWhereClauseExpression(BooleanExpr *inWhereExpr);
 
 private:
 
@@ -103,7 +103,7 @@ private:
 
 	std::string mIndexRef;
 
-	const BooleanExpr *mpWhereExpr;
+	BooleanExpr *mpWhereExpr;
 };
 
 

@@ -35,12 +35,13 @@ public:
 	virtual Expr* CreateSubExprForPushdown(const std::vector<std::string> &inTableNameList) const;
 
 	virtual void Walk(ExprWalker *io_walker) const;
+	virtual void MutableWalk(MutableExprWalker *io_walker);
 	virtual Expr* Clone() const;
 
 private:
 
 	BinaryOpType mOpType;
-	
+
 	const Expr *mpLeftOperand;
 	const Expr *mpRightOperand;
 };

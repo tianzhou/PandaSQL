@@ -18,7 +18,8 @@ public:
 		kColumnMissing = 6,
 		kInvalidExpression = 7,
 		kInvalidCommand = 8,
-		kTableAlreadyExists = 9
+		kTableAlreadyExists = 9,
+		kAmbiguousColumn = 10
 	};
 
 	Status() : mState(kOK) {}

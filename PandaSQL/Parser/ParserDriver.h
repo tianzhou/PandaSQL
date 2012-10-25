@@ -28,12 +28,12 @@ public:
 	ParserDriver(DBImpl *io_pDB);
 	~ParserDriver();
 
-	void CreateStatement();
-	void ReleaseStatement();
+	void PushNewStatement(Statement::StatementType inType);
 
 	Status LoadFromFile(File *inFile);
-	Status ParseQuery(std::string inQueryString);
-	Status Execute();
+
+	//caller is responsible to delete io_statement
+	Status ParseQuery(std::string inQueryString, Statement **io_statement);
 	void PrintCurrentState();
 	void SetLoadTable(bool isLoadTable) { mLoadTable = isLoadTable; }
 	bool IsLoadTable() const { return mLoadTable; }
@@ -54,8 +54,12 @@ public:
 
 privileged:
 
-	const Statement& GetStatement() const { return *mpStmt; }
-	Statement& GetStatement() { return *mpStmt; }
+	//TODO: support subquery
+	const Statement& GetCurrentStatement() const { return *mpStmt; }
+	Statement& GetCurrentStatement() { return *mpStmt; }
+
+	const Statement& GetRootStatement() const { return *mpStmt; }
+	Statement& GetRootStatement() { return *mpStmt; }
 
 private:
 
@@ -69,8 +73,11 @@ private:
 	ParserDriver(const ParserDriver &rhs);
 	ParserDriver& operator=(const ParserDriver &rhs);
 
-
 	DBImpl *mpDB;
+
+	//Statement is created via ParserDriver, however it is not deleted
+	//by it. The root statement is returned via ParseQuery to the caller
+	//who is responsible to delete it
 	Statement *mpStmt;
 	
 	//True when we are reading statment from table file to load table def.
