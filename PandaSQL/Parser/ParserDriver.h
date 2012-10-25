@@ -45,12 +45,12 @@ public:
 	static void GetExprForText(ANTLR3_BASE_TREE *tree, Expr *o_expr);
 	static void GetExprForNumber(ANTLR3_BASE_TREE *tree, Expr *o_expr);
 
-	Expr* CreateExprForNumericLiteral(ANTLR3_BASE_TREE *numericTree);
-	Expr* CreateExprForBinaryOp(const ANTLR3_STRING &inOpString, const Expr &inLeftOperand, const Expr &inRightOperand);
-	Expr* CreateExprForColumnReference(const ColumnQualifiedName &inColumnQualifiedName);
-	BooleanExpr* CreateExprForBooleanPrimary(const Expr &inSubExpr);
-	BooleanExpr* CreateExprForBooleanAndList();
-	BooleanExpr* CreateExprForBooleanOrList();
+	static Expr* CreateExprForNumericLiteral(ANTLR3_BASE_TREE *numericTree);
+	static Expr* CreateExprForBinaryOp(const ANTLR3_STRING &inOpString, const Expr &inLeftOperand, const Expr &inRightOperand);
+	static Expr* CreateExprForColumnReference(const ColumnQualifiedName &inColumnQualifiedName);
+	static BooleanExpr* CreateExprForBooleanPrimary(const Expr &inSubExpr);
+	static BooleanExpr* CreateExprForBooleanAndList();
+	static BooleanExpr* CreateExprForBooleanOrList();
 
 privileged:
 

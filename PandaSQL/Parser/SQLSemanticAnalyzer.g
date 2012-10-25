@@ -275,11 +275,10 @@ exact_numeric_literal returns [PandaSQL::Expr *io_pExpr]
 unsigned_integer returns [PandaSQL::Expr *io_pExpr]
 @init
 {
-	PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
 }
 	:	UNSIGNED_INTEGER
 		{
-			$io_pExpr = pDriver->CreateExprForNumericLiteral($UNSIGNED_INTEGER);
+			$io_pExpr = PandaSQL::ParserDriver::CreateExprForNumericLiteral($UNSIGNED_INTEGER);
 		}
 	;
 	
@@ -338,11 +337,10 @@ column_reference_expr returns [PandaSQL::Expr *io_pExpr]
 @init
 {
 	PandaSQL::ColumnQualifiedName qualifiedName;
-	PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
 }
 	:	column_reference[&qualifiedName]
 		{
-			io_pExpr = pDriver->CreateExprForColumnReference(qualifiedName);
+			io_pExpr = PandaSQL::ParserDriver::CreateExprForColumnReference(qualifiedName);
 		}
 	;
 
@@ -366,7 +364,6 @@ string_value_expression returns [PandaSQL::Expr *io_pExpr]
 bool_value_expression returns [PandaSQL::BooleanExpr *io_pBooleanExpr]
 @init
 {
-	PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
 	bool isSingleItem = true;
 	$io_pBooleanExpr = NULL;
 }
@@ -383,7 +380,7 @@ bool_value_expression returns [PandaSQL::BooleanExpr *io_pBooleanExpr]
 					//Or list
 					if (!$io_pBooleanExpr)
 					{
-						$io_pBooleanExpr = pDriver->CreateExprForBooleanOrList();
+						$io_pBooleanExpr = PandaSQL::ParserDriver::CreateExprForBooleanOrList();
 					}
 					$io_pBooleanExpr->AddExpr($bt.io_pBooleanExpr);
 				}				
@@ -393,7 +390,6 @@ bool_value_expression returns [PandaSQL::BooleanExpr *io_pBooleanExpr]
 boolean_term returns [PandaSQL::BooleanExpr *io_pBooleanExpr]
 @init
 {
-	PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
 	bool isSingleItem = true;
 	$io_pBooleanExpr = NULL;
 }
@@ -410,7 +406,7 @@ boolean_term returns [PandaSQL::BooleanExpr *io_pBooleanExpr]
 					//And list
 					if (!$io_pBooleanExpr)
 					{
-						$io_pBooleanExpr = pDriver->CreateExprForBooleanAndList();
+						$io_pBooleanExpr = PandaSQL::ParserDriver::CreateExprForBooleanAndList();
 					
 					}
 					$io_pBooleanExpr->AddExpr($bf.io_pBooleanExpr);
@@ -444,15 +440,14 @@ boolean_test returns [PandaSQL::BooleanExpr *io_pBooleanExpr]
 boolean_primary returns [PandaSQL::BooleanExpr *io_pBooleanExpr]
 @init
 {
-	PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
 }
 	:	^(TOK_BOOLEAN_PRIMARY p=predicate)
 		{
-			$io_pBooleanExpr = pDriver->CreateExprForBooleanPrimary(*$p.io_pExpr);
+			$io_pBooleanExpr = PandaSQL::ParserDriver::CreateExprForBooleanPrimary(*$p.io_pExpr);
 		}
 	|	^(TOK_BOOLEAN_PRIMARY bp=boolean_predicand)
 		{
-			$io_pBooleanExpr = pDriver->CreateExprForBooleanPrimary(*$bp.io_pExpr);
+			$io_pBooleanExpr = PandaSQL::ParserDriver::CreateExprForBooleanPrimary(*$bp.io_pExpr);
 		}
 	;
 	
@@ -517,11 +512,10 @@ predicate returns [PandaSQL::Expr *io_pExpr]
 comparison_predicate returns [PandaSQL::Expr *io_pExpr]
 @init
 {
-	PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
 }
 	:	^(TOK_COMPARISON_PREDICATE co=comparison_op lv=row_value_predicand rv=row_value_predicand)
 		{
-			$io_pExpr = pDriver->CreateExprForBinaryOp(*$co.text, *$lv.io_pExpr, *$rv.io_pExpr);
+			$io_pExpr = PandaSQL::ParserDriver::CreateExprForBinaryOp(*$co.text, *$lv.io_pExpr, *$rv.io_pExpr);
 		}
 	;
 	
