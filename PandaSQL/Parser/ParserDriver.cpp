@@ -64,7 +64,8 @@ mpDB(io_pDB)
 
 ParserDriver::~ParserDriver()
 {
-
+	delete mpStmt;
+	mpStmt = NULL;
 }
 
 void ParserDriver::PushNewStatement(Statement::StatementType inType)

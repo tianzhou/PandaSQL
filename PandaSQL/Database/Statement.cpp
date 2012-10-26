@@ -31,6 +31,7 @@ mpDB(io_pDB)
 
 Statement::~Statement()
 {
+	delete mpWhereExpr;
 }
 
 void Statement::Clear()
