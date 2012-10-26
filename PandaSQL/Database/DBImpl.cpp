@@ -7,6 +7,7 @@
 #include "Access/TupleIterator.h"
 #include "Access/Tuple.h"
 
+#include "Catalog/Column.h"
 #include "Catalog/Table.h"
 
 #include "Expr/BooleanExpr.h"
@@ -18,9 +19,14 @@
 #include "Utils/Common.h"
 #include "Utils/Debug.h"
 #include "Utils/Predicate.h"
+#include "Utils/Value.h"
 
 namespace PandaSQL
 {
+
+const std::string kSchemaTableName = "PD_Schema";
+ColumnDefList s_schemaColumnDefList;
+const ColumnDefList *s_pSchemaColumnDefList = &s_schemaColumnDefList;
 
 DBImpl::DBImpl(StorageType inStorageType)
 :
@@ -28,6 +34,25 @@ mStorageType(inStorageType)
 ,mpBackend(NULL)
 ,mIsOpen(false)
 {
+
+	ColumnDef schemaColumn;
+	uint32_t index = 0;
+
+	//table_name;
+	schemaColumn.qualifiedName.tableName = kSchemaTableName;
+	schemaColumn.qualifiedName.columnName = "table_name";
+	schemaColumn.index = index++;
+	schemaColumn.dataType = kText;
+	schemaColumn.constraintType = kConstraintNone;
+	s_schemaColumnDefList.push_back(schemaColumn);
+
+	//create_stmt
+	schemaColumn.qualifiedName.tableName = kSchemaTableName;
+	schemaColumn.qualifiedName.columnName = "create_stmt";
+	schemaColumn.index = index++;
+	schemaColumn.dataType = kText;
+	schemaColumn.constraintType = kConstraintNone;
+	s_schemaColumnDefList.push_back(schemaColumn);
 }
 
 DBImpl::~DBImpl()
@@ -51,7 +76,42 @@ Status DBImpl::Open(const std::string &inDBPath, const OpenOptions &inOptions)
 	
 		result = mpBackend->Open();
 
-		mIsOpen = true;
+		if (result.OK())
+		{
+			result = mpBackend->OpenTable(kSchemaTableName, IDBBackend::kCreate);
+
+			if (result.OK())
+			{
+				TupleIterator *tupleIter = mpBackend->CreateScanIterator(kSchemaTableName);
+
+				if (tupleIter)
+				{				
+					ValueList valueList;
+					ColumnDataFunctor columnFunctor(*s_pSchemaColumnDefList, &valueList);
+
+					tupleIter->SetTupleFunctor(&columnFunctor);
+
+					tupleIter->Reset();
+					//while (tupleIter->Valid())
+					//{
+					//	tupleIter->Next();
+					//}
+
+					while(tupleIter->Next())
+					{
+					}
+
+					mIsOpen = true;
+
+					delete tupleIter;
+				}	
+			}
+
+			if (!result.OK())
+			{
+				this->Close();
+			}
+		}
 	}
 
 	return result;
@@ -73,7 +133,7 @@ Status DBImpl::Close()
 	return result;
 }
 
-Status DBImpl::CreateTable(const std::string &tableName, const ColumnDefList &columnList)
+Status DBImpl::CreateOpenTable(const std::string &tableName, const ColumnDefList &columnList)
 {
 	Status result;
 
@@ -83,6 +143,10 @@ Status DBImpl::CreateTable(const std::string &tableName, const ColumnDefList &co
 
 	if (iter == mTableMap.end())
 	{
+		IDBBackend::OpenMode openMode = IDBBackend::kCreate | IDBBackend::kErrorIfExists;
+
+		result = mpBackend->OpenTable(tableName, openMode);
+
 		Table *pTable = new Table();
 		pTable->SetName(tableName);
 
@@ -95,7 +159,7 @@ Status DBImpl::CreateTable(const std::string &tableName, const ColumnDefList &co
 		
 		mTableMap.insert(TableMapEntry(tableName, pTable));
 
-		result = mpBackend->CreateTable(tableName, columnList);
+		result = mpBackend->OpenTable(tableName, IDBBackend::kCreate | IDBBackend::kErrorIfExists );
 	}
 	else
 	{
@@ -109,7 +173,9 @@ Status DBImpl::OpenTable(const std::string &tableName)
 {
 	Status result;
 
-	result = mpBackend->OpenTable(tableName);
+	IDBBackend::OpenMode openMode = 0;
+
+	result = mpBackend->OpenTable(tableName, openMode);
 	
 	return result;
 }
@@ -166,7 +232,7 @@ Status DBImpl::SelectData(const Table::TableRefList &tableList, const JoinList &
 			//ColumnDefListToTupleDesc(allColumnList, &tupleDesc);
 			//ColumnDefListToTupleDesc(projectColumnList, &projectTupleDesc);
 			
-			TupleIterator *theIter = mpBackend->CreateScanIterator(tableList[0], allColumnList, NULL);
+			TupleIterator *theIter = mpBackend->CreateScanIterator(tableList[0], NULL);
 			
 			ValueList tupleValue;
 			ValueList projectTupleValue;
@@ -215,7 +281,7 @@ Status DBImpl::SelectData(const Table::TableRefList &tableList, const JoinList &
 				ColumnDefList allColumnList = outerTableAllColumnList;
 				allColumnList.insert(allColumnList.end(), innerTableAllColumnList.begin(), innerTableAllColumnList.end());
 
-				TupleIterator *outerScan = mpBackend->CreateScanIterator(tableList[0], outerTableAllColumnList, NULL);
+				TupleIterator *outerScan = mpBackend->CreateScanIterator(tableList[0], NULL);
 
 				PDASSERT(outerScan);
 
@@ -233,7 +299,7 @@ Status DBImpl::SelectData(const Table::TableRefList &tableList, const JoinList &
 
 					exprContext.UpdateTupleValue(outerTableAllColumnList, outerTupleValue);
 
-					TupleIterator *innerScan = mpBackend->CreateScanIterator(tableList[1], innerTableAllColumnList, NULL);
+					TupleIterator *innerScan = mpBackend->CreateScanIterator(tableList[1], NULL);
 
 					PDASSERT(innerScan);
 
@@ -357,7 +423,7 @@ TupleIterator* DBImpl::CreateTupleIteratorForTable(const Table &inTable)
 {
 	const ColumnDefList &allColumnList = inTable.GetAllColumns();
 
-	TupleIterator *theIter = mpBackend->CreateScanIterator(inTable.GetName(), allColumnList, NULL);
+	TupleIterator *theIter = mpBackend->CreateScanIterator(inTable.GetName(), NULL);
 
 	return theIter;
 }

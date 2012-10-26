@@ -25,10 +25,11 @@ public:
 
 	DBImpl(StorageType inStorageType);
 	~DBImpl();
+
 	Status Open(const std::string &inDBPath, const OpenOptions &inOptions);
 	Status Close();
-	Status CreateTable(const std::string &tableName, const ColumnDefList &columnList);
 
+	Status CreateOpenTable(const std::string &tableName, const ColumnDefList &columnList);
 	Status OpenTable(const std::string &tableName);
 
 	Status InsertData(const std::string &tableName, const ColumnDefList &columnList, const ExprList &columnExprList);

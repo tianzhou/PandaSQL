@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include "Access/Tuple.h"
+
 #include "Utils/Status.h"
 #include "Utils/Types.h"
 
@@ -53,6 +55,34 @@ typedef std::set<std::string> ColumnNameSet;
 typedef std::map<std::string, ColumnNameSet> TableAndColumnSetMap;
 
 void AddOneColumnToMap(const ColumnQualifiedName &inColumnQualifiedName, TableAndColumnSetMap *io_tableAndColumnSetMap);
+
+void TupleElementToString(const TupleDescElement &descElement, const TupleDataElement &dataElement, std::string *o_string);
+void TupleToString(const TupleDesc &desc, const TupleData &data, std::string *o_string);
+void TupleStringToValue(const ColumnDef &inColumnDef, const std::string &inString, uint32_t *io_offset, Value *o_value);
+void TupleStringToValueList(const ColumnDefList &inColumnDefList, const std::string &inString, ValueList *o_valueList);
+
+void ProjectTuple(const ColumnDefList &inAllColDefList, const ColumnDefList &inProjectColDefList, const ValueList &inTupleValue, ValueList *o_projectTupleValue);
+
+void ColumnDefListToTupleDesc(const ColumnDefList &colDefList, TupleDesc *io_tupleDesc);
+
+class ColumnDataFunctor : public TupleFunctor
+{
+
+public:
+
+	ColumnDataFunctor(const ColumnDefList &inColumnDefList, ValueList *io_valueList);
+	virtual ~ColumnDataFunctor();
+
+	virtual void operator()(const std::string &inTupleData);
+
+private:
+
+	const ColumnDefList &mColumnDefList;
+	ValueList *mpValueList;
+
+
+};
+
 
 }	// PandaSQL
 

@@ -24,17 +24,6 @@
 namespace PandaSQL
 {
 
-TupleFunctor::TupleFunctor()
-{
-}
-
-void TupleFunctor::operator()(const ValueList &inValueList)
-{
-#ifdef PDDEBUG
-	PrintTuple(inValueList);
-#endif
-}
-
 SeqScanNode::SeqScanNode(PlanContext *io_pPlanContext, uint32_t inRelIndex)
 :
 PlanNode(kNodeSeqScan, io_pPlanContext)

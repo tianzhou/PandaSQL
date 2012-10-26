@@ -10,8 +10,8 @@ namespace PandaSQL
 
 static char kDeleteMark[] = " ";
 
-BDBScanIterator::BDBScanIterator(const ColumnDefList &inColumnDefList, DB *io_dbTable)
-:TupleIterator(inColumnDefList)
+BDBScanIterator::BDBScanIterator(DB *io_dbTable)
+:TupleIterator()
 ,mpDBTable(io_dbTable)
 ,mpDBCursor(NULL)
 ,mJustReset(false)
@@ -28,6 +28,7 @@ BDBScanIterator::~BDBScanIterator()
 	}
 }
 
+#pragma message ("Is still valid if reaching end record")
 bool BDBScanIterator::Valid() const
 {
 	return mpDBCursor && mLastError.OK();
@@ -107,8 +108,8 @@ bool BDBScanIterator::GetValue(ValueList *o_valueList) const
 	{
 		std::string rowString;	
 		rowString.append((const char *)data.data, data.size);
-		
-		TupleStringToValueList(mColumnDefList, rowString, o_valueList);
+
+		(*mpTupleFunctor)(rowString);
 	}
 
 	return result;

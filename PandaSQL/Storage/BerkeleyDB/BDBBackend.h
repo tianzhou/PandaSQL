@@ -21,8 +21,7 @@ public:
 	virtual Status Open();
 	virtual Status Close();
 
-	virtual Status CreateTable(const std::string &tableName, const ColumnDefList &columnList);
-	virtual Status OpenTable(const std::string &tableName);
+	virtual Status OpenTable(const std::string &tableName, OpenMode openMode);
 	//virtual Status InsertRecord(const TupleData &inTuple) = 0;
 	//virtual Status FindFirstRecordWithPredicate(const Predicate *inPredicate, Iterator **o_iterator) = 0;
 
@@ -30,7 +29,7 @@ public:
 	virtual Status DeleteData(const std::string &tableName, const TuplePredicate *inTuplePredicate = NULL);
 	virtual Status SelectData(const std::string &tableName, const ColumnDefList &columnList, const TuplePredicate *inTuplePredicate = NULL);
 
-	virtual TupleIterator* CreateScanIterator(const std::string &tableName, const ColumnDefList &inColumnDefList, const TuplePredicate *inTuplePredicate = NULL);
+	virtual TupleIterator* CreateScanIterator(const std::string &tableName, const TuplePredicate *inTuplePredicate = NULL);
 
 private:
 
@@ -39,7 +38,7 @@ private:
 
 	Status GetTableByName_Private(const std::string &name, DB **o_table) const;
 
-	Status OpenTable_Private(const std::string &inTableName, OpenMode inMode);
+	Status OpenTable_Private(const std::string &inTableName, OpenMode openMode);
 	Status CloseTable_Private(const std::string &inTableName);
 	Status CloseAllTables_Private();
 

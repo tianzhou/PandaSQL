@@ -3,8 +3,6 @@
 
 #include <vector>
 
-#include "Catalog/Column.h"
-
 #include "Utils/Status.h"
 #include "Utils/Types.h"
 #include "Utils/Value.h"
@@ -34,9 +32,10 @@ class TupleFunctor
 
 public:
 
-	TupleFunctor();
+	TupleFunctor() {}
+	virtual ~TupleFunctor() {}
 
-	virtual void operator()(const ValueList &inValueList);
+	virtual void operator()(const std::string &inTupleData) = 0;
 };
 
 class TupleDescElement
@@ -56,15 +55,6 @@ public:
 };
 
 typedef std::vector<TupleDataElement> TupleData;
-
-void TupleElementToString(const TupleDescElement &descElement, const TupleDataElement &dataElement, std::string *o_string);
-void TupleToString(const TupleDesc &desc, const TupleData &data, std::string *o_string);
-void TupleStringToValue(const ColumnDef &inColumnDef, const std::string &inString, uint32_t *io_offset, Value *o_value);
-void TupleStringToValueList(const ColumnDefList &inColumnDefList, const std::string &inString, ValueList *o_valueList);
-
-void ProjectTuple(const ColumnDefList &inAllColDefList, const ColumnDefList &inProjectColDefList, const ValueList &inTupleValue, ValueList *o_projectTupleValue);
-
-void ColumnDefListToTupleDesc(const ColumnDefList &colDefList, TupleDesc *io_tupleDesc);
 
 #ifdef PDDEBUG
 void PrintTuple(const ValueList &data);

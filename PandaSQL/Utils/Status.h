@@ -19,7 +19,7 @@ public:
 		kInvalidExpression = 7,
 		kInvalidCommand = 8,
 		kTableAlreadyExists = 9,
-		kAmbiguousColumn = 10
+		kAmbiguousColumn = 10,
 	};
 
 	Status() : mState(kOK) {}

@@ -132,9 +132,10 @@ int _tmain(int argc, _TCHAR* argv[])
 #endif
 
 		result = db.Close();
-
-		system("pause");
+		
 	}
+
+	system("pause");
 
     return 0;
 }

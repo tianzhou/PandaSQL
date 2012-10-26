@@ -7,10 +7,10 @@
 namespace PandaSQL
 {
 
-TupleIterator::TupleIterator(const ColumnDefList &inColumnDefList)
+TupleIterator::TupleIterator()
 :
-mLastError(Status::kOK)
-,mColumnDefList(inColumnDefList)
+mpTupleFunctor(NULL)
+,mLastError(Status::kOK)
 {
 }
 

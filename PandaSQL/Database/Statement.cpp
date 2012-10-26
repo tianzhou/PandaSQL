@@ -228,7 +228,7 @@ Status Statement::Execute(bool loadTable)
 			}
 			else
 			{
-				result = mpDB->CreateTable(mTableRefs[0], mColumnDefs);
+				result = mpDB->CreateOpenTable(mTableRefs[0], mColumnDefs);
 			}
 
 			break;

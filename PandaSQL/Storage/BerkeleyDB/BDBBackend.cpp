@@ -5,8 +5,6 @@
 #include "Storage/BerkeleyDB/BDBScanIterator.h"
 #include "Storage/BerkeleyDB/Transaction/BDBTransaction.h"
 
-#include "Catalog/Table.h"
-
 #include "Utils/Debug.h"
 
 namespace PandaSQL
@@ -81,20 +79,11 @@ Status BDBBackend::Close()
 	return result;
 }
 
-Status BDBBackend::CreateTable(const std::string &tableName, const ColumnDefList &columnList)
+Status BDBBackend::OpenTable(const std::string &tableName, OpenMode openMode)
 {
 	Status result;
 
-	result = this->OpenTable_Private(tableName, kCreateIfMissing);
-
-	return result;
-}
-
-Status BDBBackend::OpenTable(const std::string &tableName)
-{
-	Status result;
-
-	result = this->OpenTable_Private(tableName, 0);
+	result = this->OpenTable_Private(tableName, openMode);
 
 	return result;
 }
@@ -289,7 +278,7 @@ Status BDBBackend::SelectData(const std::string &tableName, const ColumnDefList 
 	return result;
 }
 
-TupleIterator* BDBBackend::CreateScanIterator(const std::string &tableName, const ColumnDefList &inColumnDefList, const TuplePredicate *inTuplePredicate /*= NULL*/)
+TupleIterator* BDBBackend::CreateScanIterator(const std::string &tableName, const TuplePredicate *inTuplePredicate /*= NULL*/)
 {
 	TupleIterator *result = NULL;
 
@@ -299,7 +288,7 @@ TupleIterator* BDBBackend::CreateScanIterator(const std::string &tableName, cons
 
 	if (localResult.OK())
 	{
-		result = new BDBScanIterator(inColumnDefList, pTable);
+		result = new BDBScanIterator(pTable);
 	}
 
 	return result;
@@ -325,7 +314,7 @@ Status BDBBackend::GetTableByName_Private(const std::string &name, DB **o_table)
 	return result;
 }
 
-Status BDBBackend::OpenTable_Private(const std::string &inTableName, OpenMode inMode)
+Status BDBBackend::OpenTable_Private(const std::string &inTableName, OpenMode openMode)
 {
 	static char *const kDBName = "mydb.panda";
 
@@ -339,9 +328,15 @@ Status BDBBackend::OpenTable_Private(const std::string &inTableName, OpenMode in
 
 	u_int32_t flags = DB_AUTO_COMMIT;
 
-	if ((inMode & kCreateIfMissing) != 0)
+	if (openMode & kCreate)
 	{
 		flags |= DB_CREATE;
+		
+		// It would return error if table already exists
+		if (openMode & kErrorIfExists)
+		{
+			flags |= DB_EXCL;
+		}
 	}
 
 	ret = pTable->open(pTable,
@@ -356,7 +351,21 @@ Status BDBBackend::OpenTable_Private(const std::string &inTableName, OpenMode in
 	if (ret != 0)
 	{
 		PDDebugOutputVerbose(db_strerror(ret));
-		result = Status::kInternalError;
+
+		//Doc says it would return EEXIST which is not defined...
+		if (ret == 17)
+		{
+			result = Status::kTableAlreadyExists;
+		}
+		else
+		{
+			result = Status::kInternalError;
+		}
+
+		ret = pTable->close(pTable, 0);
+
+		//Assume we can close it after failling open the db
+		PDASSERT(ret == 0);
 	}
 
 	if (result.OK())
