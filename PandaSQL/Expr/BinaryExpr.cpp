@@ -35,22 +35,22 @@ void BinaryExpr::SetOpType(BinaryExpr::BinaryOpType inOpType)
 	mOpType = inOpType;
 }
 
-const Expr* BinaryExpr::GetLeftOperand() const
+Expr* BinaryExpr::GetLeftOperand() const
 {
 	return mpLeftOperand;
 }
 
-void BinaryExpr::SetLeftOperand(const Expr *inLeftOperand)
+void BinaryExpr::SetLeftOperand(Expr *inLeftOperand)
 {
 	mpLeftOperand = inLeftOperand;
 }
 
-const Expr* BinaryExpr::GetRightOperand() const
+Expr* BinaryExpr::GetRightOperand() const
 {
 	return mpRightOperand;
 }
 
-void BinaryExpr::SetRightOperand(const Expr *inRightOperand)
+void BinaryExpr::SetRightOperand(Expr *inRightOperand)
 {
 	mpRightOperand = inRightOperand;
 }
@@ -155,16 +155,14 @@ void BinaryExpr::MutableWalk(MutableExprWalker *io_walker)
 {
 	PDASSERT(mpLeftOperand && mpRightOperand);
 
-	#pragma message("Really non-constant cast?????????????")
-
 	if (mpLeftOperand)
 	{
-		const_cast<Expr *>(mpLeftOperand)->MutableWalk(io_walker);
+		mpLeftOperand->MutableWalk(io_walker);
 	}
 	
 	if (mpRightOperand)
 	{
-		const_cast<Expr *>(mpRightOperand)->MutableWalk(io_walker);
+		mpRightOperand->MutableWalk(io_walker);
 	}
 }
 

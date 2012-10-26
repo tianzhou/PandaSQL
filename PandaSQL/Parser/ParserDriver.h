@@ -46,9 +46,9 @@ public:
 	static void GetExprForNumber(ANTLR3_BASE_TREE *tree, Expr *o_expr);
 
 	static Expr* CreateExprForNumericLiteral(ANTLR3_BASE_TREE *numericTree);
-	static Expr* CreateExprForBinaryOp(const ANTLR3_STRING &inOpString, const Expr &inLeftOperand, const Expr &inRightOperand);
+	static Expr* CreateExprForBinaryOp(const ANTLR3_STRING &inOpString, Expr *io_leftOperand, Expr *io_rightOperand);
 	static Expr* CreateExprForColumnReference(const ColumnQualifiedName &inColumnQualifiedName);
-	static BooleanExpr* CreateExprForBooleanPrimary(const Expr &inSubExpr);
+	static BooleanExpr* CreateExprForBooleanPrimary(Expr *io_inSubExpr);
 	static BooleanExpr* CreateExprForBooleanAndList();
 	static BooleanExpr* CreateExprForBooleanOrList();
 

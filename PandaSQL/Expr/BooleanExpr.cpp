@@ -44,7 +44,7 @@ const BooleanExpr::BooleanList& BooleanExpr::GetBooleanList() const
 	return mBooleanList;
 }
 
-void BooleanExpr::AddExpr(const Expr *inExpr)
+void BooleanExpr::AddExpr(Expr *inExpr)
 {
 	mBooleanList.push_back(inExpr);
 }
@@ -266,8 +266,7 @@ void BooleanExpr::MutableWalk(MutableExprWalker *io_walker)
 	BooleanList::iterator iter = mBooleanList.begin();
 	for (; iter != mBooleanList.end(); iter++)
 	{
-		#pragma message("Really non-constant cast?????????????")
-		const_cast<Expr *>((*iter))->MutableWalk(io_walker);
+		(*iter)->MutableWalk(io_walker);
 	}
 }
 

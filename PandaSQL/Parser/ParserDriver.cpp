@@ -354,7 +354,7 @@ Expr* ParserDriver::CreateExprForNumericLiteral(ANTLR3_BASE_TREE *numericTree)
 	return pNumericExpr;
 }
 
-Expr* ParserDriver::CreateExprForBinaryOp(const ANTLR3_STRING &inOpString, const Expr &inLeftOperand, const Expr &inRightOperand)
+Expr* ParserDriver::CreateExprForBinaryOp(const ANTLR3_STRING &inOpString, Expr *io_leftOperand, Expr *io_rightOperand)
 {
 	BinaryExpr *pBinaryExpr = new BinaryExpr();
 
@@ -372,8 +372,8 @@ Expr* ParserDriver::CreateExprForBinaryOp(const ANTLR3_STRING &inOpString, const
 	}
 
 	pBinaryExpr->SetOpType(op);
-	pBinaryExpr->SetLeftOperand(&inLeftOperand);
-	pBinaryExpr->SetRightOperand(&inRightOperand);
+	pBinaryExpr->SetLeftOperand(io_leftOperand);
+	pBinaryExpr->SetRightOperand(io_rightOperand);
 
 	return pBinaryExpr;
 }
@@ -387,11 +387,11 @@ Expr* ParserDriver::CreateExprForColumnReference(const ColumnQualifiedName &inCo
 	return pColumnExpr;
 }
 
-BooleanExpr* ParserDriver::CreateExprForBooleanPrimary(const Expr &inSubExpr)
+BooleanExpr* ParserDriver::CreateExprForBooleanPrimary(Expr *io_subExpr)
 {
 	BooleanExpr *pBooleanExpr = new BooleanExpr();
 
-	pBooleanExpr->AddExpr(&inSubExpr);
+	pBooleanExpr->AddExpr(io_subExpr);
 	pBooleanExpr->SetType(BooleanExpr::kBooleanNormal);
 
 	return pBooleanExpr;

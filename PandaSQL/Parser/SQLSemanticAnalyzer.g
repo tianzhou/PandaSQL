@@ -443,11 +443,11 @@ boolean_primary returns [PandaSQL::BooleanExpr *io_pBooleanExpr]
 }
 	:	^(TOK_BOOLEAN_PRIMARY p=predicate)
 		{
-			$io_pBooleanExpr = PandaSQL::ParserDriver::CreateExprForBooleanPrimary(*$p.io_pExpr);
+			$io_pBooleanExpr = PandaSQL::ParserDriver::CreateExprForBooleanPrimary($p.io_pExpr);
 		}
 	|	^(TOK_BOOLEAN_PRIMARY bp=boolean_predicand)
 		{
-			$io_pBooleanExpr = PandaSQL::ParserDriver::CreateExprForBooleanPrimary(*$bp.io_pExpr);
+			$io_pBooleanExpr = PandaSQL::ParserDriver::CreateExprForBooleanPrimary($bp.io_pExpr);
 		}
 	;
 	
@@ -515,7 +515,7 @@ comparison_predicate returns [PandaSQL::Expr *io_pExpr]
 }
 	:	^(TOK_COMPARISON_PREDICATE co=comparison_op lv=row_value_predicand rv=row_value_predicand)
 		{
-			$io_pExpr = PandaSQL::ParserDriver::CreateExprForBinaryOp(*$co.text, *$lv.io_pExpr, *$rv.io_pExpr);
+			$io_pExpr = PandaSQL::ParserDriver::CreateExprForBinaryOp(*$co.text, $lv.io_pExpr, $rv.io_pExpr);
 		}
 	;
 	

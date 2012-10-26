@@ -24,11 +24,11 @@ public:
 	BinaryOpType GetOpType() const;
 	void SetOpType(BinaryOpType inOpType);
 
-	const Expr* GetLeftOperand() const;
-	void SetLeftOperand(const Expr *inLeftOperand);
+	Expr* GetLeftOperand() const;
+	void SetLeftOperand(Expr *inLeftOperand);
 	
-	const Expr* GetRightOperand() const;
-	void SetRightOperand(const Expr *inRightOperand);
+	Expr* GetRightOperand() const;
+	void SetRightOperand(Expr *inRightOperand);
 
 	virtual bool IsTrue(const ExprContext &inExprContext) const;
 	
@@ -42,8 +42,8 @@ private:
 
 	BinaryOpType mOpType;
 
-	const Expr *mpLeftOperand;
-	const Expr *mpRightOperand;
+	Expr *mpLeftOperand;
+	Expr *mpRightOperand;
 };
 
 }	// PandaSQL

@@ -72,7 +72,6 @@ public:
 	Status Execute(bool loadTable);
 	void PrintStatement();
 
-	#pragma message("Really non-constant cast?????????????")
 	void SetWhereClauseExpression(BooleanExpr *inWhereExpr);
 
 private:

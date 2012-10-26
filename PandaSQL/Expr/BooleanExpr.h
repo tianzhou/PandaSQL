@@ -21,7 +21,7 @@ public:
 
 	typedef uint8_t BooleanType;
 
-	typedef std::vector<const Expr *> BooleanList;
+	typedef std::vector<Expr *> BooleanList;
 
 	BooleanExpr();
 	~BooleanExpr();
@@ -31,7 +31,7 @@ public:
 	void SetType(BooleanType inType);
 
 	const BooleanList& GetBooleanList() const;
-	void AddExpr(const Expr *inExpr);
+	void AddExpr(Expr *inExpr);
 
 	virtual bool IsTrue(const ExprContext &inExprContext) const;
 	
