@@ -214,7 +214,7 @@ Status Statement::Prepare()
 	return result;
 }
 
-Status Statement::Execute(bool loadTable)
+Status Statement::Execute(bool createTable /* = true */)
 {
 	Status result;
 
@@ -222,15 +222,22 @@ Status Statement::Execute(bool loadTable)
 	{
 	case kStmtCreateTable:
 		{
-			if (loadTable)
+			if (createTable)
 			{
-				result = mpDB->OpenTable(mTableRefs[0]);
+				//It will call Statement::Execute again and call mpDB->OpenTable
+				//to actually open the table
+				result = mpDB->CreateOpenTable(mTableRefs[0], mOrigStmtText);
 			}
 			else
 			{
-				result = mpDB->CreateOpenTable(mTableRefs[0], mColumnDefs);
+				result = mpDB->OpenTable(mTableRefs[0], mColumnDefs);				
 			}
 
+			break;
+		}
+	case kStmtDropTable:
+		{
+			result = mpDB->DropTable(mTableRefs[0]);
 			break;
 		}
 	case kStmtInsert:

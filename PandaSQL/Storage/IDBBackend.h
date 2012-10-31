@@ -37,6 +37,7 @@ public:
 	virtual Status Close() = 0;
 
 	virtual Status OpenTable(const std::string &tableName, OpenMode openMode) = 0;
+	virtual Status DropTable(const std::string &tableName) = 0;
 
 	virtual Status InsertData(const std::string &tableName, const TupleDesc &tupleDesc, const TupleData &tupleData, int32_t keyIndex) = 0;
 	virtual Status DeleteData(const std::string &tableName, const TuplePredicate *inTuplePredicate = NULL) = 0;
@@ -45,7 +46,7 @@ public:
 	//virtual Status FindFirstRecordWithPredicate(const Predicate *inPredicate, Iterator **o_iterator) = 0;
 
 	//Return NULL if table for tableName is not opened
-	virtual TupleIterator* CreateScanIterator(const std::string &tableName, const TuplePredicate *inTuplePredicate = NULL) = 0;
+	virtual TupleIterator* CreateScanIterator(const std::string &tableName, const TupleDesc &tupleDesc, const TuplePredicate *inTuplePredicate = NULL) = 0;
 
 protected:
 	IDBBackend(const std::string &inRootPath);
@@ -56,7 +57,7 @@ private:
 
 protected:
 
-	const std::string &mRootPath;
+	const std::string mRootPath;
 
 };
 

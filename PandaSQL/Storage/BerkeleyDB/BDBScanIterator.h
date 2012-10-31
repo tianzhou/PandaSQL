@@ -14,7 +14,7 @@ class BDBScanIterator : public TupleIterator
 {
 public:
 
-	BDBScanIterator(DB *io_dbTable);
+	BDBScanIterator(const TupleDesc &inTupleDesc, DB *io_dbTable);
 	virtual ~BDBScanIterator();
 
 	virtual bool Valid() const;

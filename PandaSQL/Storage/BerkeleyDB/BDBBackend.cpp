@@ -3,12 +3,15 @@
 #include "Storage/BerkeleyDB/BDBBackend.h"
 
 #include "Storage/BerkeleyDB/BDBScanIterator.h"
+#include "Storage/BerkeleyDB/BDBTypes.h"
 #include "Storage/BerkeleyDB/Transaction/BDBTransaction.h"
 
 #include "Utils/Debug.h"
 
 namespace PandaSQL
 {
+
+static const char *const kDBName = "mydb.panda";
 
 BDBBackend::BDBBackend(const std::string &inRootPath)
 :
@@ -84,6 +87,34 @@ Status BDBBackend::OpenTable(const std::string &tableName, OpenMode openMode)
 	Status result;
 
 	result = this->OpenTable_Private(tableName, openMode);
+
+	return result;
+}
+
+Status BDBBackend::DropTable(const std::string &tableName)
+{
+	Status result;
+
+	//TODO: For now delete every table in schema
+	int ret = mpDBEnv->dbremove(mpDBEnv
+		, NULL
+		, kDBName
+		, tableName.c_str()
+		, 0);
+
+	if (ret != 0)
+	{
+		PDDebugOutputVerbose(db_strerror(ret));
+
+		if (ret == ENOENT)
+		{
+			result = Status::kTableMissing;
+		}
+		else
+		{
+			result = Status::kInternalError;
+		}
+	}
 
 	return result;
 }
@@ -278,7 +309,7 @@ Status BDBBackend::SelectData(const std::string &tableName, const ColumnDefList 
 	return result;
 }
 
-TupleIterator* BDBBackend::CreateScanIterator(const std::string &tableName, const TuplePredicate *inTuplePredicate /*= NULL*/)
+TupleIterator* BDBBackend::CreateScanIterator(const std::string &tableName, const TupleDesc &tupleDesc, const TuplePredicate *inTuplePredicate /*= NULL*/)
 {
 	TupleIterator *result = NULL;
 
@@ -288,7 +319,7 @@ TupleIterator* BDBBackend::CreateScanIterator(const std::string &tableName, cons
 
 	if (localResult.OK())
 	{
-		result = new BDBScanIterator(pTable);
+		result = new BDBScanIterator(tupleDesc, pTable);
 	}
 
 	return result;
@@ -316,8 +347,6 @@ Status BDBBackend::GetTableByName_Private(const std::string &name, DB **o_table)
 
 Status BDBBackend::OpenTable_Private(const std::string &inTableName, OpenMode openMode)
 {
-	static char *const kDBName = "mydb.panda";
-
 	Status result;
 
 	DB *pTable = NULL;
@@ -352,8 +381,7 @@ Status BDBBackend::OpenTable_Private(const std::string &inTableName, OpenMode op
 	{
 		PDDebugOutputVerbose(db_strerror(ret));
 
-		//Doc says it would return EEXIST which is not defined...
-		if (ret == 17)
+		if (ret == EEXIST)
 		{
 			result = Status::kTableAlreadyExists;
 		}

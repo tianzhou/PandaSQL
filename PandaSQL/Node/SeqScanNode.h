@@ -30,6 +30,7 @@ private:
 
 	uint32_t mRelIndex;
 	TupleIterator *mpTupleIterator;
+	TupleDesc mTupleDesc;
 	ColumnIndexList mProjectionList;
 };
 

@@ -13,6 +13,8 @@
 #include "Expr/BooleanExpr.h"
 #include "Expr/ExprContext.h"
 
+#include "Parser/ParserDriver.h"
+
 #include "Storage/IDBBackend.h"
 #include "Storage/IStorage.h"
 
@@ -24,9 +26,18 @@
 namespace PandaSQL
 {
 
+bool s_initSystemTable = false;
 const std::string kSchemaTableName = "PD_Schema";
+
+enum
+{
+	kSchemaTableNameIndex = 0,
+	kSchemaTableCreationStmtIndex = 1
+};
+
 ColumnDefList s_schemaColumnDefList;
 const ColumnDefList *s_pSchemaColumnDefList = &s_schemaColumnDefList;
+TupleDesc s_tupleDesc;
 
 DBImpl::DBImpl(StorageType inStorageType)
 :
@@ -34,25 +45,40 @@ mStorageType(inStorageType)
 ,mpBackend(NULL)
 ,mIsOpen(false)
 {
+	//TODO: Lock
 
-	ColumnDef schemaColumn;
-	uint32_t index = 0;
+	if (!s_initSystemTable)
+	{
+		ColumnDef schemaColumn;
+		TupleDescElement tupleDescElement;
+		uint32_t index = 0;
 
-	//table_name;
-	schemaColumn.qualifiedName.tableName = kSchemaTableName;
-	schemaColumn.qualifiedName.columnName = "table_name";
-	schemaColumn.index = index++;
-	schemaColumn.dataType = kText;
-	schemaColumn.constraintType = kConstraintNone;
-	s_schemaColumnDefList.push_back(schemaColumn);
+		//table_name;
+		PDASSERT(index == kSchemaTableNameIndex);
+		schemaColumn.qualifiedName.tableName = kSchemaTableName;
+		schemaColumn.qualifiedName.columnName = "table_name";
+		schemaColumn.index = index++;
+		schemaColumn.dataType = kText;
+		schemaColumn.constraintType = kConstraintNone;
+		s_schemaColumnDefList.push_back(schemaColumn);
 
-	//create_stmt
-	schemaColumn.qualifiedName.tableName = kSchemaTableName;
-	schemaColumn.qualifiedName.columnName = "create_stmt";
-	schemaColumn.index = index++;
-	schemaColumn.dataType = kText;
-	schemaColumn.constraintType = kConstraintNone;
-	s_schemaColumnDefList.push_back(schemaColumn);
+		tupleDescElement.mDataType = schemaColumn.dataType;
+		s_tupleDesc.push_back(tupleDescElement);
+
+		//create_stmt
+		PDASSERT(index == kSchemaTableCreationStmtIndex);
+		schemaColumn.qualifiedName.tableName = kSchemaTableName;
+		schemaColumn.qualifiedName.columnName = "create_stmt";
+		schemaColumn.index = index++;
+		schemaColumn.dataType = kText;
+		schemaColumn.constraintType = kConstraintNone;
+		s_schemaColumnDefList.push_back(schemaColumn);
+
+		tupleDescElement.mDataType = schemaColumn.dataType;
+		s_tupleDesc.push_back(tupleDescElement);
+
+		s_initSystemTable = true;
+	}
 }
 
 DBImpl::~DBImpl()
@@ -82,32 +108,40 @@ Status DBImpl::Open(const std::string &inDBPath, const OpenOptions &inOptions)
 
 			if (result.OK())
 			{
-				TupleIterator *tupleIter = mpBackend->CreateScanIterator(kSchemaTableName);
+				TupleDesc tupleDesc;
 
-				if (tupleIter)
+				ColumnDefListToTupleDesc(*s_pSchemaColumnDefList, &tupleDesc);
+
+				TupleIterator *schemaTupleIter = mpBackend->CreateScanIterator(kSchemaTableName, tupleDesc);
+
+				if (schemaTupleIter)
 				{				
-					ValueList valueList;
-					ColumnDataFunctor columnFunctor(*s_pSchemaColumnDefList, &valueList);
+					ValueList tableInfoValueList;
 
-					tupleIter->SetTupleFunctor(&columnFunctor);
+					schemaTupleIter->Reset();
 
-					tupleIter->Reset();
-					//while (tupleIter->Valid())
-					//{
-					//	tupleIter->Next();
-					//}
-
-					while(tupleIter->Next())
+					while(schemaTupleIter->Next())
 					{
+						if (schemaTupleIter->GetValue(&tableInfoValueList))
+						{
+							result = this->OpenTableWithCreationStmt_Private(tableInfoValueList[kSchemaTableCreationStmtIndex].GetAsString());
+
+							if (!result.OK())
+							{
+								break;
+							}
+						}
 					}
 
-					mIsOpen = true;
-
-					delete tupleIter;
+					delete schemaTupleIter;
 				}	
 			}
 
-			if (!result.OK())
+			if (result.OK())
+			{
+				mIsOpen = true;
+			}
+			else
 			{
 				this->Close();
 			}
@@ -133,7 +167,7 @@ Status DBImpl::Close()
 	return result;
 }
 
-Status DBImpl::CreateOpenTable(const std::string &tableName, const ColumnDefList &columnList)
+Status DBImpl::CreateOpenTable(const std::string &tableName, const std::string &creationStmt)
 {
 	Status result;
 
@@ -147,19 +181,26 @@ Status DBImpl::CreateOpenTable(const std::string &tableName, const ColumnDefList
 
 		result = mpBackend->OpenTable(tableName, openMode);
 
-		Table *pTable = new Table();
-		pTable->SetName(tableName);
+		if (result.OK())
+		{
+			TupleData oneTupleData;
+			TupleDataElement oneTupleElement;
 
-		ColumnDefList::const_iterator colIter = columnList.begin();
+			oneTupleElement.mText = tableName;
+			oneTupleData.push_back(oneTupleElement);
 
-		for (; colIter != columnList.end(); colIter++)
-		{		
-			pTable->AddColumnDef(*colIter);
-		}
+			oneTupleElement.mText = creationStmt;
+			oneTupleData.push_back(oneTupleElement);
+
+			//Insert this new table info into schema table
+			//TODO: Use tableName as key
+			result = mpBackend->InsertData(kSchemaTableName, s_tupleDesc, oneTupleData, -1);
 		
-		mTableMap.insert(TableMapEntry(tableName, pTable));
-
-		result = mpBackend->OpenTable(tableName, IDBBackend::kCreate | IDBBackend::kErrorIfExists );
+			if (result.OK())
+			{
+				result = this->OpenTableWithCreationStmt_Private(creationStmt);
+			}
+		}		
 	}
 	else
 	{
@@ -169,14 +210,44 @@ Status DBImpl::CreateOpenTable(const std::string &tableName, const ColumnDefList
 	return result;
 }
 
-Status DBImpl::OpenTable(const std::string &tableName)
+Status DBImpl::OpenTable(const std::string &tableName, const ColumnDefList &columnList)
 {
 	Status result;
 
 	IDBBackend::OpenMode openMode = 0;
 
 	result = mpBackend->OpenTable(tableName, openMode);
+
+	if (result.OK())
+	{
+		Table *pTable = new Table();
+		pTable->SetName(tableName);
+
+		ColumnDefList::const_iterator colIter = columnList.begin();
+
+		for (; colIter != columnList.end(); colIter++)
+		{		
+			pTable->AddColumnDef(*colIter);
+		}
+
+		mTableMap.insert(TableMapEntry(tableName, pTable));
+	}
 	
+	return result;
+}
+
+Status DBImpl::DropTable(const std::string &tableName)
+{
+	Status result;
+
+	result = mpBackend->DropTable(tableName);
+
+	//TODO: For now, delete every table
+	if (result.OK())
+	{
+		result = mpBackend->DeleteData(kSchemaTableName);
+	}
+
 	return result;
 }
 
@@ -215,139 +286,139 @@ Status DBImpl::SelectData(const Table::TableRefList &tableList, const JoinList &
 {
 	Status result;
 
-	if (tableList.size() == 1)
-	{
-		Table *theTable = NULL;
-
-		result = this->GetTableByName(tableList[0], &theTable);
-   
-		if (result.OK())
-		{
-			std::cout << "****** Select Table:" << tableList[0] << " ******" << std::endl;
-			//result = mpBackend->SelectData(tableList[0], columnList, inTuplePredicate);
-			const ColumnDefList &allColumnList = theTable->GetAllColumns();
-			//TupleDesc tupleDesc;
-			//TupleDesc projectTupleDesc;
-
-			//ColumnDefListToTupleDesc(allColumnList, &tupleDesc);
-			//ColumnDefListToTupleDesc(projectColumnList, &projectTupleDesc);
-			
-			TupleIterator *theIter = mpBackend->CreateScanIterator(tableList[0], NULL);
-			
-			ValueList tupleValue;
-			ValueList projectTupleValue;
-			ExprContext exprContext;
-
-			while (theIter->Valid())
-			{
-				if (!theIter->GetValue(&tupleValue))
-				{
-					break;
-				}
-
-				exprContext.UpdateTupleValue(allColumnList, tupleValue);
-
-				if (!inWhereExpr || inWhereExpr->IsTrue(exprContext))
-				{
-					//TODO: This is slow when doing every time
-					ProjectTuple(allColumnList, projectColumnList, tupleValue, &projectTupleValue);			
-
-#ifdef PDDEBUG
-					PrintTuple(projectTupleValue);
-#endif
-				}
-
-				theIter->Next();
-			}
-
-			delete theIter;	
-		}
-	}
-	else if (tableList.size() == 2)
-	{
-		Table *outerTable = NULL;
-		Table *innerTable = NULL;
-
-		result = this->GetTableByName(tableList[0], &outerTable);
-
-		if (result.OK())
-		{
-			result = this->GetTableByName(tableList[1], &innerTable);
-
-			if (result.OK())
-			{
-				const ColumnDefList &outerTableAllColumnList = outerTable->GetAllColumns();
-				const ColumnDefList &innerTableAllColumnList = innerTable->GetAllColumns();
-				ColumnDefList allColumnList = outerTableAllColumnList;
-				allColumnList.insert(allColumnList.end(), innerTableAllColumnList.begin(), innerTableAllColumnList.end());
-
-				TupleIterator *outerScan = mpBackend->CreateScanIterator(tableList[0], NULL);
-
-				PDASSERT(outerScan);
-
-				ValueList projectTupleValue;
-				ExprContext exprContext;
-				while (outerScan->Valid())
-				{
-					ValueList outerTupleValue;
-					ValueList outerProjectTupleValue;
-
-					if (!outerScan->GetValue(&outerTupleValue))
-					{
-						break;
-					}
-
-					exprContext.UpdateTupleValue(outerTableAllColumnList, outerTupleValue);
-
-					TupleIterator *innerScan = mpBackend->CreateScanIterator(tableList[1], NULL);
-
-					PDASSERT(innerScan);
-
-					while (innerScan->Valid())
-					{
-						ValueList innerTupleValue;
-						ValueList innerProjectTupleValue;
-
-						if (!innerScan->GetValue(&innerTupleValue))
-						{
-							break;
-						}
-
-						exprContext.UpdateTupleValue(innerTableAllColumnList, innerTupleValue);
-
-						if (!inWhereExpr || inWhereExpr->IsTrue(exprContext))
-						{
-							//TODO: This is slow when doing every time
-							ValueList allTupleValue = outerTupleValue;
-							allTupleValue.insert(allTupleValue.end(), innerTupleValue.begin(), innerTupleValue.end());
-
-							ProjectTuple(allColumnList, projectColumnList, allTupleValue, &projectTupleValue);		
-#ifdef PDDEBUG
-							PrintTuple(projectTupleValue);
-#endif
-						}
-
-						innerScan->Next();
-					}
-
-					delete innerScan;
-
-					if (!result.OK())
-					{
-						break;
-					}
-
-					outerScan->Next();
-				}
-
-				delete outerScan;
-			}
-		}
-	}
-	else
-	{
-		PDASSERT(0);
-	}
+//	if (tableList.size() == 1)
+//	{
+//		Table *theTable = NULL;
+//
+//		result = this->GetTableByName(tableList[0], &theTable);
+//   
+//		if (result.OK())
+//		{
+//			std::cout << "****** Select Table:" << tableList[0] << " ******" << std::endl;
+//			//result = mpBackend->SelectData(tableList[0], columnList, inTuplePredicate);
+//			const ColumnDefList &allColumnList = theTable->GetAllColumns();
+//			TupleDesc tupleDesc;
+//			//TupleDesc projectTupleDesc;
+//
+//			ColumnDefListToTupleDesc(allColumnList, &tupleDesc);
+//			//ColumnDefListToTupleDesc(projectColumnList, &projectTupleDesc);
+//			
+//			TupleIterator *theIter = mpBackend->CreateScanIterator(tableList[0], tupleDesc, NULL);
+//			
+//			ValueList tupleValue;
+//			ValueList projectTupleValue;
+//			ExprContext exprContext;
+//
+//			while (theIter->Valid())
+//			{
+//				if (!theIter->GetValue(&tupleValue))
+//				{
+//					break;
+//				}
+//
+//				exprContext.UpdateTupleValue(allColumnList, tupleValue);
+//
+//				if (!inWhereExpr || inWhereExpr->IsTrue(exprContext))
+//				{
+//					//TODO: This is slow when doing every time
+//					ProjectTuple(allColumnList, projectColumnList, tupleValue, &projectTupleValue);			
+//
+//#ifdef PDDEBUG
+//					PrintTuple(projectTupleValue);
+//#endif
+//				}
+//
+//				theIter->Next();
+//			}
+//
+//			delete theIter;	
+//		}
+//	}
+//	else if (tableList.size() == 2)
+//	{
+//		Table *outerTable = NULL;
+//		Table *innerTable = NULL;
+//
+//		result = this->GetTableByName(tableList[0], &outerTable);
+//
+//		if (result.OK())
+//		{
+//			result = this->GetTableByName(tableList[1], &innerTable);
+//
+//			if (result.OK())
+//			{
+//				const ColumnDefList &outerTableAllColumnList = outerTable->GetAllColumns();
+//				const ColumnDefList &innerTableAllColumnList = innerTable->GetAllColumns();
+//				ColumnDefList allColumnList = outerTableAllColumnList;
+//				allColumnList.insert(allColumnList.end(), innerTableAllColumnList.begin(), innerTableAllColumnList.end());
+//
+//				TupleIterator *outerScan = mpBackend->CreateScanIterator(tableList[0], NULL);
+//
+//				PDASSERT(outerScan);
+//
+//				ValueList projectTupleValue;
+//				ExprContext exprContext;
+//				while (outerScan->Valid())
+//				{
+//					ValueList outerTupleValue;
+//					ValueList outerProjectTupleValue;
+//
+//					if (!outerScan->GetValue(&outerTupleValue))
+//					{
+//						break;
+//					}
+//
+//					exprContext.UpdateTupleValue(outerTableAllColumnList, outerTupleValue);
+//
+//					TupleIterator *innerScan = mpBackend->CreateScanIterator(tableList[1], NULL);
+//
+//					PDASSERT(innerScan);
+//
+//					while (innerScan->Valid())
+//					{
+//						ValueList innerTupleValue;
+//						ValueList innerProjectTupleValue;
+//
+//						if (!innerScan->GetValue(&innerTupleValue))
+//						{
+//							break;
+//						}
+//
+//						exprContext.UpdateTupleValue(innerTableAllColumnList, innerTupleValue);
+//
+//						if (!inWhereExpr || inWhereExpr->IsTrue(exprContext))
+//						{
+//							//TODO: This is slow when doing every time
+//							ValueList allTupleValue = outerTupleValue;
+//							allTupleValue.insert(allTupleValue.end(), innerTupleValue.begin(), innerTupleValue.end());
+//
+//							ProjectTuple(allColumnList, projectColumnList, allTupleValue, &projectTupleValue);		
+//#ifdef PDDEBUG
+//							PrintTuple(projectTupleValue);
+//#endif
+//						}
+//
+//						innerScan->Next();
+//					}
+//
+//					delete innerScan;
+//
+//					if (!result.OK())
+//					{
+//						break;
+//					}
+//
+//					outerScan->Next();
+//				}
+//
+//				delete outerScan;
+//			}
+//		}
+//	}
+//	else
+//	{
+//		PDASSERT(0);
+//	}
 
 	return result;
 }
@@ -419,11 +490,11 @@ Status DBImpl::GetColumnDefFromQualifiedName(const Table::TableRefList &inTableR
 	return result;
 }
 
-TupleIterator* DBImpl::CreateTupleIteratorForTable(const Table &inTable)
+TupleIterator* DBImpl::CreateTupleIteratorForTable(const Table &inTable, const TupleDesc &inTupleDesc)
 {
 	const ColumnDefList &allColumnList = inTable.GetAllColumns();
 
-	TupleIterator *theIter = mpBackend->CreateScanIterator(inTable.GetName(), NULL);
+	TupleIterator *theIter = mpBackend->CreateScanIterator(inTable.GetName(), inTupleDesc, NULL);
 
 	return theIter;
 }
@@ -444,6 +515,27 @@ Status DBImpl::GetTableByName(const std::string &name, Table **o_table) const
 
 		result = Status::kTableMissing;
 	}
+
+	return result;
+}
+
+Status DBImpl::OpenTableWithCreationStmt_Private(const std::string &inCreationStmt)
+{
+	Status result;
+
+	ParserDriver parserDriver(this);
+	Statement *pStmt = NULL;
+
+	result = parserDriver.ParseQuery(inCreationStmt, &pStmt);
+
+	if (result.OK())
+	{
+		//We use inCreationStmt to open table only
+		result = pStmt->Execute(false); //createTable = false;
+		
+		delete pStmt;
+	}
+	
 
 	return result;
 }

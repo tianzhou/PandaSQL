@@ -27,16 +27,17 @@ class ParserDriver
 public:
 	ParserDriver(DBImpl *io_pDB);
 	~ParserDriver();
-
-	void PushNewStatement(Statement::StatementType inType);
+	
+	//caller is responsible to delete io_statement
+	Status ParseQuery(std::string inQueryString, Statement **io_statement);
 
 	Status LoadFromFile(File *inFile);
 
-	//caller is responsible to delete io_statement
-	Status ParseQuery(std::string inQueryString, Statement **io_statement);
+privileged:
+
+	void PushNewStatement(Statement::StatementType inType);
+
 	void PrintCurrentState();
-	void SetLoadTable(bool isLoadTable) { mLoadTable = isLoadTable; }
-	bool IsLoadTable() const { return mLoadTable; }
 
 	static void GetString(ANTLR3_BASE_TREE *tree, std::string *o_str);
 	static void GetNumber(ANTLR3_BASE_TREE *tree, int32_t *o_num);
@@ -51,8 +52,6 @@ public:
 	static BooleanExpr* CreateExprForBooleanPrimary(Expr *io_inSubExpr);
 	static BooleanExpr* CreateExprForBooleanAndList();
 	static BooleanExpr* CreateExprForBooleanOrList();
-
-privileged:
 
 	//TODO: support subquery
 	const Statement& GetCurrentStatement() const { return *mpStmt; }
@@ -79,9 +78,6 @@ private:
 	//by it. The root statement is returned via ParseQuery to the caller
 	//who is responsible to delete it
 	Statement *mpStmt;
-	
-	//True when we are reading statment from table file to load table def.
-	bool mLoadTable;
 };
 
 }	// namespace PandaSQL

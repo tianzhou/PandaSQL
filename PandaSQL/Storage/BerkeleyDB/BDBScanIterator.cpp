@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "Storage/BerkeleyDB/BDBScanIterator.h"
+#include "Storage/BerkeleyDB/BDBTypes.h"
 
 #include "Utils/Debug.h"
 #include "Utils/Predicate.h"
@@ -10,8 +11,8 @@ namespace PandaSQL
 
 static char kDeleteMark[] = " ";
 
-BDBScanIterator::BDBScanIterator(DB *io_dbTable)
-:TupleIterator()
+BDBScanIterator::BDBScanIterator(const TupleDesc &inTupleDesc, DB *io_dbTable)
+:TupleIterator(inTupleDesc)
 ,mpDBTable(io_dbTable)
 ,mpDBCursor(NULL)
 ,mJustReset(false)
@@ -109,7 +110,7 @@ bool BDBScanIterator::GetValue(ValueList *o_valueList) const
 		std::string rowString;	
 		rowString.append((const char *)data.data, data.size);
 
-		(*mpTupleFunctor)(rowString);
+		TupleStringToValueList(mTupleDesc, rowString, o_valueList);
 	}
 
 	return result;

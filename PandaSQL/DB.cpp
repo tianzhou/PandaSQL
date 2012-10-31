@@ -58,13 +58,15 @@ Status DB::Execute(const std::string &inQuery)
 	{
 		PDASSERT(pTopStatement);
 
-		result = pTopStatement->Execute(false);
+		result = pTopStatement->Execute();
 
 		if (!result.OK())
 		{
 			std::cout << inQuery << std::endl;
 			std::cout << "ERROR: " << result.GetCode() << std::endl;
 		}
+
+		delete pTopStatement;
 	}
 	
 	return result;

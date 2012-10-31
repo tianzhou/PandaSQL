@@ -69,7 +69,8 @@ public:
 	//Rewrite statment. e.g. Translate to fully qualified column name
 	Status Prepare();
 
-	Status Execute(bool loadTable);
+	//We use "CREATE TABLE ..." to both create and load table.
+	Status Execute(bool createTable = true);
 	void PrintStatement();
 
 	void SetWhereClauseExpression(BooleanExpr *inWhereExpr);

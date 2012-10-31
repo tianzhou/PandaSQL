@@ -90,8 +90,9 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 
 #if 1
+		//result = ReadSQLScript("./drop_table.txt", pVFS, &db);
 
-		result = ReadSQLScript("./create_db.txt", pVFS, &db);		
+		//result = ReadSQLScript("./create_table.txt", pVFS, &db);		
 
 		//result = ReadSQLScript("./delete.txt", pVFS, &db);
 

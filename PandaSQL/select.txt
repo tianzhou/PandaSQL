@@ -1,11 +1,3 @@
 SELECT *
 FROM Master
 ;
-
-SELECT *
-FROM Detail
-;
-
-SELECT *
-FROM Detail_Detail
-;

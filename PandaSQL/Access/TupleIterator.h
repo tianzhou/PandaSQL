@@ -14,7 +14,7 @@ class TupleIterator
 
 public:
 
-	TupleIterator();
+	TupleIterator(const TupleDesc &inTupleDesc);
 	virtual ~TupleIterator() = 0 {}
 
 	Status GetLastError() const { return mLastError; }
@@ -29,6 +29,7 @@ public:
 protected:
 
 	TupleFunctor *mpTupleFunctor;
+	const TupleDesc &mTupleDesc;
 
 	mutable Status mLastError;
 };

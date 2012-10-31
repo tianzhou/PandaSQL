@@ -58,14 +58,11 @@ ParserDriver::ParserDriver(DBImpl *io_pDB)
 :
 mpDB(io_pDB)
 ,mpStmt(NULL)
-,mLoadTable(false)
 {
 }
 
 ParserDriver::~ParserDriver()
 {
-	delete mpStmt;
-	mpStmt = NULL;
 }
 
 void ParserDriver::PushNewStatement(Statement::StatementType inType)
@@ -258,11 +255,8 @@ Status ParserDriver::ParseQuery(std::string inQueryString, Statement **io_statem
 		{
 			nodes	= antlr3CommonTreeNodeStreamNewTree(langAST.tree, ANTLR3_SIZE_HINT); // sIZE HINT WILL SOON BE DEPRECATED!!
 
-			if (!this->IsLoadTable())
-			{
-				PrintASTTree(langAST.tree, 0);
-				//printf("\nParser OK: Nodes: %s\n", langAST.tree->toStringTree(langAST.tree)->chars);
-			}
+			PrintASTTree(langAST.tree, 0);
+			//printf("\nParser OK: Nodes: %s\n", langAST.tree->toStringTree(langAST.tree)->chars);
 
 			// Tree parsers are given a common tree node stream (or your override)
 			//
@@ -289,6 +283,8 @@ Status ParserDriver::ParseQuery(std::string inQueryString, Statement **io_statem
 
 	if (result.OK())
 	{
+		this->GetRootStatement().SetOriginalStmtText(inQueryString);
+		
 		*io_statement = &this->GetRootStatement();
 	}
 	else

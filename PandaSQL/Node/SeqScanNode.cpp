@@ -46,7 +46,9 @@ void SeqScanNode::Reset()
 		const RelNode *pRelNode = mpPlanContext->mRelList[mRelIndex];
 		const Table *pTable = pRelNode->GetTable();
 
-		mpTupleIterator = mpPlanContext->mpDB->CreateTupleIteratorForTable(*pTable);
+		ColumnDefListToTupleDesc(pTable->GetAllColumns(), &mTupleDesc); 
+
+		mpTupleIterator = mpPlanContext->mpDB->CreateTupleIteratorForTable(*pTable, mTupleDesc);
 	}
 	
 	mpTupleIterator->Reset();

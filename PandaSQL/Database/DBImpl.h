@@ -29,8 +29,9 @@ public:
 	Status Open(const std::string &inDBPath, const OpenOptions &inOptions);
 	Status Close();
 
-	Status CreateOpenTable(const std::string &tableName, const ColumnDefList &columnList);
-	Status OpenTable(const std::string &tableName);
+	Status CreateOpenTable(const std::string &tableName, const std::string &creationStmt);
+	Status OpenTable(const std::string &tableName, const ColumnDefList &columnList);
+	Status DropTable(const std::string &tableName);
 
 	Status InsertData(const std::string &tableName, const ColumnDefList &columnList, const ExprList &columnExprList);
 	Status DeleteData(const std::string &tableName, const BooleanExpr *inBooleanExpr = NULL);
@@ -44,7 +45,7 @@ public:
 
 	Status GetColumnDefFromQualifiedName(const Table::TableRefList &inTableRefList, const ColumnQualifiedName &inQualifiedName, ColumnDef *io_columnDef) const;
 
-	TupleIterator* CreateTupleIteratorForTable(const Table &inTable);
+	TupleIterator* CreateTupleIteratorForTable(const Table &inTable, const TupleDesc &inTupleDesc);
 
 private:
 
@@ -54,6 +55,7 @@ private:
 	typedef std::map<std::string, Table*> TableMap;
 	typedef std::pair<std::string, Table*> TableMapEntry;
 
+	Status	OpenTableWithCreationStmt_Private(const std::string &inCreationStmt);
 	void	ClearTableMap_Private();
 
 	StorageType mStorageType;

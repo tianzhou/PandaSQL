@@ -910,6 +910,10 @@
 						RelativePath=".\Storage\BerkeleyDB\BDBStorage.h"
 						>
 					</File>
+					<File
+						RelativePath=".\Storage\BerkeleyDB\BDBTypes.h"
+						>
+					</File>
 					<Filter
 						Name="Transaction"
 						>
@@ -1166,11 +1170,15 @@
 			>
 		</Filter>
 		<File
-			RelativePath=".\create_db.txt"
+			RelativePath=".\create_table.txt"
 			>
 		</File>
 		<File
 			RelativePath=".\delete.txt"
+			>
+		</File>
+		<File
+			RelativePath=".\drop_table.txt"
 			>
 		</File>
 		<File

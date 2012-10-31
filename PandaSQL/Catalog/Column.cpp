@@ -70,21 +70,21 @@ void AddOneColumnToMap(const ColumnQualifiedName &inColumnQualifiedName, TableAn
 	}
 }
 
-ColumnDataFunctor::ColumnDataFunctor(const ColumnDefList &inColumnDefList, ValueList *io_valueList)
-:
-mColumnDefList(inColumnDefList)
-,mpValueList(io_valueList)
-{
-}
-
-ColumnDataFunctor::~ColumnDataFunctor()
-{
-}
-
-void ColumnDataFunctor::operator()(const std::string &inTupleData)
-{
-	TupleStringToValueList(mColumnDefList, inTupleData, mpValueList);
-}
+//ColumnDataFunctor::ColumnDataFunctor(const TupleDescElement &inTupleDesc, ValueList *io_valueList)
+//:
+//mColumnDefList(inColumnDefList)
+//,mpValueList(io_valueList)
+//{
+//}
+//
+//ColumnDataFunctor::~ColumnDataFunctor()
+//{
+//}
+//
+//void ColumnDataFunctor::operator()(const std::string &inTupleData)
+//{
+//	TupleStringToValueList(mColumnDefList, inTupleData, mpValueList);
+//}
 
 void TupleElementToString(const TupleDescElement &descElement, const TupleDataElement &dataElement, std::string *o_string)
 {
@@ -116,15 +116,15 @@ void TupleToString(const TupleDesc &desc, const TupleData &data, std::string *o_
 	}
 }
 
-void TupleStringToValue(const ColumnDef &inColumnDef, const std::string &inString, uint32_t *io_offset, Value *o_value)
+void TupleStringToValue(const TupleDescElement &descElement, const std::string &inString, uint32_t *io_offset, Value *o_value)
 {
-	if (inColumnDef.dataType == kInt)
+	if (descElement.mDataType == kInt)
 	{
 		int numberValue = *(const int *)(inString.c_str() + *io_offset);
 		o_value->SetAsNumber(numberValue);
 		*io_offset += sizeof(int);
 	}
-	else if (inColumnDef.dataType == kText)
+	else if (descElement.mDataType == kText)
 	{
 		std::string stringValue;
 
@@ -142,17 +142,17 @@ void TupleStringToValue(const ColumnDef &inColumnDef, const std::string &inStrin
 	}
 }
 
-void TupleStringToValueList(const ColumnDefList &inColumnDefList, const std::string &inString, ValueList *o_valueList)
+void TupleStringToValueList(const TupleDesc &desc, const std::string &inString, ValueList *o_valueList)
 {
 	size_t offset = 0;
 
 	o_valueList->clear();
 
-	for (size_t i = 0; i < inColumnDefList.size(); i++)
+	for (size_t i = 0; i < desc.size(); i++)
 	{
 		Value oneValue;
 
-		TupleStringToValue(inColumnDefList[i], inString, &offset, &oneValue);
+		TupleStringToValue(desc[i], inString, &offset, &oneValue);
 
 		o_valueList->push_back(oneValue);
 	}
