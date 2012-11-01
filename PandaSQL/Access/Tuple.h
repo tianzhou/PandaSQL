@@ -10,17 +10,6 @@
 namespace PandaSQL
 {
 
-class TupleFunctor
-{
-
-public:
-
-	TupleFunctor() {}
-	virtual ~TupleFunctor() {}
-
-	virtual void operator()(const std::string &inTupleData) = 0;
-};
-
 class TupleDescElement
 {
 public:
@@ -35,9 +24,8 @@ void StringToTuple(const TupleDesc &desc, const std::string &inString, ValueList
 void TupleElementToString(const TupleDescElement &descElement, const Value &tupleValue, std::string *o_string);
 void TupleToString(const TupleDesc &tupleDesc, const ValueList &tupleValueList, std::string *o_string);
 
-
 #ifdef PDDEBUG
-void PrintTuple(const ValueList &data);
+void PrintTuple(const ValueList &tupleValueList);
 #endif
 
 }	// PandaSQL

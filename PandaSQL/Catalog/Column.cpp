@@ -70,22 +70,6 @@ void AddOneColumnToMap(const ColumnQualifiedName &inColumnQualifiedName, TableAn
 	}
 }
 
-//ColumnDataFunctor::ColumnDataFunctor(const TupleDescElement &inTupleDesc, ValueList *io_valueList)
-//:
-//mColumnDefList(inColumnDefList)
-//,mpValueList(io_valueList)
-//{
-//}
-//
-//ColumnDataFunctor::~ColumnDataFunctor()
-//{
-//}
-//
-//void ColumnDataFunctor::operator()(const std::string &inTupleData)
-//{
-//	TupleStringToValueList(mColumnDefList, inTupleData, mpValueList);
-//}
-
 void ProjectTuple(const ColumnDefList &inAllColDefList, const ColumnDefList &inProjectColDefList, const ValueList &inTupleValue, ValueList *o_projectTupleValue)
 {
 	ColumnDefList::const_iterator projectIter = inProjectColDefList.begin();

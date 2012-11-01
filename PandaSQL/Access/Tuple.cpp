@@ -85,18 +85,18 @@ void TupleToString(const TupleDesc &tupleDesc, const ValueList &tupleValueList, 
 }
 
 #ifdef PDDEBUG
-void PrintTuple(const ValueList &data)
+void PrintTuple(const ValueList &tupleValueList)
 {
 	std::string tupleString;
 	std::string oneString;
-	for (size_t i = 0; i < data.size(); i++)
+	for (size_t i = 0; i < tupleValueList.size(); i++)
 	{
 		if (i > 0)
 		{
 			tupleString.append(", ");
 		}
 
-		oneString = data[i].GetAsString();
+		oneString = tupleValueList[i].GetAsString();
 
 		tupleString.append(oneString);
 	}

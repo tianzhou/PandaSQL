@@ -60,24 +60,6 @@ void ProjectTuple(const ColumnDefList &inAllColDefList, const ColumnDefList &inP
 
 void ColumnDefListToTupleDesc(const ColumnDefList &colDefList, TupleDesc *io_tupleDesc);
 
-//class ColumnDataFunctor : public TupleFunctor
-//{
-//
-//public:
-//
-//	ColumnDataFunctor(const ColumnDefList &inColumnDefList, ValueList *io_valueList);
-//	virtual ~ColumnDataFunctor();
-//
-//	virtual void operator()(const std::string &inTupleData);
-//
-//private:
-//
-//	const ColumnDefList &mColumnDefList;
-//	ValueList *mpValueList;
-//
-//
-//};
-
 
 }	// PandaSQL
 

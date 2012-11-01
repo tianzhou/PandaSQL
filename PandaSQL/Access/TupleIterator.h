@@ -18,7 +18,6 @@ public:
 	virtual ~TupleIterator() = 0 {}
 
 	Status GetLastError() const { return mLastError; }
-	void   SetTupleFunctor(TupleFunctor *io_tupleFunctor) { mpTupleFunctor = io_tupleFunctor; }
 
 	virtual bool Valid() const = 0;
 	virtual void Reset() = 0;
@@ -28,7 +27,6 @@ public:
 
 protected:
 
-	TupleFunctor *mpTupleFunctor;
 	const TupleDesc &mTupleDesc;
 
 	mutable Status mLastError;
