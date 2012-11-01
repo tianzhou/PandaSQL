@@ -86,51 +86,6 @@ void AddOneColumnToMap(const ColumnQualifiedName &inColumnQualifiedName, TableAn
 //	TupleStringToValueList(mColumnDefList, inTupleData, mpValueList);
 //}
 
-void TupleStringToValue(const TupleDescElement &descElement, const std::string &inString, uint32_t *io_offset, Value *o_value)
-{
-	if (descElement.mDataType == kInt)
-	{
-		int numberValue = *(const int *)(inString.c_str() + *io_offset);
-		o_value->SetAsNumber(numberValue);
-		*io_offset += sizeof(int);
-	}
-	else if (descElement.mDataType == kText)
-	{
-		std::string stringValue;
-
-		size_t length = *(const size_t *)(inString.c_str() + *io_offset);
-		*io_offset += sizeof(length);
-
-		stringValue.append(inString.c_str() + *io_offset, length);
-		o_value->SetAsString(stringValue);
-		
-		*io_offset += length;
-	}
-	else
-	{
-		PDASSERT(0);
-	}
-}
-
-void TupleStringToValueList(const TupleDesc &desc, const std::string &inString, ValueList *o_valueList)
-{
-	size_t offset = 0;
-
-	o_valueList->clear();
-
-	for (size_t i = 0; i < desc.size(); i++)
-	{
-		Value oneValue;
-
-		TupleStringToValue(desc[i], inString, &offset, &oneValue);
-
-		o_valueList->push_back(oneValue);
-	}
-
-	//TODO: Check
-	PDASSERT(offset <= inString.length());
-}
-
 void ProjectTuple(const ColumnDefList &inAllColDefList, const ColumnDefList &inProjectColDefList, const ValueList &inTupleValue, ValueList *o_projectTupleValue)
 {
 	ColumnDefList::const_iterator projectIter = inProjectColDefList.begin();

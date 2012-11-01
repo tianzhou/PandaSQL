@@ -56,9 +56,6 @@ typedef std::map<std::string, ColumnNameSet> TableAndColumnSetMap;
 
 void AddOneColumnToMap(const ColumnQualifiedName &inColumnQualifiedName, TableAndColumnSetMap *io_tableAndColumnSetMap);
 
-void TupleStringToValue(const TupleDescElement &descElement, const std::string &inString, uint32_t *io_offset, Value *o_value);
-void TupleStringToValueList(const TupleDesc &desc, const std::string &inString, ValueList *o_valueList);
-
 void ProjectTuple(const ColumnDefList &inAllColDefList, const ColumnDefList &inProjectColDefList, const ValueList &inTupleValue, ValueList *o_projectTupleValue);
 
 void ColumnDefListToTupleDesc(const ColumnDefList &colDefList, TupleDesc *io_tupleDesc);

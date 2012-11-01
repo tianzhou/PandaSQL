@@ -21,7 +21,7 @@ public:
 	virtual void Reset();
 	virtual bool Next();
 	virtual bool Prev();
-	virtual bool GetValue(ValueList *o_valueList) const;
+	virtual bool GetValue(ValueList *o_tupleValueList) const;
 
 protected:
  

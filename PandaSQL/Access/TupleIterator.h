@@ -24,7 +24,7 @@ public:
 	virtual void Reset() = 0;
 	virtual bool Next() = 0;
 	virtual bool Prev() = 0;
-	virtual bool GetValue(ValueList *o_valueList) const = 0;
+	virtual bool GetValue(ValueList *o_tupleValueList) const = 0;
 
 protected:
 

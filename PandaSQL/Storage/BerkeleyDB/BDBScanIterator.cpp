@@ -76,7 +76,7 @@ bool BDBScanIterator::Prev()
 	return MoveCursor_Private(DB_PREV);
 }
 
-bool BDBScanIterator::GetValue(ValueList *o_valueList) const
+bool BDBScanIterator::GetValue(ValueList *o_tupleValueList) const
 {
 	if (!mLastError.OK())
 	{
@@ -110,7 +110,7 @@ bool BDBScanIterator::GetValue(ValueList *o_valueList) const
 		std::string rowString;	
 		rowString.append((const char *)data.data, data.size);
 
-		TupleStringToValueList(mTupleDesc, rowString, o_valueList);
+		StringToTuple(mTupleDesc, rowString, o_tupleValueList);
 	}
 
 	return result;
