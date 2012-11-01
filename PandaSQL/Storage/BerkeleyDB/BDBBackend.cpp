@@ -119,7 +119,7 @@ Status BDBBackend::DropTable(const std::string &tableName)
 	return result;
 }
 
-Status BDBBackend::InsertData(const std::string &tableName, const TupleDesc &tupleDesc, const TupleData &tupleData, int32_t keyIndex)
+Status BDBBackend::InsertData(const std::string &tableName, const TupleDesc &tupleDesc, const ValueList &tupleValueList, int32_t keyIndex)
 {
 	Status result;
 
@@ -140,7 +140,7 @@ Status BDBBackend::InsertData(const std::string &tableName, const TupleDesc &tup
 		std::string keyString;
 		if (keyIndex >= 0)
 		{		
-			TupleElementToString(tupleDesc[keyIndex], tupleData[keyIndex], &keyString);
+			TupleElementToString(tupleDesc[keyIndex], tupleValueList[keyIndex], &keyString);
 			
 			key.data = (void *)keyString.c_str();
 			key.size = keyString.length();
@@ -149,7 +149,7 @@ Status BDBBackend::InsertData(const std::string &tableName, const TupleDesc &tup
 		memset(&data, 0, sizeof(data));
 
 		std::string rowString;
-		TupleToString(tupleDesc, tupleData, &rowString);
+		TupleToString(tupleDesc, tupleValueList, &rowString);
 		data.data = (void *)rowString.c_str();
 		data.size = rowString.length();
 

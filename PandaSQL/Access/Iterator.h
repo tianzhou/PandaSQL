@@ -26,10 +26,10 @@ public:
 	virtual Status Next() = 0;
 	virtual Status Prev() = 0;
 	//virtual Status GetKey(std::string *o_key) const = 0;
-	virtual Status InsertValue(const TupleData &inTuple) = 0;
-	virtual Status UpdateValue(const TupleData &inTuple) = 0;
+	virtual Status InsertValue(const ValueList &inTupleValueList) = 0;
+	virtual Status UpdateValue(const ValueList &inTupleValueList) = 0;
 	virtual Status DeleteValue() = 0;
-	virtual Status GetValue(TupleData *o_tuple) const = 0;
+	virtual Status GetValue(ValueList *o_tupleValueList) const = 0;
 
 	Status GetStatus() const { return mStatus; }
 

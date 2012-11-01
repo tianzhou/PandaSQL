@@ -51,9 +51,9 @@ public:
 
 	ExprType GetType() const { return mExprType; }
 
-	void Eval(TupleDescElement inDescElement, TupleDataElement *io_data) const;
+	void Eval(TupleDescElement inDescElement, Value *io_data) const;
 
-	static void EvalExprList(const ExprList &inExprList, const TupleDesc &inTupleDesc, TupleData *io_tupleData);
+	static void EvalExprList(const ExprList &inExprList, const TupleDesc &inTupleDesc, ValueList *io_tupleValueList);
 
 	virtual bool IsTrue(const ExprContext &inExprContext) const;
 	virtual Status GetValue(const ExprContext &inExprContext, Value *io_value) const;

@@ -10,23 +10,6 @@
 namespace PandaSQL
 {
 
-
-//class TupleDesc
-//{
-//
-//public:
-//
-//	TupleDesc(const ColumnQualifiedName &inQualifiedName);
-//	~TupleDesc();
-//
-//	ColumnQualifiedName GetColumnQualifiedName() const { return mQualifiedName; }
-//
-//private:
-//
-//	const ColumnQualifiedName &mQualifiedName;
-//
-//};
-
 class TupleFunctor
 {
 
@@ -46,47 +29,13 @@ public:
 
 typedef std::vector<TupleDescElement> TupleDesc;
 
-class TupleDataElement
-{
-public:
-	int32_t mNumber;
+void TupleElementToString(const TupleDescElement &descElement, const Value &tupleValue, std::string *o_string);
+void TupleToString(const TupleDesc &tupleDesc, const ValueList &tupleValueList, std::string *o_string);
 
-	std::string mText;
-};
-
-typedef std::vector<TupleDataElement> TupleData;
 
 #ifdef PDDEBUG
 void PrintTuple(const ValueList &data);
 #endif
-//class TupleData 
-//{
-//public:
-//
-//	TupleData();
-//	~TupleData();
-//
-//	uint32_t Count() const;
-//	void GetDataAtIndex(uint32_t index, std::string *o_data) const;
-//
-//	void AppendData(const std::string &inData);
-//	void SetDataAtIndex(uint32_t index, const std::string &inData);
-//
-//	//static void ValueListToString(const ColumnDefList &inColumnDefList, const ColumnValueList &inColumnValueList, std::string *io_string);
-//	//static void StringToValueList(const ColumnDefList &inColumnDefList, std::string &inString, ColumnValueList *io_columnValueList);
-//
-//private:
-//	//TupleData(const TupleData &rhs);
-//	//TupleData& operator=(const TupleData &rhs);
-//
-//	std::vector<std::string> mValueList;
-//};
-//
-//struct TupleEntry
-//{
-//	std::string tableName;
-//	TupleData tupleData;
-//};
 
 }	// PandaSQL
 

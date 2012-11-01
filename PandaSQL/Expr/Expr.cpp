@@ -24,16 +24,16 @@ Expr::~Expr()
 	mExprType = kExprUnknown;
 }
 
-void Expr::Eval(TupleDescElement inDescElement, TupleDataElement *io_data) const
+void Expr::Eval(TupleDescElement inDescElement, Value *io_data) const
 {
 	//TODO: No coercing at this point
 	if (inDescElement.mDataType == kInt)
 	{
-		io_data->mNumber = mNumberValue;
+		io_data->SetAsNumber(mNumberValue);
 	}
 	else if (inDescElement.mDataType == kText)
 	{
-		io_data->mText = mTextValue;
+		io_data->SetAsString(mTextValue);
 	}
 	else
 	{
@@ -42,7 +42,7 @@ void Expr::Eval(TupleDescElement inDescElement, TupleDataElement *io_data) const
 	}
 }
 
-void Expr::EvalExprList(const ExprList &inExprList, const TupleDesc &inTupleDesc, TupleData *io_tupleData)
+void Expr::EvalExprList(const ExprList &inExprList, const TupleDesc &inTupleDesc, ValueList *io_tupleValueList)
 {
 	PDASSERT(inExprList.size() == inTupleDesc.size());
 
@@ -51,11 +51,11 @@ void Expr::EvalExprList(const ExprList &inExprList, const TupleDesc &inTupleDesc
 
 	while (exprIter != inExprList.end())
 	{
-		TupleDataElement oneTupleElement;
+		Value oneValue;
 
-		exprIter->Eval(*tupleDescIter, &oneTupleElement);
+		exprIter->Eval(*tupleDescIter, &oneValue);
 
-		io_tupleData->push_back(oneTupleElement);
+		io_tupleValueList->push_back(oneValue);
 
 		exprIter++;
 		tupleDescIter++;

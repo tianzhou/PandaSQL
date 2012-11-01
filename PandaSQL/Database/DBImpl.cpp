@@ -183,18 +183,18 @@ Status DBImpl::CreateOpenTable(const std::string &tableName, const std::string &
 
 		if (result.OK())
 		{
-			TupleData oneTupleData;
-			TupleDataElement oneTupleElement;
+			ValueList tupleValueList;
+			Value oneValue;
 
-			oneTupleElement.mText = tableName;
-			oneTupleData.push_back(oneTupleElement);
+			oneValue.SetAsString(tableName);
+			tupleValueList.push_back(oneValue);
 
-			oneTupleElement.mText = creationStmt;
-			oneTupleData.push_back(oneTupleElement);
+			oneValue.SetAsString(creationStmt);
+			tupleValueList.push_back(oneValue);
 
 			//Insert this new table info into schema table
 			//TODO: Use tableName as key
-			result = mpBackend->InsertData(kSchemaTableName, s_tupleDesc, oneTupleData, -1);
+			result = mpBackend->InsertData(kSchemaTableName, s_tupleDesc, tupleValueList, -1);
 		
 			if (result.OK())
 			{
@@ -256,11 +256,12 @@ Status DBImpl::InsertData(const std::string &tableName, const ColumnDefList &col
 	Status result;
 
 	TupleDesc tupleDesc;
-	TupleData tupleData;
+	ValueList tupleValueList;
+
 	ColumnDefListToTupleDesc(columnList, &tupleDesc);
-	Expr::EvalExprList(columnExprList, tupleDesc, &tupleData);
+	Expr::EvalExprList(columnExprList, tupleDesc, &tupleValueList);
 	
-	result = mpBackend->InsertData(tableName, tupleDesc, tupleData, -1);
+	result = mpBackend->InsertData(tableName, tupleDesc, tupleValueList, -1);
 
 	return result;
 }

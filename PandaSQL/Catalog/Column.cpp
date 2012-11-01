@@ -86,36 +86,6 @@ void AddOneColumnToMap(const ColumnQualifiedName &inColumnQualifiedName, TableAn
 //	TupleStringToValueList(mColumnDefList, inTupleData, mpValueList);
 //}
 
-void TupleElementToString(const TupleDescElement &descElement, const TupleDataElement &dataElement, std::string *o_string)
-{
-	if (descElement.mDataType == kInt)
-	{
-		o_string->append((const char *)&dataElement.mNumber, sizeof(dataElement.mNumber));
-	}
-	else if (descElement.mDataType == kText)
-	{
-		size_t length = dataElement.mText.length();
-		o_string->append((const char *)&length, sizeof(size_t));
-		o_string->append(dataElement.mText.c_str(), length);
-	}
-	else
-	{
-		PDASSERT(0);
-	}
-}
-
-void TupleToString(const TupleDesc &desc, const TupleData &data, std::string *o_string)
-{
-	PDASSERT(desc.size() == data.size());
-
-	o_string->clear();
-
-	for (size_t i = 0; i < desc.size(); i++)
-	{
-		TupleElementToString(desc[i], data[i], o_string);
-	}
-}
-
 void TupleStringToValue(const TupleDescElement &descElement, const std::string &inString, uint32_t *io_offset, Value *o_value)
 {
 	if (descElement.mDataType == kInt)

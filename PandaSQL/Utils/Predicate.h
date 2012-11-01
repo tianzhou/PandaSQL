@@ -33,7 +33,7 @@ public:
 
 	TuplePredicate();
 	//void SetFormat(uint32_t index, ComparisonType type, const std::string value);
-	bool Eval(const TupleData &inTupleData) const;
+	bool Eval(const ValueList &inTupleValueList) const;
 
 private:
 

@@ -54,7 +54,7 @@ TuplePredicate::TuplePredicate()
 //	mCompareValue = value;
 //}
 
-bool TuplePredicate::Eval(const TupleData &inTupleData) const
+bool TuplePredicate::Eval(const ValueList &inTupleValueList) const
 {
 	bool result = false;
 
