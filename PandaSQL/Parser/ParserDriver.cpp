@@ -87,7 +87,7 @@ Status ParserDriver::LoadFromFile(File *inFile)
 
 Status ParserDriver::ParseQuery(std::string inQueryString, Statement **io_statement)
 {
-	printf("\nstmt: %s\n", inQueryString.c_str());
+	*io_statement = NULL;
 
 	Status result;
 
@@ -253,6 +253,8 @@ Status ParserDriver::ParseQuery(std::string inQueryString, Statement **io_statem
 	{
 		if (langAST.tree)
 		{
+			printf("\nstmt: %s\n\n", inQueryString.c_str());
+
 			nodes	= antlr3CommonTreeNodeStreamNewTree(langAST.tree, ANTLR3_SIZE_HINT); // sIZE HINT WILL SOON BE DEPRECATED!!
 
 			PrintASTTree(langAST.tree, 0);
@@ -265,6 +267,11 @@ Status ParserDriver::ParseQuery(std::string inQueryString, Statement **io_statem
 			treePsr->stmt(treePsr, this);
 			nodes   ->free  (nodes);	    nodes	= NULL;
 			treePsr ->free  (treePsr);	    treePsr	= NULL;
+		}
+		else
+		{
+			//If there is no syntax tree, then it's a comment
+			this->PushNewStatement(Statement::kStmtEmpty); 
 		}
 	}
 
@@ -286,10 +293,6 @@ Status ParserDriver::ParseQuery(std::string inQueryString, Statement **io_statem
 		this->GetRootStatement().SetOriginalStmtText(inQueryString);
 		
 		*io_statement = &this->GetRootStatement();
-	}
-	else
-	{
-		*io_statement = NULL;
 	}
 	
 	return result;

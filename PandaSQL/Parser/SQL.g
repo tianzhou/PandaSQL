@@ -549,6 +549,11 @@ RCURLY : '}' ;
 			
 WS : (' '|'\r'|'\t'|'\n') {$channel=HIDDEN;} ;
 
+//5.2 <token> and <separator>
+COMMENT
+	: '--' (~('\n'|'\r'))*	{ $channel = HIDDEN; }
+	;
+
 fragment
 Letter
 	:	'a'..'z' | 'A'..'Z'

@@ -115,100 +115,104 @@ Status Statement::Prepare()
 {
 	Status result;
 
-	result = mPredicate.Prepare(*mpDB, mTableRefs);
-	mPredicate.TransformToCNF();
-	
-	if (mpWhereExpr)
+	if (mStmtType != kStmtUnknown
+		&& mStmtType != kStmtEmpty)
 	{
-		TableAndColumnSetMap validTableAndColumnSetMap;
+		result = mPredicate.Prepare(*mpDB, mTableRefs);
+		mPredicate.TransformToCNF();
 
-		Table::TableRefList::const_iterator iter = mTableRefs.begin();
-		Table *pTable;
-		for (; iter != mTableRefs.end(); iter++)
+		if (mpWhereExpr)
 		{
-			result = mpDB->GetTableByName(*iter, &pTable);
-
-			if (result.OK())
-			{
-				const ColumnDefList& theColumnDefList = pTable->GetAllColumns();
-				
-				ColumnDefList::const_iterator columnIter = theColumnDefList.begin();
-				ColumnNameSet columnSet;
-
-				for (; columnIter != theColumnDefList.end(); columnIter++)
-				{
-					columnSet.insert(columnIter->qualifiedName.columnName);
-				}
-
-				validTableAndColumnSetMap.insert(TableAndColumnSetMap::value_type(pTable->GetName(), columnSet));
-			}
-			else
-			{
-				break;
-			}
-		}
-
-		if (result.OK())
-		{
-			AmendColumnWalker amendColumnWalker(validTableAndColumnSetMap);	
-			mpWhereExpr->MutableWalk(&amendColumnWalker);
-		}
-	}
-
-	if (result.OK())
-	{
-		if (mAllColumns)
-		{
-			PDASSERT(mColumnDefs.empty());
+			TableAndColumnSetMap validTableAndColumnSetMap;
 
 			Table::TableRefList::const_iterator iter = mTableRefs.begin();
-			Table *theTable;
+			Table *pTable;
 			for (; iter != mTableRefs.end(); iter++)
 			{
-				result = mpDB->GetTableByName(*iter, &theTable);
+				result = mpDB->GetTableByName(*iter, &pTable);
 
 				if (result.OK())
 				{
-					const ColumnDefList& theColumnDefList = theTable->GetAllColumns();
-					mColumnDefs.insert(mColumnDefs.end(), theColumnDefList.begin(), theColumnDefList.end());
+					const ColumnDefList& theColumnDefList = pTable->GetAllColumns();
+
+					ColumnDefList::const_iterator columnIter = theColumnDefList.begin();
+					ColumnNameSet columnSet;
+
+					for (; columnIter != theColumnDefList.end(); columnIter++)
+					{
+						columnSet.insert(columnIter->qualifiedName.columnName);
+					}
+
+					validTableAndColumnSetMap.insert(TableAndColumnSetMap::value_type(pTable->GetName(), columnSet));
 				}
 				else
 				{
 					break;
 				}
 			}
-		}
-		else
-		{
-			if (mStmtType == kStmtCreateTable)
-			{
-				ColumnDefList::iterator iter = mColumnDefs.begin();
-				uint32_t columnIndex = 0;
 
-				for (; iter != mColumnDefs.end(); iter++)
+			if (result.OK())
+			{
+				AmendColumnWalker amendColumnWalker(validTableAndColumnSetMap);	
+				mpWhereExpr->MutableWalk(&amendColumnWalker);
+			}
+		}
+
+		if (result.OK())
+		{
+			if (mAllColumns)
+			{
+				PDASSERT(mColumnDefs.empty());
+
+				Table::TableRefList::const_iterator iter = mTableRefs.begin();
+				Table *theTable;
+				for (; iter != mTableRefs.end(); iter++)
 				{
-					iter->qualifiedName.tableName = mTableRefs[0];
-					iter->index = columnIndex;
-					columnIndex++;
+					result = mpDB->GetTableByName(*iter, &theTable);
+
+					if (result.OK())
+					{
+						const ColumnDefList& theColumnDefList = theTable->GetAllColumns();
+						mColumnDefs.insert(mColumnDefs.end(), theColumnDefList.begin(), theColumnDefList.end());
+					}
+					else
+					{
+						break;
+					}
 				}
 			}
 			else
 			{
-				ColumnDefList::iterator iter = mColumnDefs.begin();
+				if (mStmtType == kStmtCreateTable)
+				{
+					ColumnDefList::iterator iter = mColumnDefs.begin();
+					uint32_t columnIndex = 0;
 
-				for (; iter != mColumnDefs.end(); iter++)
-				{	
-					//result = mpDB->AmendColumnDef(mTableRefs, &(*iter));				
+					for (; iter != mColumnDefs.end(); iter++)
+					{
+						iter->qualifiedName.tableName = mTableRefs[0];
+						iter->index = columnIndex;
+						columnIndex++;
+					}
+				}
+				else
+				{
+					ColumnDefList::iterator iter = mColumnDefs.begin();
+
+					for (; iter != mColumnDefs.end(); iter++)
+					{	
+						//result = mpDB->AmendColumnDef(mTableRefs, &(*iter));				
+					}
 				}
 			}
 		}
-	}
-	
-	this->PrintStatement();
 
-	if (!result.OK())
-	{
-		std::cout << "Error:" << result.GetCode() << std::endl;
+		this->PrintStatement();
+
+		if (!result.OK())
+		{
+			std::cout << "Error:" << result.GetCode() << std::endl;
+		}
 	}
 
 	return result;

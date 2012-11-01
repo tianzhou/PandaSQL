@@ -27,6 +27,7 @@ PandaSQL::Status ReadSQLScript(const char *filePath, PandaSQL::IVFS *io_VFS, Pan
 		PandaSQL::File::Size amount = 512;
 		PandaSQL::File::Size o_bytesRead = 0;
 		char buf[513]; //Add Null terminator
+		char *pBuf = buf;
 
 		do
 		{
@@ -34,9 +35,14 @@ PandaSQL::Status ReadSQLScript(const char *filePath, PandaSQL::IVFS *io_VFS, Pan
 
 			if (o_bytesRead > 0)
 			{
-				buf[o_bytesRead] = '\0';
+				pBuf[o_bytesRead] = '\0';
 
-				std::string query(buf);
+				while (*pBuf == '\n' || *pBuf == '\r')
+				{
+					pBuf++;
+				}
+
+				std::string query(pBuf);
 
 				result = io_db->Execute(query);
 			}
@@ -90,17 +96,17 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 
 #if 1
-		//result = ReadSQLScript("./drop_table.txt", pVFS, &db);
+		result = ReadSQLScript("./drop_table.txt", pVFS, &db);
 
-		//result = ReadSQLScript("./create_table.txt", pVFS, &db);		
+		result = ReadSQLScript("./create_table.txt", pVFS, &db);		
 
 		//result = ReadSQLScript("./delete.txt", pVFS, &db);
 
 		//result = ReadSQLScript("./insert.txt", pVFS, &db);
 
-		//result = ReadSQLScript("./select.txt", pVFS, &db);
+		result = ReadSQLScript("./select.txt", pVFS, &db);
 
-		result = ReadSQLScript("./select_join_3table.txt", pVFS, &db);
+		//result = ReadSQLScript("./select_join_3table.txt", pVFS, &db);
 
 		//result = ReadSQLScript("./select_where.txt", pVFS, &db);
 #else

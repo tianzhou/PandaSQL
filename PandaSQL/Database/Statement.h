@@ -19,14 +19,15 @@ public:
 	enum StatementType
 	{
 		kStmtUnknown = 0,
-		kStmtSelect = 1,
-		kStmtUpdate = 2,
-		kStmtInsert = 3,
-		kStmtDelete = 4,
-		kStmtCreateTable = 5,
-		kStmtCreateIndex = 6,
-		kStmtDropTable = 7,
-		kStmtDropIndex = 8,
+		kStmtEmpty = 1,
+		kStmtSelect = 2,
+		kStmtUpdate = 3,
+		kStmtInsert = 4,
+		kStmtDelete = 5,
+		kStmtCreateTable = 6,
+		kStmtCreateIndex = 7,
+		kStmtDropTable = 8,
+		kStmtDropIndex = 9,
 	};
 
 	Statement(StatementType inStmtType, DBImpl *io_pDB);

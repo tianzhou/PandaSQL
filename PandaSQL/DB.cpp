@@ -62,7 +62,6 @@ Status DB::Execute(const std::string &inQuery)
 
 		if (!result.OK())
 		{
-			std::cout << inQuery << std::endl;
 			std::cout << "ERROR: " << result.GetCode() << std::endl;
 		}
 
