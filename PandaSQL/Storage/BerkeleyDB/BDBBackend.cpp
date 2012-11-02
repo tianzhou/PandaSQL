@@ -84,6 +84,8 @@ Status BDBBackend::Close()
 
 Status BDBBackend::OpenTable(const std::string &inTableName, OpenMode openMode)
 {
+	PDASSERT(mTableMap.find(inTableName) == mTableMap.end());
+
 	Status result;
 
 	DB *pTable = NULL;
@@ -417,9 +419,13 @@ Status BDBBackend::GetTableByName_Private(const std::string &name, DB **o_table)
 	}
 	else
 	{
+		//The caller should always get a valid table.
+		//kTableMissing error should be returned by higher layer
+		PDASSERT(0);
+
 		*o_table = NULL;
 
-		result = Status::kTableMissing;
+		result = Status::kInternalError;
 	}
 
 	return result;
