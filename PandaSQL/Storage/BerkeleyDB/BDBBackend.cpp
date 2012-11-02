@@ -91,6 +91,28 @@ Status BDBBackend::OpenTable(const std::string &tableName, OpenMode openMode)
 	return result;
 }
 
+Status BDBBackend::CloseTable(const std::string &tableName)
+{
+	Status result;
+
+	DB *pTable = NULL;
+
+	result = this->GetTableByName_Private(tableName, &pTable);
+
+	if (result.OK())
+	{
+		int ret = pTable->close(pTable, 0);
+
+		if (ret != 0)
+		{
+			PDDebugOutputVerbose(db_strerror(ret));
+			result = Status::kInternalError;
+		}
+	}
+
+	return result;
+}
+
 Status BDBBackend::DropTable(const std::string &tableName)
 {
 	Status result;

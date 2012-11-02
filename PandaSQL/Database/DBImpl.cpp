@@ -240,7 +240,23 @@ Status DBImpl::DropTable(const std::string &tableName)
 {
 	Status result;
 
-	result = mpBackend->DropTable(tableName);
+	Table *theTable = NULL;
+
+	result = this->GetTableByName(tableName, &theTable);
+
+	if (result.OK())
+	{
+		size_t itemErased = mTableMap.erase(tableName);
+
+		PDASSERT(itemErased == 1);
+
+		result = mpBackend->CloseTable(tableName);
+	}
+
+	if (result.OK())
+	{
+		result = mpBackend->DropTable(tableName);
+	}
 
 	//TODO: For now, delete every table
 	if (result.OK())

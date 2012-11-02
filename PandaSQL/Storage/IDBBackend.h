@@ -37,6 +37,7 @@ public:
 	virtual Status Close() = 0;
 
 	virtual Status OpenTable(const std::string &tableName, OpenMode openMode) = 0;
+	virtual Status CloseTable(const std::string &tableName) = 0;
 	virtual Status DropTable(const std::string &tableName) = 0;
 
 	virtual Status InsertData(const std::string &tableName, const TupleDesc &tupleDesc, const ValueList &tupleValueList, int32_t keyIndex) = 0;

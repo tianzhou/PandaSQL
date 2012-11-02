@@ -22,6 +22,7 @@ public:
 	virtual Status Close();
 
 	virtual Status OpenTable(const std::string &tableName, OpenMode openMode);
+	virtual Status CloseTable(const std::string &tableName);
 	virtual Status DropTable(const std::string &tableName);
 	//virtual Status InsertRecord(const TupleData &inTuple) = 0;
 	//virtual Status FindFirstRecordWithPredicate(const Predicate *inPredicate, Iterator **o_iterator) = 0;
