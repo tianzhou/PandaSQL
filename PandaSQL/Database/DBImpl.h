@@ -29,7 +29,7 @@ public:
 	Status Open(const std::string &inDBPath, const OpenOptions &inOptions);
 	Status Close();
 
-	Status CreateOpenTable(const std::string &tableName, const std::string &creationStmt);
+	Status CreateOpenTable(const std::string &tableName, const ColumnDefList &columnList, const std::string &creationStmt);
 	Status OpenTable(const std::string &tableName, const ColumnDefList &columnList);
 	Status DropTable(const std::string &tableName);
 
@@ -53,6 +53,7 @@ private:
 	DBImpl& operator=(const DBImpl &rhs);
 
 	Status	OpenTableWithCreationStmt_Private(const std::string &inCreationStmt);
+	void	AddTable_Private(const std::string &tableName, const ColumnDefList &columnList);
 
 	StorageType mStorageType;
 	IDBBackend *mpBackend;

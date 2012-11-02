@@ -167,7 +167,7 @@ Status DBImpl::Close()
 	return result;
 }
 
-Status DBImpl::CreateOpenTable(const std::string &tableName, const std::string &creationStmt)
+Status DBImpl::CreateOpenTable(const std::string &tableName, const ColumnDefList &columnList, const std::string &creationStmt)
 {
 	Status result;
 
@@ -196,7 +196,7 @@ Status DBImpl::CreateOpenTable(const std::string &tableName, const std::string &
 		
 			if (result.OK())
 			{
-				result = this->OpenTableWithCreationStmt_Private(creationStmt);
+				this->AddTable_Private(tableName, columnList);
 			}
 		}		
 	}
@@ -218,17 +218,7 @@ Status DBImpl::OpenTable(const std::string &tableName, const ColumnDefList &colu
 
 	if (result.OK())
 	{
-		Table *pTable = new Table();
-		pTable->SetName(tableName);
-
-		ColumnDefList::const_iterator colIter = columnList.begin();
-
-		for (; colIter != columnList.end(); colIter++)
-		{		
-			pTable->AddColumnDef(*colIter);
-		}
-
-		mTableCatalog.AddTable(tableName, pTable);
+		this->AddTable_Private(tableName, columnList);
 	}
 	
 	return result;
@@ -545,6 +535,21 @@ Status DBImpl::OpenTableWithCreationStmt_Private(const std::string &inCreationSt
 	
 
 	return result;
+}
+
+void DBImpl::AddTable_Private(const std::string &tableName, const ColumnDefList &columnList)
+{		
+	Table *pTable = new Table();
+	pTable->SetName(tableName);
+
+	ColumnDefList::const_iterator colIter = columnList.begin();
+
+	for (; colIter != columnList.end(); colIter++)
+	{		
+		pTable->AddColumnDef(*colIter);
+	}
+
+	mTableCatalog.AddTable(tableName, pTable);
 }
 
 Table* DBImpl::GetTableByID(uint32_t inTableID) const

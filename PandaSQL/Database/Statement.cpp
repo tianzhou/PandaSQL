@@ -230,7 +230,7 @@ Status Statement::Execute(bool createTable /* = true */)
 			{
 				//It will call Statement::Execute again and call mpDB->OpenTable
 				//to actually open the table
-				result = mpDB->CreateOpenTable(mTableRefs[0], mOrigStmtText);
+				result = mpDB->CreateOpenTable(mTableRefs[0], mColumnDefs, mOrigStmtText);
 			}
 			else
 			{
