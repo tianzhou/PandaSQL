@@ -16,9 +16,13 @@ public:
 	TableCatalog();
 	~TableCatalog();
 
-	Table* GetTableByName(const std::string &inTableName);
-	void   AddTableWithName(const std::string &inTableName, Table *io_table);
-	void   RemoveTableWithName(const std::string &inTableName);
+	const Table* GetTableByName(const std::string &inTableName) const;
+	
+	//Don't return value, instead it will throw assert
+	//It's an internal class, so the caller should make sure
+	//not adding duplicate table or not removing non-existing table
+	void AddTable(const std::string &inTableName, Table *io_table);
+	void RemoveTable(const std::string &inTableName);
 
 private:
 

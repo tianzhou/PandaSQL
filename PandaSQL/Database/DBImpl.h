@@ -37,7 +37,7 @@ public:
 	Status DeleteData(const std::string &tableName, const BooleanExpr *inBooleanExpr = NULL);
 	Status SelectData(const Table::TableRefList &tableList, const JoinList &joinList, const ColumnDefList &projectColumnList, const BooleanExpr *inWhereExpr = NULL);
 
-	Status GetTableByName(const std::string &name, Table **o_table) const;
+	Status GetTableByName(const std::string &tableName, const Table **o_table) const;
 
 	Table* GetTableByID(uint32_t inTableID) const;
 	uint32_t GetTableIDByName(const std::string &inTableName) const;
@@ -52,18 +52,12 @@ private:
 	DBImpl(const DBImpl &rhs);
 	DBImpl& operator=(const DBImpl &rhs);
 
-	typedef std::map<std::string, Table*> TableMap;
-	typedef std::pair<std::string, Table*> TableMapEntry;
-
 	Status	OpenTableWithCreationStmt_Private(const std::string &inCreationStmt);
-	void	ClearTableMap_Private();
 
 	StorageType mStorageType;
 	IDBBackend *mpBackend;
 
 	TableCatalog mTableCatalog;
-
-	TableMap mTableMap;
 
 	bool mIsOpen;
 	

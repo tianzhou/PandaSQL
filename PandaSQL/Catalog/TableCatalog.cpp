@@ -17,19 +17,27 @@ TableCatalog::~TableCatalog()
 {
 }
 
-Table* TableCatalog::GetTableByName(const std::string &inTableName)
+const Table* TableCatalog::GetTableByName(const std::string &inTableName) const
 {
-	return mTableStore[inTableName];
+	const Table* returnedTable = NULL;
+	TableStore::const_iterator iter = mTableStore.find(inTableName);
+	
+	if (iter != mTableStore.end())
+	{
+		returnedTable = iter->second;
+	}
+
+	return returnedTable;
 }
 
-void   TableCatalog::AddTableWithName(const std::string &inTableName, Table *io_table)
+void   TableCatalog::AddTable(const std::string &inTableName, Table *io_table)
 {
 	//Prevent adding duplicate
 	PDASSERT(mTableStore.find(inTableName) == mTableStore.end());
 	mTableStore[inTableName] = io_table;
 }
 
-void   TableCatalog::RemoveTableWithName(const std::string &inTableName)
+void   TableCatalog::RemoveTable(const std::string &inTableName)
 {
 	TableStore::const_iterator iter = mTableStore.find(inTableName);
 

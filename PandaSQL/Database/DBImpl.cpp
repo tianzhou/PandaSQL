@@ -171,11 +171,11 @@ Status DBImpl::CreateOpenTable(const std::string &tableName, const std::string &
 {
 	Status result;
 
-	TableMap::iterator iter = mTableMap.find(tableName);
+	const Table *pTable = mTableCatalog.GetTableByName(tableName);
 
-	PDASSERT(iter == mTableMap.end());
+	PDASSERT(pTable == NULL);
 
-	if (iter == mTableMap.end())
+	if (pTable == NULL)
 	{
 		IDBBackend::OpenMode openMode = IDBBackend::kCreate | IDBBackend::kErrorIfExists;
 
@@ -230,7 +230,7 @@ Status DBImpl::OpenTable(const std::string &tableName, const ColumnDefList &colu
 			pTable->AddColumnDef(*colIter);
 		}
 
-		mTableMap.insert(TableMapEntry(tableName, pTable));
+		mTableCatalog.AddTable(tableName, pTable);
 	}
 	
 	return result;
@@ -240,15 +240,13 @@ Status DBImpl::DropTable(const std::string &tableName)
 {
 	Status result;
 
-	Table *theTable = NULL;
+	const Table *theTable = NULL;
 
 	result = this->GetTableByName(tableName, &theTable);
 
 	if (result.OK())
 	{
-		size_t itemErased = mTableMap.erase(tableName);
-
-		PDASSERT(itemErased == 1);
+		mTableCatalog.RemoveTable(tableName);
 
 		result = mpBackend->CloseTable(tableName);
 	}
@@ -286,7 +284,7 @@ Status DBImpl::DeleteData(const std::string &tableName, const BooleanExpr *inBoo
 {
 	Status result;
 
-	Table *theTable = NULL;
+	const Table *theTable = NULL;
 
 	result = this->GetTableByName(tableName, &theTable);
 
@@ -452,7 +450,7 @@ Status DBImpl::GetColumnDefFromQualifiedName(const Table::TableRefList &inTableR
 
 		for (; iter != inTableRefList.end(); iter++)
 		{
-			Table *theTable;
+			const Table *theTable;
 
 			result = this->GetTableByName(*iter, &theTable);
 
@@ -480,7 +478,7 @@ Status DBImpl::GetColumnDefFromQualifiedName(const Table::TableRefList &inTableR
 		{
 			if (*iter == inQualifiedName.tableName)
 			{
-				Table *theTable;
+				const Table *theTable;
 
 				result = this->GetTableByName(*iter, &theTable);
 
@@ -516,20 +514,14 @@ TupleIterator* DBImpl::CreateTupleIteratorForTable(const Table &inTable, const T
 	return theIter;
 }
 
-Status DBImpl::GetTableByName(const std::string &name, Table **o_table) const
+Status DBImpl::GetTableByName(const std::string &tableName, const Table **o_table) const
 {
 	Status result;
 
-	TableMap::const_iterator iter = mTableMap.find(name);
+	*o_table = mTableCatalog.GetTableByName(tableName);
 
-	if (iter != mTableMap.end())
+	if (*o_table == NULL)
 	{
-		*o_table = iter->second;
-	}
-	else
-	{
-		*o_table = NULL;
-
 		result = Status::kTableMissing;
 	}
 
@@ -555,18 +547,6 @@ Status DBImpl::OpenTableWithCreationStmt_Private(const std::string &inCreationSt
 	
 
 	return result;
-}
-
-void DBImpl::ClearTableMap_Private()
-{
-	TableMap::iterator iter = mTableMap.begin();
-
-	for (; iter != mTableMap.end(); iter++)
-	{
-		delete iter->second;
-	}
-
-	mTableMap.clear();
 }
 
 Table* DBImpl::GetTableByID(uint32_t inTableID) const

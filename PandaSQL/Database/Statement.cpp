@@ -126,7 +126,7 @@ Status Statement::Prepare()
 			TableAndColumnSetMap validTableAndColumnSetMap;
 
 			Table::TableRefList::const_iterator iter = mTableRefs.begin();
-			Table *pTable;
+			const Table *pTable;
 			for (; iter != mTableRefs.end(); iter++)
 			{
 				result = mpDB->GetTableByName(*iter, &pTable);
@@ -165,7 +165,7 @@ Status Statement::Prepare()
 				PDASSERT(mColumnDefs.empty());
 
 				Table::TableRefList::const_iterator iter = mTableRefs.begin();
-				Table *theTable;
+				const Table *theTable;
 				for (; iter != mTableRefs.end(); iter++)
 				{
 					result = mpDB->GetTableByName(*iter, &theTable);

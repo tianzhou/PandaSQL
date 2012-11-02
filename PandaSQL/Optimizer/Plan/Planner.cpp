@@ -34,7 +34,7 @@ PlanNode* Planner::GeneratePlan()
 	PlanNode *newPlanNode = NULL;
 
 	const DBImpl *pDB = mStatement.GetDB();
-	Table *theTable = NULL;
+	const Table *theTable = NULL;
 	const RelNode *theRelNode = NULL;
 
 	const Table::TableRefList &allTableRef = mStatement.GetTableRefList();
