@@ -27,7 +27,6 @@ PandaSQL::Status ReadSQLScript(const char *filePath, PandaSQL::IVFS *io_VFS, Pan
 		PandaSQL::File::Size amount = 512;
 		PandaSQL::File::Size o_bytesRead = 0;
 		char buf[513]; //Add Null terminator
-		char *pBuf = buf;
 
 		do
 		{
@@ -35,6 +34,7 @@ PandaSQL::Status ReadSQLScript(const char *filePath, PandaSQL::IVFS *io_VFS, Pan
 
 			if (o_bytesRead > 0)
 			{
+				char *pBuf = buf;
 				pBuf[o_bytesRead] = '\0';
 
 				while (*pBuf == '\n' || *pBuf == '\r')
