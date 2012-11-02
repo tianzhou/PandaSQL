@@ -12,7 +12,7 @@ void StringToTupleElement(const TupleDescElement &descElement, const std::string
 {
 	if (descElement.mDataType == kInt)
 	{
-		int numberValue = *(const int *)(inString.c_str() + *io_offset);
+		int32_t numberValue = *(const int32_t *)(inString.c_str() + *io_offset);
 		o_tupleValue->SetAsNumber(numberValue);
 		*io_offset += sizeof(int);
 	}
@@ -64,7 +64,11 @@ void TupleElementToString(const TupleDescElement &descElement, const Value &tupl
 	}
 	else if (descElement.mDataType == kText)
 	{
-		*o_string = tupleValue.GetAsString();
+		size_t length = tupleValue.GetAsString().length();
+		
+		o_string->append((const char *)&length, sizeof(length));
+
+		o_string->append(tupleValue.GetAsString());
 	}
 	else
 	{
