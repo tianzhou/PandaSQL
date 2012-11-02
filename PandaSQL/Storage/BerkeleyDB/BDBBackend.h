@@ -21,8 +21,8 @@ public:
 	virtual Status Open();
 	virtual Status Close();
 
-	virtual Status OpenTable(const std::string &tableName, OpenMode openMode);
-	virtual Status CloseTable(const std::string &tableName);
+	virtual Status OpenTable(const std::string &inTableName, OpenMode openMode);
+	virtual Status CloseTable(const std::string &inTableName);
 	virtual Status DropTable(const std::string &tableName);
 	//virtual Status InsertRecord(const TupleData &inTuple) = 0;
 	//virtual Status FindFirstRecordWithPredicate(const Predicate *inPredicate, Iterator **o_iterator) = 0;
@@ -39,10 +39,6 @@ private:
 	BDBBackend& operator=(const BDBBackend &rhs);
 
 	Status GetTableByName_Private(const std::string &name, DB **o_table) const;
-
-	Status OpenTable_Private(const std::string &inTableName, OpenMode openMode);
-	Status CloseTable_Private(const std::string &inTableName);
-	Status CloseAllTables_Private();
 
 	typedef std::map<std::string, DB*> TableMap;
 	typedef std::pair<std::string, DB*> TableMapEntry;

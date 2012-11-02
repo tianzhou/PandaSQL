@@ -82,25 +82,83 @@ Status BDBBackend::Close()
 	return result;
 }
 
-Status BDBBackend::OpenTable(const std::string &tableName, OpenMode openMode)
-{
-	Status result;
-
-	result = this->OpenTable_Private(tableName, openMode);
-
-	return result;
-}
-
-Status BDBBackend::CloseTable(const std::string &tableName)
+Status BDBBackend::OpenTable(const std::string &inTableName, OpenMode openMode)
 {
 	Status result;
 
 	DB *pTable = NULL;
 
-	result = this->GetTableByName_Private(tableName, &pTable);
+	int ret = db_create(&pTable, mpDBEnv, 0);
+
+	PDASSERT(ret == 0);
+
+	u_int32_t flags = DB_AUTO_COMMIT;
+
+	if (openMode & kCreate)
+	{
+		flags |= DB_CREATE;
+		
+		// It would return error if table already exists
+		if (openMode & kErrorIfExists)
+		{
+			flags |= DB_EXCL;
+		}
+	}
+
+	ret = pTable->open(pTable,
+		NULL
+		, kDBName
+		, inTableName.c_str()
+		, DB_RECNO
+		, flags
+		, 0);
+
+
+	if (ret != 0)
+	{
+		PDDebugOutputVerbose(db_strerror(ret));
+
+		if (ret == EEXIST)
+		{
+			result = Status::kTableAlreadyExists;
+		}
+		else
+		{
+			result = Status::kInternalError;
+		}
+
+		ret = pTable->close(pTable, 0);
+
+		//Assume we can close it after failling open the db
+		PDASSERT(ret == 0);
+	}
 
 	if (result.OK())
 	{
+		TableMapEntry tableEntry(inTableName.c_str(), pTable);
+		mTableMap.insert(tableEntry);
+	}
+
+	return result;
+}
+
+Status BDBBackend::CloseTable(const std::string &inTableName)
+{
+	Status result;
+
+	DB *pTable = NULL;
+
+	result = this->GetTableByName_Private(inTableName, &pTable);
+
+	if (result.OK())
+	{
+		TableMap::iterator iter = mTableMap.find(inTableName);
+
+		if (iter != mTableMap.end())
+		{
+			mTableMap.erase(iter);
+		}
+
 		int ret = pTable->close(pTable, 0);
 
 		if (ret != 0)
@@ -363,102 +421,6 @@ Status BDBBackend::GetTableByName_Private(const std::string &name, DB **o_table)
 
 		result = Status::kTableMissing;
 	}
-
-	return result;
-}
-
-Status BDBBackend::OpenTable_Private(const std::string &inTableName, OpenMode openMode)
-{
-	Status result;
-
-	DB *pTable = NULL;
-
-	int ret = db_create(&pTable, mpDBEnv, 0);
-
-	PDASSERT(ret == 0);
-
-	u_int32_t flags = DB_AUTO_COMMIT;
-
-	if (openMode & kCreate)
-	{
-		flags |= DB_CREATE;
-		
-		// It would return error if table already exists
-		if (openMode & kErrorIfExists)
-		{
-			flags |= DB_EXCL;
-		}
-	}
-
-	ret = pTable->open(pTable,
-		NULL
-		, kDBName
-		, inTableName.c_str()
-		, DB_RECNO
-		, flags
-		, 0);
-
-
-	if (ret != 0)
-	{
-		PDDebugOutputVerbose(db_strerror(ret));
-
-		if (ret == EEXIST)
-		{
-			result = Status::kTableAlreadyExists;
-		}
-		else
-		{
-			result = Status::kInternalError;
-		}
-
-		ret = pTable->close(pTable, 0);
-
-		//Assume we can close it after failling open the db
-		PDASSERT(ret == 0);
-	}
-
-	if (result.OK())
-	{
-		TableMapEntry tableEntry(inTableName.c_str(), pTable);
-		mTableMap.insert(tableEntry);
-	}
-
-	return result;
-}
-
-Status BDBBackend::CloseTable_Private(const std::string &inTableName)
-{
-	Status result;
-
-	TableMap::iterator iter = mTableMap.find(inTableName);
-
-	if (iter != mTableMap.end())
-	{
-		int ret = iter->second->close(iter->second, 0);
-
-		PDASSERT(ret == 0);
-
-		mTableMap.erase(iter);
-	}
-
-	return result;
-}
-
-Status BDBBackend::CloseAllTables_Private()
-{
-	Status result;
-
-	TableMap::iterator iter = mTableMap.begin();
-
-	for (; iter != mTableMap.end(); iter++)
-	{
-		int ret = iter->second->close(iter->second, 0);
-
-		PDASSERT(ret == 0);
-	}
-
-	mTableMap.clear();
 
 	return result;
 }
