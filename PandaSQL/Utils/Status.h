@@ -20,6 +20,7 @@ public:
 		kInvalidCommand = 8,
 		kTableAlreadyExists = 9,
 		kAmbiguousColumn = 10,
+		kSQLSyntaxError = 11,
 	};
 
 	Status() : mState(kOK) {}
