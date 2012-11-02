@@ -173,8 +173,6 @@ Status DBImpl::CreateOpenTable(const std::string &tableName, const std::string &
 
 	const Table *pTable = mTableCatalog.GetTableByName(tableName);
 
-	PDASSERT(pTable == NULL);
-
 	if (pTable == NULL)
 	{
 		IDBBackend::OpenMode openMode = IDBBackend::kCreate | IDBBackend::kErrorIfExists;
