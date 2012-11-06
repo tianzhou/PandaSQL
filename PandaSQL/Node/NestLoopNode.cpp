@@ -109,6 +109,7 @@ bool NestLoopNode::Step()
 		{
 			if (!mpOuterNode->Step())
 			{
+				mLastStatus = mpOuterNode->GetLastStatus();
 				break;
 			} 
 
@@ -137,6 +138,7 @@ bool NestLoopNode::Step()
 			}
 			else
 			{
+				mLastStatus = mpInnerNode->GetLastStatus();
 				mNeedStepOuterNode = true;
 			}
 		}
