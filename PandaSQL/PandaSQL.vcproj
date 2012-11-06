@@ -767,122 +767,6 @@
 					RelativePath=".\Storage\IDBBackend.h"
 					>
 				</File>
-				<File
-					RelativePath=".\Storage\IStorage.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Storage\IStorage.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Storage\StorageTypes.h"
-					>
-				</File>
-				<Filter
-					Name="Buffer"
-					>
-					<File
-						RelativePath=".\Storage\Buffer\BufMgr.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Storage\Buffer\BufMgr.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Storage\Buffer\Page.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Storage\Buffer\Page.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Storage\Buffer\PageProxy.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Storage\Buffer\PageProxy.h"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="CVS"
-					>
-					<File
-						RelativePath=".\Storage\CVS\CVSScanIterator.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath=".\Storage\CVS\CVSScanIterator.h"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCustomBuildTool"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath=".\Storage\CVS\CVSStorage.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath=".\Storage\CVS\CVSStorage.h"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCustomBuildTool"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath=".\Storage\CVS\HeapStore.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath=".\Storage\CVS\HeapStore.h"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCustomBuildTool"
-							/>
-						</FileConfiguration>
-					</File>
-				</Filter>
 				<Filter
 					Name="BerkeleyDB"
 					>
@@ -900,14 +784,6 @@
 					</File>
 					<File
 						RelativePath=".\Storage\BerkeleyDB\BDBScanIterator.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Storage\BerkeleyDB\BDBStorage.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Storage\BerkeleyDB\BDBStorage.h"
 						>
 					</File>
 					<File
