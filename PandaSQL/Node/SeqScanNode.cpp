@@ -30,6 +30,14 @@ PlanNode(kNodeSeqScan, io_pPlanContext)
 ,mRelIndex(inRelIndex)
 ,mpTupleIterator(NULL)
 {
+	const RelNode *pRelNode = mpPlanContext->mRelList[mRelIndex];
+	const Table *pTable = pRelNode->GetTable();
+
+	ColumnDefListToTupleDesc(pTable->GetAllColumns(), &mTupleDesc); 
+
+	mpTupleIterator = mpPlanContext->mpDB->CreateTupleIteratorForTable(*pTable, mTupleDesc);
+
+	mLastStatus = mpTupleIterator->GetLastError();
 }
 
 SeqScanNode::~SeqScanNode()
@@ -39,17 +47,7 @@ SeqScanNode::~SeqScanNode()
 
 void SeqScanNode::Reset()
 {
-	PDASSERT(mRelIndex >= 0 && mRelIndex < mpPlanContext->mRelList.size());
-
-	if (!mpTupleIterator)
-	{
-		const RelNode *pRelNode = mpPlanContext->mRelList[mRelIndex];
-		const Table *pTable = pRelNode->GetTable();
-
-		ColumnDefListToTupleDesc(pTable->GetAllColumns(), &mTupleDesc); 
-
-		mpTupleIterator = mpPlanContext->mpDB->CreateTupleIteratorForTable(*pTable, mTupleDesc);
-	}
+	PDASSERT(mpTupleIterator);
 	
 	mpTupleIterator->Reset();
 

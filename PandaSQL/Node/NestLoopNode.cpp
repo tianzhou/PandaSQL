@@ -56,7 +56,7 @@ PlanNode(kNodeNestLoop, io_pPlanContext)
 ,mNestLoopResultFunctor()
 ,mpOuterNode(io_outerNode)
 ,mpInnerNode(io_innerNode)
-,mNeedStepOuterNode(false)
+,mNeedStepOuterNode(true)
 {
 	mNestLoopResultFunctor.SetNestLoopNode(this);
 	mpOuterNode->SetResultFunctor(&mNestLoopResultFunctor);

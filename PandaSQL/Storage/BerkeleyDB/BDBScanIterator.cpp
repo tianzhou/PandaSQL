@@ -15,8 +15,19 @@ BDBScanIterator::BDBScanIterator(const TupleDesc &inTupleDesc, DB *io_dbTable)
 :TupleIterator(inTupleDesc)
 ,mpDBTable(io_dbTable)
 ,mpDBCursor(NULL)
-,mJustReset(false)
 {
+	DBC *dbcp = NULL;
+	int ret;
+
+	ret = mpDBTable->cursor(mpDBTable, NULL, &mpDBCursor, 0);
+
+	if (ret != 0)
+	{
+		PDDebugOutputVerbose(db_strerror(ret));
+		mLastError = Status::kInternalError;
+	}
+
+	mJustReset = true;
 }
 
 BDBScanIterator::~BDBScanIterator()
@@ -37,20 +48,6 @@ bool BDBScanIterator::Valid() const
 
 void BDBScanIterator::Reset()
 {
-	DBC *dbcp = NULL;
-	int ret;
-
-	if (!mpDBCursor)
-	{
-		ret = mpDBTable->cursor(mpDBTable, NULL, &mpDBCursor, 0);
-
-		if (ret != 0)
-		{
-			PDDebugOutputVerbose(db_strerror(ret));
-			mLastError = Status::kInternalError;
-		}
-	}
-
 	mJustReset = true;
 }
 
