@@ -41,6 +41,7 @@ BDBScanIterator::BDBScanIterator(const TupleDesc &inTupleDesc, DB *io_dbTable, D
 		}
 
 		mJustReset = true;
+		mInvalidCursor = true;
 	}
 }
 
@@ -58,20 +59,24 @@ BDBScanIterator::~BDBScanIterator()
 	}
 }
 
-#pragma message ("Is still valid if reaching end record")
 bool BDBScanIterator::Valid() const
 {
-	return mpDBCursor && mLastError.OK();
+	return mpDBCursor
+		&&!mInvalidCursor
+		&& mLastError.OK();
 }
 
 void BDBScanIterator::Reset()
 {
 	mJustReset = true;
+	mInvalidCursor = true;
 }
 
 bool BDBScanIterator::Next()
 {
-	if (!mLastError.OK())
+	if (!mLastError.OK()
+		|| (mInvalidCursor && !mJustReset)
+		)
 	{
 		return false;
 	}
@@ -88,17 +93,26 @@ bool BDBScanIterator::Next()
 		result = MoveCursor_Private(DB_NEXT);
 	}
 
+	mInvalidCursor = !result;
+
 	return result;
 }
 
 bool BDBScanIterator::Prev()
 {	
+	if (!mLastError.OK()
+		|| (mInvalidCursor && !mJustReset)
+		)
+	{
+		return false;
+	}
+
 	return MoveCursor_Private(DB_PREV);
 }
 
 bool BDBScanIterator::GetValue(ValueList *o_tupleValueList) const
 {
-	if (!mLastError.OK())
+	if (mInvalidCursor || !mLastError.OK())
 	{
 		return false;
 	}
@@ -117,11 +131,8 @@ bool BDBScanIterator::GetValue(ValueList *o_tupleValueList) const
 
 	if (ret != 0)
 	{
-		if (ret != DB_NOTFOUND)
-		{
-			PDDebugOutputVerbose(db_strerror(ret));
-			mLastError = Status::kInternalError;
-		}
+		PDDebugOutputVerbose(db_strerror(ret));
+		mLastError = Status::kInternalError;
 
 		result = false;
 	}
@@ -138,7 +149,7 @@ bool BDBScanIterator::GetValue(ValueList *o_tupleValueList) const
 
 bool BDBScanIterator::Remove()
 {
-	if (!mLastError.OK())
+	if (mInvalidCursor || !mLastError.OK())
 	{
 		return false;
 	}
@@ -175,7 +186,11 @@ bool BDBScanIterator::MoveCursor_Private(u_int32_t flags)
 
 	if (ret != 0)
 	{
-		if (ret != DB_NOTFOUND)
+		if (ret == DB_NOTFOUND)
+		{
+			mInvalidCursor = true;
+		}
+		else
 		{
 			PDDebugOutputVerbose(db_strerror(ret));
 			mLastError = Status::kInternalError;

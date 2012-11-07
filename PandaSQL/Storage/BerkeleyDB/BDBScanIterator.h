@@ -38,6 +38,7 @@ private:
 	DB_TXN *mpDBTXN;
 
 	bool mJustReset;
+	bool mInvalidCursor;
 };
 
 }	// PandaSQL
