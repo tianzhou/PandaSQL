@@ -52,6 +52,8 @@ private:
 	DBImpl(const DBImpl &rhs);
 	DBImpl& operator=(const DBImpl &rhs);
 
+	Status  Close_Private(bool forceClose);
+
 	Status	OpenTableWithCreationStmt_Private(const std::string &inCreationStmt);
 	void	AddTable_Private(const std::string &tableName, const ColumnDefList &columnList);
 

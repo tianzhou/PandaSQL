@@ -108,6 +108,8 @@ Status DBImpl::Open(const std::string &inDBPath, const OpenOptions &inOptions)
 
 			if (result.OK())
 			{
+				this->AddTable_Private(kSchemaTableName, *s_pSchemaColumnDefList);
+
 				TupleDesc tupleDesc;
 
 				ColumnDefListToTupleDesc(*s_pSchemaColumnDefList, &tupleDesc);
@@ -143,7 +145,7 @@ Status DBImpl::Open(const std::string &inDBPath, const OpenOptions &inOptions)
 			}
 			else
 			{
-				this->Close();
+				this->Close_Private(true);
 			}
 		}
 	}
@@ -153,18 +155,7 @@ Status DBImpl::Open(const std::string &inDBPath, const OpenOptions &inOptions)
 
 Status DBImpl::Close()
 {
-	PDASSERT(mIsOpen);
-
-	Status result;
-
-	result = mpBackend->Close();
-
-	PDASSERT(result.OK());
-
-	delete mpBackend;
-	mpBackend = NULL;
-
-	return result;
+	return this->Close_Private(false);
 }
 
 Status DBImpl::CreateOpenTable(const std::string &tableName, const ColumnDefList &columnList, const std::string &creationStmt)
@@ -228,26 +219,70 @@ Status DBImpl::DropTable(const std::string &tableName)
 {
 	Status result;
 
-	const Table *theTable = NULL;
+	const Table *pTable = NULL;
 
-	result = this->GetTableByName(tableName, &theTable);
+	result = this->GetTableByName(tableName, &pTable);
 
+	//Remove the entry from schema table
 	if (result.OK())
 	{
-		mTableCatalog.RemoveTable(tableName);
+		const Table *pSchemaTable = NULL;
 
+		result = this->GetTableByName(kSchemaTableName, &pSchemaTable);
+
+		if (result.OK())
+		{
+			TupleIterator *pTupleIterator = this->CreateTupleIteratorForTable(*pSchemaTable, s_tupleDesc);
+
+			result = pTupleIterator->GetLastError();
+
+			if (result.OK())
+			{
+				while (pTupleIterator->Next())
+				{
+					ValueList theValueList;
+					if (pTupleIterator->GetValue(&theValueList))
+					{
+						if (theValueList[kSchemaTableNameIndex].GetAsString() == tableName)
+						{
+							if (!pTupleIterator->Remove())
+							{
+								result = Status::kInternalError;
+							}
+
+							break;
+						}
+					}
+				}
+
+				if (!pTupleIterator->Valid())
+				{
+					//We should find a matching item
+					PDASSERT(0);
+
+					result = Status::kInternalError;
+				}
+			}
+
+			delete pTupleIterator;
+		}
+	}
+
+	//Close the table
+	if (result.OK())
+	{
 		result = mpBackend->CloseTable(tableName);
 	}
 
+	//Drop the table
 	if (result.OK())
 	{
 		result = mpBackend->DropTable(tableName);
-	}
+	}	
 
-	//TODO: For now, delete every table
 	if (result.OK())
 	{
-		result = mpBackend->DeleteData(kSchemaTableName);
+		mTableCatalog.RemoveTable(tableName);		
 	}
 
 	return result;
@@ -512,6 +547,25 @@ Status DBImpl::GetTableByName(const std::string &tableName, const Table **o_tabl
 	{
 		result = Status::kTableMissing;
 	}
+
+	return result;
+}
+
+Status DBImpl::Close_Private(bool forceClose)
+{
+	Status result;
+
+	if (!forceClose)
+	{
+		PDASSERT(mIsOpen);
+	}
+
+	result = mpBackend->Close();
+
+	PDASSERT(result.OK());
+
+	delete mpBackend;
+	mpBackend = NULL;
 
 	return result;
 }

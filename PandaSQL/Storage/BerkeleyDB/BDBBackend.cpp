@@ -177,7 +177,6 @@ Status BDBBackend::DropTable(const std::string &tableName)
 {
 	Status result;
 
-	//TODO: For now delete every table in schema
 	int ret = mpDBEnv->dbremove(mpDBEnv
 		, NULL
 		, kDBName
@@ -401,7 +400,7 @@ TupleIterator* BDBBackend::CreateScanIterator(const std::string &tableName, cons
 
 	if (localResult.OK())
 	{
-		result = new BDBScanIterator(tupleDesc, pTable);
+		result = new BDBScanIterator(tupleDesc, pTable, mpDBEnv);
 	}
 
 	return result;

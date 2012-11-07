@@ -2,6 +2,7 @@
 
 #include "Storage/BerkeleyDB/BDBScanIterator.h"
 #include "Storage/BerkeleyDB/BDBTypes.h"
+#include "Storage/BerkeleyDB/Transaction/BDBTransaction.h"
 
 #include "Utils/Debug.h"
 #include "Utils/Predicate.h"
@@ -11,15 +12,17 @@ namespace PandaSQL
 
 static char kDeleteMark[] = " ";
 
-BDBScanIterator::BDBScanIterator(const TupleDesc &inTupleDesc, DB *io_dbTable)
+BDBScanIterator::BDBScanIterator(const TupleDesc &inTupleDesc, DB *io_dbTable, DB_ENV *io_dbEnv)
 :TupleIterator(inTupleDesc)
 ,mpDBTable(io_dbTable)
 ,mpDBCursor(NULL)
+,mpDBTXN(NULL)
 {
 	DBC *dbcp = NULL;
 	int ret;
 
-	ret = mpDBTable->cursor(mpDBTable, NULL, &mpDBCursor, 0);
+	//Must use transaction, otherwise del will fail
+	ret = TransactionBegin(io_dbEnv, NULL, &mpDBTXN);
 
 	if (ret != 0)
 	{
@@ -27,12 +30,27 @@ BDBScanIterator::BDBScanIterator(const TupleDesc &inTupleDesc, DB *io_dbTable)
 		mLastError = Status::kInternalError;
 	}
 
-	mJustReset = true;
+	if (mLastError.OK())
+	{
+		ret = mpDBTable->cursor(mpDBTable, mpDBTXN, &mpDBCursor, 0);
+
+		if (ret != 0)
+		{
+			PDDebugOutputVerbose(db_strerror(ret));
+			mLastError = Status::kInternalError;
+		}
+
+		mJustReset = true;
+	}
 }
 
 BDBScanIterator::~BDBScanIterator()
 {
-	int ret = mpDBCursor->close(mpDBCursor);
+	int ret;
+
+	//No need to close the cursor here. Transaction commit will first
+	//close the cursor and commit if succesful or abort on error
+	ret = TransactionCommit(mpDBTXN);
 
 	if (ret != 0)
 	{
@@ -53,6 +71,11 @@ void BDBScanIterator::Reset()
 
 bool BDBScanIterator::Next()
 {
+	if (!mLastError.OK())
+	{
+		return false;
+	}
+
 	bool result;
 
 	if (mJustReset)
@@ -108,6 +131,29 @@ bool BDBScanIterator::GetValue(ValueList *o_tupleValueList) const
 		rowString.append((const char *)data.data, data.size);
 
 		StringToTuple(mTupleDesc, rowString, o_tupleValueList);
+	}
+
+	return result;
+}
+
+bool BDBScanIterator::Remove()
+{
+	if (!mLastError.OK())
+	{
+		return false;
+	}
+
+	bool result = true;
+
+	PDASSERT(mpDBCursor);
+
+	int ret = mpDBCursor->del(mpDBCursor, 0);
+
+	if (ret != 0)
+	{
+		PDDebugOutputVerbose(db_strerror(ret));
+		mLastError = Status::kInternalError;
+		result = false;
 	}
 
 	return result;

@@ -14,7 +14,7 @@ class BDBScanIterator : public TupleIterator
 {
 public:
 
-	BDBScanIterator(const TupleDesc &inTupleDesc, DB *io_dbTable);
+	BDBScanIterator(const TupleDesc &inTupleDesc, DB *io_dbTable, DB_ENV *io_dbEnv);
 	virtual ~BDBScanIterator();
 
 	virtual bool Valid() const;
@@ -22,6 +22,7 @@ public:
 	virtual bool Next();
 	virtual bool Prev();
 	virtual bool GetValue(ValueList *o_tupleValueList) const;
+	virtual bool Remove();
 
 protected:
  
@@ -34,6 +35,7 @@ private:
 	
 	DB *mpDBTable;
 	DBC *mpDBCursor;
+	DB_TXN *mpDBTXN;
 
 	bool mJustReset;
 };
