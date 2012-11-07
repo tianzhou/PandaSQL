@@ -251,11 +251,6 @@ Status Statement::Execute(bool createTable /* = true */)
 		}
 	case kStmtSelect:
 		{
-			//ColumnQualifiedName join1 = {"Master", "master_id"};
-			//ColumnQualifiedName join2 = {"Detail", "detail_id"};
-			//mJoinList.push_back(join1);
-			//mJoinList.push_back(join2);
-
 			Planner thePlanner(*this, mpDB);
 
 			PlanNode *thePlan = thePlanner.GeneratePlan();
@@ -264,9 +259,6 @@ Status Statement::Execute(bool createTable /* = true */)
 			result = theExecutor.ExecutePlan(thePlan);
 
 			delete thePlan;
-
-			//TuplePredicate tuplePredicate;
-			//result = mpDB->SelectData(mTableRefs, mJoinList, mColumnDefs, mpWhereExpr);
 			break;
 		}
 	case kStmtDelete:
