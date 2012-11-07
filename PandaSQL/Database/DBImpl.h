@@ -34,7 +34,7 @@ public:
 	Status DropTable(const std::string &tableName);
 
 	Status InsertData(const std::string &tableName, const ColumnDefList &columnList, const ExprList &columnExprList);
-	Status DeleteData(const std::string &tableName, const BooleanExpr *inBooleanExpr = NULL);
+	Status DeleteData(const std::string &tableName, const BooleanExpr *inPredicateExpr = NULL);
 	Status SelectData(const Table::TableRefList &tableList, const JoinList &joinList, const ColumnDefList &projectColumnList, const BooleanExpr *inWhereExpr = NULL);
 
 	Status GetTableByName(const std::string &tableName, const Table **o_table) const;

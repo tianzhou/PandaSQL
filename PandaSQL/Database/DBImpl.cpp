@@ -303,18 +303,58 @@ Status DBImpl::InsertData(const std::string &tableName, const ColumnDefList &col
 	return result;
 }
 
-Status DBImpl::DeleteData(const std::string &tableName, const BooleanExpr *inBooleanExpr /* = NULL */)
+Status DBImpl::DeleteData(const std::string &tableName, const BooleanExpr *inPredicateExpr /* = NULL */)
 {
 	Status result;
 
-	const Table *theTable = NULL;
+	const Table *pTable = NULL;
 
-	result = this->GetTableByName(tableName, &theTable);
+	result = this->GetTableByName(tableName, &pTable);
 
 	if (result.OK())
 	{
-		std::cout << "****** Delete Table:" << tableName << " ******" << std::endl;
-		//result = mpBackend->DeleteData(tableName, inTuplePredicate);
+		TupleDesc tupleDesc;
+		const ColumnDefList &columnDefList = pTable->GetAllColumns();
+
+		ColumnDefListToTupleDesc(columnDefList, &tupleDesc); 
+
+		TupleIterator *pTupleIterator = this->CreateTupleIteratorForTable(*pTable, tupleDesc);
+
+		result = pTupleIterator->GetLastError();
+
+		if (result.OK())
+		{
+			ExprContext exprContext;
+
+			bool matchPredicate = false;
+
+			while (pTupleIterator->Next())
+			{
+				matchPredicate = (inPredicateExpr == NULL);
+
+				if (!matchPredicate)
+				{
+					ValueList theValueList;
+					if (pTupleIterator->GetValue(&theValueList))
+					{
+						exprContext.UpdateTupleValue(columnDefList, theValueList);
+
+						matchPredicate = inPredicateExpr->IsTrue(exprContext);
+					}
+				}
+
+				if (matchPredicate)
+				{
+					if (!pTupleIterator->Remove())
+					{
+						result = Status::kInternalError;
+						break;
+					}
+				}
+			}
+		}
+
+		delete pTupleIterator;
 	}
 
 	return result;

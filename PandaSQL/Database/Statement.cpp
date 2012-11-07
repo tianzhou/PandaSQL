@@ -263,29 +263,7 @@ Status Statement::Execute(bool createTable /* = true */)
 		}
 	case kStmtDelete:
 		{
-			//Predicate thePredicate;
-			//PredicateItem predicateItem;
-
-			//PandaSQL::Expr lExpr;
-			//lExpr.type = kExprColumnDef;
-
-			//ColumnQualifiedName qualifiedName = {"", "name"};
-			//ColumnDef theDef;
-			//theDef.qualifiedName = qualifiedName;
-			//theDef.index = kInvalidColumnIndex;
-			//theDef.dataType = kText;
-			//theDef.constraintType = kConstraintNone;
-			//
-			//lExpr.columnDef = theDef;
-
-			//PandaSQL::Expr rExpr;
-			//rExpr.type = kExprText;
-			//rExpr.text = "\"Peter\"";
-
-			//predicateItem.SetFormat(lExpr, rExpr, PredicateItem::kEqual);
-			//thePredicate.SetSinglePredicateItem(predicateItem);
-			//result = mpDB->DeleteData(mTableRefs[0], &thePredicate);
-			result = mpDB->DeleteData(mTableRefs[0], NULL);
+			result = mpDB->DeleteData(mTableRefs[0], mpWhereExpr);
 			break;
 		}
 
