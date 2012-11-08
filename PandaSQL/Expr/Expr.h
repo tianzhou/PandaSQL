@@ -25,7 +25,7 @@ enum ExprType
 	kExprColumnDef = 3
 };
 
-typedef std::vector<Expr> ExprList;
+typedef std::vector<Expr*> ExprList;
 
 class Expr
 {
@@ -43,6 +43,8 @@ public:
 
 	typedef uint8_t ExprType;
 
+	static Status EvalExprList(const ExprList &inExprList, const TupleDesc &inTupleDesc, ValueList *io_tupleValueList);
+
 	Expr();
 
 	Expr(ExprType inExprType);
@@ -50,10 +52,6 @@ public:
 	virtual ~Expr();
 
 	ExprType GetType() const { return mExprType; }
-
-	void Eval(TupleDescElement inDescElement, Value *io_data) const;
-
-	static void EvalExprList(const ExprList &inExprList, const TupleDesc &inTupleDesc, ValueList *io_tupleValueList);
 
 	virtual bool IsTrue(const ExprContext &inExprContext) const;
 	virtual Status GetValue(const ExprContext &inExprContext, Value *io_value) const;
@@ -68,15 +66,6 @@ public:
 	virtual Expr* Clone() const;
 
 	ExprType mExprType;
-
-	//type == kExprNumber
-	int32_t mNumberValue;
-
-	//type == kExprText
-	std::string mTextValue;
-
-	//type == kExprColumnDef
-	ColumnDef mColumnDef;
 
 protected:
 

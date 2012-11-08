@@ -2,6 +2,8 @@
 
 #include "Expr/Expr.h"
 
+#include "Expr/ExprContext.h"
+
 #include "Utils/Debug.h"
 
 namespace PandaSQL
@@ -24,42 +26,28 @@ Expr::~Expr()
 	mExprType = kExprUnknown;
 }
 
-void Expr::Eval(TupleDescElement inDescElement, Value *io_data) const
+Status Expr::EvalExprList(const ExprList &inExprList, const TupleDesc &inTupleDesc, ValueList *io_tupleValueList)
 {
-	//TODO: No coercing at this point
-	if (inDescElement.mDataType == kInt)
-	{
-		io_data->SetAsNumber(mNumberValue);
-	}
-	else if (inDescElement.mDataType == kText)
-	{
-		io_data->SetAsString(mTextValue);
-	}
-	else
-	{
-		//TODO
-		PDASSERT(0);
-	}
-}
+	Status result;
 
-void Expr::EvalExprList(const ExprList &inExprList, const TupleDesc &inTupleDesc, ValueList *io_tupleValueList)
-{
 	PDASSERT(inExprList.size() == inTupleDesc.size());
 
 	ExprList::const_iterator exprIter = inExprList.begin();
-	TupleDesc::const_iterator tupleDescIter = inTupleDesc.begin();
+
+	ExprContext exprContext;
 
 	while (exprIter != inExprList.end())
 	{
 		Value oneValue;
 
-		exprIter->Eval(*tupleDescIter, &oneValue);
+		result = (*exprIter)->GetValue(exprContext, &oneValue);
 
 		io_tupleValueList->push_back(oneValue);
 
 		exprIter++;
-		tupleDescIter++;
 	}
+
+	return result;
 }
 
 bool Expr::IsTrue(const ExprContext &inExprContext) const

@@ -329,18 +329,6 @@ void ParserDriver::GetStringFromAntlrString(const ANTLR3_STRING &inOpString, std
 	*io_string = std::string((const char *)inOpString.chars, inOpString.len);
 }
 
-void ParserDriver::GetExprForText(ANTLR3_BASE_TREE *tree, Expr *o_expr)
-{
-	//o_expr->mType = kExprText;
-	GetString(tree, &o_expr->mTextValue);
-}
-
-void ParserDriver::GetExprForNumber(ANTLR3_BASE_TREE *tree, Expr *o_expr)
-{
-	//o_expr->mType = kExprNumber;
-	GetNumber(tree, &o_expr->mNumberValue);
-}
-
 Expr* ParserDriver::CreateExprForNumericLiteral(ANTLR3_BASE_TREE *numericTree)
 {
 	ConstantExpr *pNumericExpr = new ConstantExpr();

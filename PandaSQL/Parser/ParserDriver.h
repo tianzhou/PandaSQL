@@ -43,9 +43,6 @@ privileged:
 	static void GetNumber(ANTLR3_BASE_TREE *tree, int32_t *o_num);
 	static void GetStringFromAntlrString(const ANTLR3_STRING &inOpString, std::string *io_string);
 
-	static void GetExprForText(ANTLR3_BASE_TREE *tree, Expr *o_expr);
-	static void GetExprForNumber(ANTLR3_BASE_TREE *tree, Expr *o_expr);
-
 	static Expr* CreateExprForNumericLiteral(ANTLR3_BASE_TREE *numericTree);
 	static Expr* CreateExprForStringLiteral(ANTLR3_BASE_TREE *stringTree);
 	static Expr* CreateExprForBinaryOp(const ANTLR3_STRING &inOpString, Expr *io_leftOperand, Expr *io_rightOperand);
