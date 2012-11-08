@@ -38,8 +38,6 @@ public:
 	virtual Expr* Clone() const;
 
 private:
-
-	ConstantType mConstantType;
 	
 	Value mConstantValue;
 };

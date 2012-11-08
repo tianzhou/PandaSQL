@@ -62,7 +62,6 @@ Expr* ConstantExpr::Clone() const
 {
 	ConstantExpr *result = new ConstantExpr();
 
-	result->mConstantType = mConstantType;
 	result->mConstantValue = mConstantValue;
 
 	return result;
