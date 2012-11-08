@@ -224,6 +224,28 @@ Status Statement::Execute(bool createTable /* = true */)
 
 	switch (mStmtType)
 	{
+	case kStmtSelect:
+		{
+			Planner thePlanner(*this, mpDB);
+
+			PlanNode *thePlan = thePlanner.GeneratePlan();
+
+			Executor theExecutor;
+			result = theExecutor.ExecutePlan(thePlan);
+
+			delete thePlan;
+			break;
+		}
+	case kStmtInsert:
+		{
+			result = mpDB->InsertData(mTableRefs[0], mColumnDefs, mSetExprList);
+			break;
+		}
+	case kStmtDelete:
+		{
+			result = mpDB->DeleteData(mTableRefs[0], mpWhereExpr);
+			break;
+		}
 	case kStmtCreateTable:
 		{
 			if (createTable)
@@ -242,28 +264,6 @@ Status Statement::Execute(bool createTable /* = true */)
 	case kStmtDropTable:
 		{
 			result = mpDB->DropTable(mTableRefs[0]);
-			break;
-		}
-	case kStmtInsert:
-		{
-			result = mpDB->InsertData(mTableRefs[0], mColumnDefs, mSetExprList);
-			break;
-		}
-	case kStmtSelect:
-		{
-			Planner thePlanner(*this, mpDB);
-
-			PlanNode *thePlan = thePlanner.GeneratePlan();
-
-			Executor theExecutor;
-			result = theExecutor.ExecutePlan(thePlan);
-
-			delete thePlan;
-			break;
-		}
-	case kStmtDelete:
-		{
-			result = mpDB->DeleteData(mTableRefs[0], mpWhereExpr);
 			break;
 		}
 
