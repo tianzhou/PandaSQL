@@ -24,6 +24,7 @@ public:
 	virtual bool Next() = 0;
 	virtual bool Prev() = 0;
 	virtual bool GetValue(ValueList *o_tupleValueList) const = 0;
+	virtual bool Update(const ValueList &inValueList) = 0;
 	virtual bool Remove() = 0;
 
 protected:
