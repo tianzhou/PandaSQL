@@ -21,8 +21,8 @@ public:
 		kStmtUnknown = 0,
 		kStmtEmpty = 1,
 		kStmtSelect = 2,
-		kStmtUpdate = 3,
-		kStmtInsert = 4,
+		kStmtInsert = 3,
+		kStmtUpdate = 4,
 		kStmtDelete = 5,
 		kStmtCreateTable = 6,
 		kStmtCreateIndex = 7,
@@ -50,7 +50,7 @@ public:
 
 	//For update_stmt, applied value[1..N]
 	//For insert_stmt, applied value[1..N]
-	void AddExprRef(const Expr &inExpr);
+	void AddExprRef(Expr *inExpr);
 
 	//For create_index_stmt, indexed column[1]
 	//For select_stmt, selected column[1..N]

@@ -47,6 +47,7 @@ privileged:
 	static void GetExprForNumber(ANTLR3_BASE_TREE *tree, Expr *o_expr);
 
 	static Expr* CreateExprForNumericLiteral(ANTLR3_BASE_TREE *numericTree);
+	static Expr* CreateExprForStringLiteral(ANTLR3_BASE_TREE *stringTree);
 	static Expr* CreateExprForBinaryOp(const ANTLR3_STRING &inOpString, Expr *io_leftOperand, Expr *io_rightOperand);
 	static Expr* CreateExprForColumnReference(const ColumnQualifiedName &inColumnQualifiedName);
 	static BooleanExpr* CreateExprForBooleanPrimary(Expr *io_inSubExpr);

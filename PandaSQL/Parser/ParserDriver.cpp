@@ -354,6 +354,19 @@ Expr* ParserDriver::CreateExprForNumericLiteral(ANTLR3_BASE_TREE *numericTree)
 	return pNumericExpr;
 }
 
+Expr* ParserDriver::CreateExprForStringLiteral(ANTLR3_BASE_TREE *stringTree)
+{
+	ConstantExpr *pStringExpr = new ConstantExpr();
+
+	std::string str;
+
+	ParserDriver::GetString(stringTree, &str);
+
+	pStringExpr->SetText(str);
+
+	return pStringExpr;
+}
+
 Expr* ParserDriver::CreateExprForBinaryOp(const ANTLR3_STRING &inOpString, Expr *io_leftOperand, Expr *io_rightOperand)
 {
 	BinaryExpr *pBinaryExpr = new BinaryExpr();

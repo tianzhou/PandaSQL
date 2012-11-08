@@ -368,8 +368,8 @@ NUMBER_LITERAL
 	;
 	
 STRING_LITERAL
-    :	( '\'' ( ~('\''|'\\') | ('\\' .) )* '\''
-		| '\"' ( ~('\"'|'\\') | ('\\' .) )* '\"')+
+    :	'\'' ( ~('\''|'\\') | ('\\' .) )* '\''
+		| '\"' ( ~('\"'|'\\') | ('\\' .) )* '\"'
     ;
 	
 //More specific rule comes first(e.g KW_FROM is before IDENTIFIER)

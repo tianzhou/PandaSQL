@@ -246,16 +246,25 @@ unsigned_literal returns [PandaSQL::Expr *io_pExpr]
 		{
 			$io_pExpr = $unl.io_pExpr;
 		}
-	|	general_literal
+	|	gl=general_literal
+		{
+			$io_pExpr = $gl.io_pExpr;
+		}
 	;
 	
-general_literal
-	:	character_string_literal
+general_literal returns [PandaSQL::Expr *io_pExpr]
+	:	csl=character_string_literal
+		{
+			$io_pExpr = $csl.io_pExpr;
+		}
 	|	boolean_literal
 	;
 	
-character_string_literal
-	:	QUOTE (Letter | Digit | '_')* QUOTE
+character_string_literal returns [PandaSQL::Expr *io_pExpr]
+	:	STRING_LITERAL
+		{
+			$io_pExpr = PandaSQL::ParserDriver::CreateExprForStringLiteral($STRING_LITERAL);
+		}
 	;
 	
 unsigned_numeric_literal returns [PandaSQL::Expr *io_pExpr]
@@ -573,15 +582,13 @@ predicate_or[PandaSQL::Predicate &o_Predicate]
 predicate_and[PandaSQL::Predicate &o_predicate]
 @init
 {
-	PandaSQL::Expr leftExpr;
-	PandaSQL::Expr rightExpr;
 	o_predicate = PandaSQL::Predicate();
 }
 	:	predicate_list[o_predicate]
-	|	^(TOK_BINARY_OP op=binary_op expr[&leftExpr] expr[&rightExpr])
+	|	^(TOK_BINARY_OP op=binary_op pLeftExpr=expr pRightExpr=expr)
 		{
 			PandaSQL::PredicateItem predicateItem;
-			predicateItem.SetFormat(leftExpr, rightExpr, op);
+			predicateItem.SetFormat(*$pLeftExpr.o_pExpr, *$pRightExpr.o_pExpr, op);
 			o_predicate.SetSinglePredicateItem(predicateItem);
 		}
 	;
@@ -650,13 +657,12 @@ set_clause
 @init
 {
 	PandaSQL::ColumnQualifiedName qualifiedName;
-	PandaSQL::Expr valueExpr;
 }
-	:	^(TOK_UPDATE_SET column_reference[&qualifiedName] expr[&valueExpr])
+	:	^(TOK_UPDATE_SET column_reference[&qualifiedName] exp=expr)
 		{
 			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
 			pDriver->GetCurrentStatement().AddColumnWithQualifiedName(qualifiedName);
-			pDriver->GetCurrentStatement().AddExprRef(valueExpr);
+			pDriver->GetCurrentStatement().AddExprRef($exp.o_pExpr);
 		}
 	;
 	
@@ -665,7 +671,7 @@ insert_stmt
 {
 	std::string tableRef;
 	PandaSQL::ColumnQualifiedName qualifiedName;
-	PandaSQL::Expr valueExpr;
+	PandaSQL::Expr *pValueExpr;
 	
 	PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
 	pDriver->PushNewStatement(PandaSQL::Statement::kStmtInsert);
@@ -682,10 +688,10 @@ insert_stmt
 				pDriver->GetCurrentStatement().AddColumnWithQualifiedName(qualifiedName);
 			})+
 			TOK_INSERT_VALUES
-			(expr[&valueExpr]
+			(exp=expr
 			{
 				PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-				pDriver->GetCurrentStatement().AddExprRef(valueExpr);
+				pDriver->GetCurrentStatement().AddExprRef($exp.o_pExpr);
 			})+)
 	;
 	
@@ -745,23 +751,14 @@ identifier[std::string *o_str]
 		}
 	;
 	
-expr[PandaSQL::Expr *o_expr]
+expr returns [PandaSQL::Expr *o_pExpr]
 @init
 {
 	PandaSQL::ColumnQualifiedName qualifiedName;
 }
-	:	num=UNSIGNED_INTEGER
+	:	ul=unsigned_literal
 		{
-			PandaSQL::ParserDriver::GetExprForNumber($num, o_expr);
-		}
-	|	num=NUMBER_LITERAL
-		{
-			PandaSQL::ParserDriver::GetExprForNumber($num, o_expr);
-			
-		}
-	|	str=STRING_LITERAL
-		{
-			PandaSQL::ParserDriver::GetExprForText($str, o_expr);
+			$o_pExpr = $ul.io_pExpr;
 		}
 	|	column_reference[&qualifiedName]
 		{

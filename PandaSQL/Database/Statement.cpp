@@ -31,6 +31,13 @@ mpDB(io_pDB)
 
 Statement::~Statement()
 {
+	ExprList::iterator exprIter = mSetExprList.begin();
+
+	for (; exprIter != mSetExprList.end(); exprIter++)
+	{
+		delete (*exprIter);
+	}
+
 	delete mpWhereExpr;
 }
 
@@ -74,7 +81,7 @@ void Statement::AddTableRef(const std::string &inTableRef)
 	mTableRefs.push_back(inTableRef);
 }
 
-void Statement::AddExprRef(const Expr &inExpr)
+void Statement::AddExprRef(Expr *inExpr)
 {
 	mSetExprList.push_back(inExpr);
 }
@@ -83,12 +90,9 @@ void Statement::AddColumnWithQualifiedName(const ColumnQualifiedName &inQualifie
 {
 	ColumnDef theColumnDef;
 
-	Status result = mpDB->GetColumnDefFromQualifiedName(mTableRefs, inQualifiedName, &theColumnDef);
-	
-	if (result.OK())
-	{
-		mColumnDefs.push_back(theColumnDef);
-	}
+	theColumnDef.qualifiedName = inQualifiedName;
+
+	mColumnDefs.push_back(theColumnDef);
 }
 
 void Statement::AddColumnDef(const ColumnDef &inDef)
@@ -201,7 +205,13 @@ Status Statement::Prepare()
 
 					for (; iter != mColumnDefs.end(); iter++)
 					{	
-						//result = mpDB->AmendColumnDef(mTableRefs, &(*iter));				
+						ColumnQualifiedName qualifiedName = iter->qualifiedName;
+						result = mpDB->GetColumnDefFromQualifiedName(mTableRefs, qualifiedName, &(*iter));
+						
+						if (!result.OK())
+						{
+							break;
+						}
 					}
 				}
 			}
@@ -239,6 +249,11 @@ Status Statement::Execute(bool createTable /* = true */)
 	case kStmtInsert:
 		{
 			result = mpDB->InsertData(mTableRefs[0], mColumnDefs, mSetExprList);
+			break;
+		}
+	case kStmtUpdate:
+		{
+			result = mpDB->UpdateData(mTableRefs[0], mColumnDefs, mSetExprList, mpWhereExpr);
 			break;
 		}
 	case kStmtDelete:
