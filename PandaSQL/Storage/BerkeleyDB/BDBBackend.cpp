@@ -217,6 +217,7 @@ Status BDBBackend::InsertData(const std::string &tableName, const TupleDesc &tup
 		db_recno_t recno;
 		
 		memset(&key, 0, sizeof(key));
+		memset(&data, 0, sizeof(data));
 
 		std::string keyString;
 		if (keyIndex >= 0)
@@ -226,8 +227,6 @@ Status BDBBackend::InsertData(const std::string &tableName, const TupleDesc &tup
 			key.data = (void *)keyString.c_str();
 			key.size = keyString.length();
 		}
-
-		memset(&data, 0, sizeof(data));
 
 		std::string rowString;
 		TupleToString(tupleDesc, tupleValueList, &rowString);

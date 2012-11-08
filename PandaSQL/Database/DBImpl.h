@@ -34,6 +34,7 @@ public:
 	Status DropTable(const std::string &tableName);
 
 	Status InsertData(const std::string &tableName, const ColumnDefList &columnList, const ExprList &columnExprList);
+	Status UpdateData(const std::string &tableName, const ColumnDefList &columnList, const ExprList &columnExprList, const BooleanExpr *inPredicateExpr = NULL);
 	Status DeleteData(const std::string &tableName, const BooleanExpr *inPredicateExpr = NULL);
 	Status SelectData(const Table::TableRefList &tableList, const JoinList &joinList, const ColumnDefList &projectColumnList, const BooleanExpr *inWhereExpr = NULL);
 
@@ -56,6 +57,9 @@ private:
 
 	Status	OpenTableWithCreationStmt_Private(const std::string &inCreationStmt);
 	void	AddTable_Private(const std::string &tableName, const ColumnDefList &columnList);
+
+	typedef Status (*PerformIterator)(TupleIterator *io_iterator, void *io_ctx);
+	Status	PerformIterator_Private(const std::string &tableName, const BooleanExpr *inPredicateExpr, PerformIterator performer, void *io_ctx);
 
 	StorageType mStorageType;
 	IDBBackend *mpBackend;

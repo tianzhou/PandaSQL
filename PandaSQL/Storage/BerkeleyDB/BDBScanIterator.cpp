@@ -147,6 +147,41 @@ bool BDBScanIterator::GetValue(ValueList *o_tupleValueList) const
 	return result;
 }
 
+bool BDBScanIterator::Update(const ValueList &inValueList)
+{
+	if (mInvalidCursor || !mLastError.OK())
+	{
+		return false;
+	}
+
+	bool result = true;
+
+	PDASSERT(mpDBCursor);
+
+	DBT key;
+	DBT data;
+	int ret;
+
+	memset(&key, 0, sizeof(key));
+	memset(&data, 0, sizeof(data));
+
+	std::string rowString;
+	TupleToString(mTupleDesc, inValueList, &rowString);
+	data.data = (void *)rowString.c_str();
+	data.size = rowString.length();
+
+	ret = mpDBCursor->put(mpDBCursor, &key, &data, DB_CURRENT);
+
+	if (ret != 0)
+	{
+		PDDebugOutputVerbose(db_strerror(ret));
+		mLastError = Status::kInternalError;
+		result = false;
+	}
+
+	return result;
+}
+
 bool BDBScanIterator::Remove()
 {
 	if (mInvalidCursor || !mLastError.OK())

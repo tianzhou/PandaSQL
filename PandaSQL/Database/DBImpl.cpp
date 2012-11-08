@@ -303,8 +303,105 @@ Status DBImpl::InsertData(const std::string &tableName, const ColumnDefList &col
 	return result;
 }
 
+struct DBImpl_UpdateContext
+{
+	DBImpl_UpdateContext(const ColumnDefList &inColumnDefList, const ExprList &inColumnExprList);
+	const ColumnDefList &columnList;
+	const ExprList &columnExprList;
+};
+
+DBImpl_UpdateContext::DBImpl_UpdateContext(const ColumnDefList &inColumnDefList, const ExprList &inColumnExprList)
+:
+columnList(inColumnDefList)
+,columnExprList(inColumnExprList)
+{
+}
+
+Status UpdateCurrent(TupleIterator *io_iterator, void *io_ctx)
+{
+	Status result;
+
+	DBImpl_UpdateContext *ctx = (DBImpl_UpdateContext *)io_ctx;
+	const ColumnDefList &columnList = ctx->columnList;
+	const ExprList &columnExprList = ctx->columnExprList;
+
+	ValueList newValueList;
+
+	if (io_iterator->GetValue(&newValueList))
+	{
+		//For now, columnExprList should be constant.
+		//And we provide empty context here.
+		ExprContext exprContext;
+		Value newColumnValue;
+
+		ColumnDefList::const_iterator columnIter = columnList.begin();
+
+		size_t index = 0;
+		for (; columnIter != columnList.end(); columnIter++)
+		{
+			result = columnExprList[index]->GetValue(exprContext, &newColumnValue);
+
+			if (!result.OK())
+			{
+				break;
+			}
+
+			newValueList[columnIter->index] = newColumnValue;
+			index++;
+		}
+
+		if (result.OK())
+		{
+			if (!io_iterator->Update(newValueList))
+			{
+				result = Status::kInternalError;
+			}
+		}
+	}
+	else
+	{
+		result = Status::kInternalError;
+	}
+
+	return result;
+}
+
+Status DeleteCurrent(TupleIterator *io_iterator, void *io_ctx)
+{
+	Status result;
+
+	if (!io_iterator->Remove())
+	{
+		result = Status::kInternalError;
+	}
+
+	return result;
+}
+
+Status DBImpl::UpdateData(const std::string &tableName, const ColumnDefList &columnList, const ExprList &columnExprList, const BooleanExpr *inPredicateExpr /* = NULL */)
+{
+	Status result;
+
+	DBImpl_UpdateContext context(columnList, columnExprList);
+
+	result = this->PerformIterator_Private(tableName, inPredicateExpr, UpdateCurrent, &context);
+
+	return result;
+}
+
 Status DBImpl::DeleteData(const std::string &tableName, const BooleanExpr *inPredicateExpr /* = NULL */)
 {
+	Status result;
+
+	result = this->PerformIterator_Private(tableName, inPredicateExpr, DeleteCurrent, NULL);
+
+	return result;
+}
+
+Status DBImpl::PerformIterator_Private(const std::string &tableName, const BooleanExpr *inPredicateExpr, PerformIterator performer, void *io_ctx)
+{
+	PDASSERT(performer);
+
 	Status result;
 
 	const Table *pTable = NULL;
@@ -345,9 +442,10 @@ Status DBImpl::DeleteData(const std::string &tableName, const BooleanExpr *inPre
 
 				if (matchPredicate)
 				{
-					if (!pTupleIterator->Remove())
+					result = performer(pTupleIterator, io_ctx);
+					
+					if (!result.OK())
 					{
-						result = Status::kInternalError;
 						break;
 					}
 				}
