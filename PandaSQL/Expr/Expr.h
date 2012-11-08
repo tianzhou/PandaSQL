@@ -43,7 +43,7 @@ public:
 
 	typedef uint8_t ExprType;
 
-	static Status EvalExprList(const ExprList &inExprList, const TupleDesc &inTupleDesc, ValueList *io_tupleValueList);
+	static Status EvalExprList(const ExprList &inExprList, const ExprContext &inExprContext, ValueList *io_tupleValueList);
 
 	Expr();
 

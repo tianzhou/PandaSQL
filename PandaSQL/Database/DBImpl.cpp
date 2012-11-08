@@ -296,7 +296,11 @@ Status DBImpl::InsertData(const std::string &tableName, const ColumnDefList &col
 	ValueList tupleValueList;
 
 	ColumnDefListToTupleDesc(columnList, &tupleDesc);
-	Expr::EvalExprList(columnExprList, tupleDesc, &tupleValueList);
+
+	//For now, columnExprList should be constant.
+	//And we provide empty context here.
+	ExprContext exprContext;
+	Expr::EvalExprList(columnExprList, exprContext, &tupleValueList);
 	
 	result = mpBackend->InsertData(tableName, tupleDesc, tupleValueList, -1);
 

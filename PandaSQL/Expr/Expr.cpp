@@ -26,21 +26,22 @@ Expr::~Expr()
 	mExprType = kExprUnknown;
 }
 
-Status Expr::EvalExprList(const ExprList &inExprList, const TupleDesc &inTupleDesc, ValueList *io_tupleValueList)
+Status Expr::EvalExprList(const ExprList &inExprList, const ExprContext &inExprContext, ValueList *io_tupleValueList)
 {
 	Status result;
 
-	PDASSERT(inExprList.size() == inTupleDesc.size());
-
 	ExprList::const_iterator exprIter = inExprList.begin();
-
-	ExprContext exprContext;
 
 	while (exprIter != inExprList.end())
 	{
 		Value oneValue;
 
-		result = (*exprIter)->GetValue(exprContext, &oneValue);
+		result = (*exprIter)->GetValue(inExprContext, &oneValue);
+
+		if (!result.OK())
+		{
+			break;
+		}
 
 		io_tupleValueList->push_back(oneValue);
 
