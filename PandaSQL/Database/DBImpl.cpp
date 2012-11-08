@@ -343,7 +343,7 @@ Status UpdateCurrent(TupleIterator *io_iterator, void *io_ctx)
 		size_t index = 0;
 		for (; columnIter != columnList.end(); columnIter++)
 		{
-			result = columnExprList[index]->GetValue(exprContext, &newColumnValue);
+			result = columnExprList[index]->Eval(exprContext, &newColumnValue);
 
 			if (!result.OK())
 			{

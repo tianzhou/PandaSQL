@@ -36,7 +36,7 @@ bool ColumnExpr::IsTrue(const ExprContext &inExprContext) const
 
 	Value columnValue;
 		
-	this->GetValue(inExprContext, &columnValue);
+	this->Eval(inExprContext, &columnValue);
 
 	if (columnValue.GetType() == kUnknownType)
 	{
@@ -55,7 +55,7 @@ bool ColumnExpr::IsTrue(const ExprContext &inExprContext) const
 	return result;
 }
 
-Status ColumnExpr::GetValue(const ExprContext &inExprContext, Value *io_value) const
+Status ColumnExpr::Eval(const ExprContext &inExprContext, Value *io_value) const
 {
 	Status result;
 

@@ -65,8 +65,8 @@ bool BinaryExpr::IsTrue(const ExprContext &inExprContext) const
 	{
 		Value leftValue, rightValue;
 		
-		mpLeftOperand->GetValue(inExprContext, &leftValue);
-		mpRightOperand->GetValue(inExprContext, &rightValue);
+		mpLeftOperand->Eval(inExprContext, &leftValue);
+		mpRightOperand->Eval(inExprContext, &rightValue);
 
 		if (leftValue.GetType() == kUnknownType
 			|| rightValue.GetType() == kUnknownType)

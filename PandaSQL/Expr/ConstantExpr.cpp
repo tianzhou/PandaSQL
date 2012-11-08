@@ -44,7 +44,7 @@ bool ConstantExpr::IsTrue(const ExprContext &inExprContext) const
 	return mConstantValue.GetAsBool();
 }
 
-Status ConstantExpr::GetValue(const ExprContext &inExprContext, Value *io_value) const
+Status ConstantExpr::Eval(const ExprContext &inExprContext, Value *io_value) const
 {
 	Status result;
 

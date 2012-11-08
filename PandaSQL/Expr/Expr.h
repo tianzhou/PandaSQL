@@ -54,7 +54,7 @@ public:
 	ExprType GetType() const { return mExprType; }
 
 	virtual bool IsTrue(const ExprContext &inExprContext) const;
-	virtual Status GetValue(const ExprContext &inExprContext, Value *io_value) const;
+	virtual Status Eval(const ExprContext &inExprContext, Value *io_value) const;
 
 	//We are only interested in those expressions referencing any table names in <<tableNameList>>
 	//This is useful for predicate pushdown

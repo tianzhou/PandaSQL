@@ -36,7 +36,7 @@ Status Expr::EvalExprList(const ExprList &inExprList, const ExprContext &inExprC
 	{
 		Value oneValue;
 
-		result = (*exprIter)->GetValue(inExprContext, &oneValue);
+		result = (*exprIter)->Eval(inExprContext, &oneValue);
 
 		if (!result.OK())
 		{
@@ -56,7 +56,7 @@ bool Expr::IsTrue(const ExprContext &inExprContext) const
 	return true;
 }
 
-Status Expr::GetValue(const ExprContext &inExprContext, Value *io_value) const
+Status Expr::Eval(const ExprContext &inExprContext, Value *io_value) const
 {
 	Status result;
 
