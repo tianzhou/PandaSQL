@@ -202,7 +202,7 @@ general_literal
 	;
 	
 character_string_literal
-	:	QUOTE (Letter | Digit | '_')* QUOTE
+	:	STRING_LITERAL
 	;
 	
 unsigned_numeric_literal
@@ -352,7 +352,6 @@ NUMBER_LITERAL
 	
 STRING_LITERAL
     :	'\'' ( ~('\''|'\\') | ('\\' .) )* '\''
-		| '\"' ( ~('\"'|'\\') | ('\\' .) )* '\"'
     ;
 	
 //More specific rule comes first(e.g KW_FROM is before IDENTIFIER)
@@ -511,8 +510,6 @@ GEQ   : '>=' ;
 LESS  : '<' ;
 
 LEQ   : '<=' ;
-
-QUOTE : '\'' ;
 
 SEMI : ';' ;
 
