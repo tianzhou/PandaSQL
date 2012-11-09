@@ -85,6 +85,31 @@ bool BinaryExpr::IsTrue(const ExprContext &inExprContext) const
 					result = (leftValue == rightValue);
 					break;
 				}
+			case kBinaryNotEqual:
+				{
+					result = (leftValue != rightValue);
+					break;
+				}
+			case kBinaryGreater:
+				{
+					result = (leftValue > rightValue);
+					break;
+				}
+			case kBinaryGreaterEqual:
+				{
+					result = (leftValue >= rightValue);
+					break;
+				}
+			case kBinaryLess:
+				{
+					result = (leftValue < rightValue);
+					break;
+				}
+			case kBinaryLessEqual:
+				{
+					result = (leftValue <= rightValue);
+					break;
+				}
 			default:
 				PDASSERT(0);
 				break;

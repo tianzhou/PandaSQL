@@ -497,11 +497,7 @@ where_clause
 	PandaSQL::Predicate predicate;
 	PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
 }
-	:	^(TOK_WHERE predicate_list[predicate])
-		{
-			pDriver->GetCurrentStatement().SetPredicate(predicate);
-		}
-	|	^(TOK_WHERE sc=search_condition)
+	:	^(TOK_WHERE sc=search_condition)
 		{
 			pDriver->GetCurrentStatement().SetWhereClauseExpression($sc.io_pBooleanExpr);
 		}
@@ -530,6 +526,11 @@ comparison_predicate returns [PandaSQL::Expr *io_pExpr]
 	
 comparison_op
 	:	EQUAL
+	|	NEQ
+	|	GREATER
+	|	GEQ
+	|	LESS
+	|	LEQ
 	;
 
 search_condition returns [PandaSQL::BooleanExpr *io_pBooleanExpr]

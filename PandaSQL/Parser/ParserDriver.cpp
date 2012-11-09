@@ -367,9 +367,25 @@ Expr* ParserDriver::CreateExprForBinaryOp(const ANTLR3_STRING &inOpString, Expr 
 	{
 		op = BinaryExpr::kBinaryEqual;
 	}
-	else
+	else if (opString == "!=")
 	{
-
+		op = BinaryExpr::kBinaryNotEqual;
+	}
+	else if (opString == ">")
+	{
+		op = BinaryExpr::kBinaryGreater;
+	}
+	else if (opString == ">=")
+	{
+		op = BinaryExpr::kBinaryGreaterEqual;
+	}
+	else if (opString == "<")
+	{
+		op = BinaryExpr::kBinaryLess;
+	}
+	else if (opString == "<=")
+	{
+		op = BinaryExpr::kBinaryLessEqual;
 	}
 
 	pBinaryExpr->SetOpType(op);

@@ -14,6 +14,11 @@ public:
 	{
 		kBinaryUnknown = 0,
 		kBinaryEqual = 1,
+		kBinaryNotEqual = 2,
+		kBinaryGreater = 3,
+		kBinaryGreaterEqual = 4,
+		kBinaryLess = 5,
+		kBinaryLessEqual = 6
 	};
 
 	typedef uint8_t BinaryOpType;

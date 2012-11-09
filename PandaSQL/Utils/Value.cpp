@@ -38,6 +38,69 @@ bool Value::operator==(const Value &rhs) const
 	return result;
 }
 
+bool Value::operator!=(const Value &rhs) const
+{
+	return !(*this == rhs);
+}
+
+bool Value::operator>(const Value &rhs) const
+{	
+	bool result = true;
+
+	switch (mValueType)
+	{
+	case kInt:
+		{
+			result = (mNumber > rhs.GetAsNumber());
+			break;
+		}
+	case kText:
+		{
+			result = (mText > rhs.GetAsString());
+			break;
+		}
+	default:
+		PDASSERT(0);
+		break;
+	}
+
+	return result;
+}
+
+bool Value::operator>=(const Value &rhs) const
+{
+	bool result = true;
+
+	switch (mValueType)
+	{
+	case kInt:
+		{
+			result = (mNumber >= rhs.GetAsNumber());
+			break;
+		}
+	case kText:
+		{
+			result = (mText >= rhs.GetAsString());
+			break;
+		}
+	default:
+		PDASSERT(0);
+		break;
+	}
+
+	return result;
+}
+
+bool Value::operator<(const Value &rhs) const
+{
+	return !(*this >= rhs);
+}
+
+bool Value::operator<=(const Value &rhs) const
+{
+	return !(*this > rhs);
+}
+
 int32_t Value::GetAsNumber() const
 {
 	int32_t result;

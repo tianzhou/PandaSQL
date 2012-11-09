@@ -314,6 +314,11 @@ comparison_predicate
 	
 comparison_op
 	:	EQUAL
+	|	NEQ
+	|	GREATER
+	|	GEQ
+	|	LESS
+	|	LEQ
 	;
 	
 search_condition
