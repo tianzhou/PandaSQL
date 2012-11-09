@@ -9,7 +9,6 @@
 
 #include "Utils/Common.h"
 #include "Utils/Debug.h"
-#include "Utils/Predicate.h"
 
 namespace PandaSQL
 {
