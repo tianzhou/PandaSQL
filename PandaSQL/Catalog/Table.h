@@ -17,7 +17,6 @@ namespace PandaSQL
 {
 
 class Iterator;
-class Predicate;
 
 class Table
 {

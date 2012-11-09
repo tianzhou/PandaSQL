@@ -49,6 +49,134 @@ void BooleanExpr::AddExpr(Expr *inExpr)
 	mBooleanList.push_back(inExpr);
 }
 
+void BooleanExpr::TransformToCNF()
+{
+	//if (mLogicGateType == kLogicAnd
+	//	|| mLogicGateType == kLogicOr)
+	//{
+	//	std::vector<Predicate>::iterator iter = mPredicateList.begin();
+
+	//	while (iter != mPredicateList.end())
+	//	{
+	//		iter->TransformToCNF();
+	//		iter++;
+	//	}
+
+	//	if (mLogicGateType == kLogicOr)
+	//	{
+	//		PDASSERT(mPredicateList.size() >= 2);
+
+	//		std::vector<Predicate>::iterator leftIter = mPredicateList.begin();
+	//		std::vector<Predicate>::iterator rightIter = leftIter+1;
+	//		std::vector<Predicate> newPredicateList;
+
+	//		while (rightIter != mPredicateList.end())
+	//		{
+	//			//.......
+
+	//			PDASSERT(leftIter->mLogicGateType == kLogicStandalone
+	//				|| leftIter->mLogicGateType == kLogicAnd);
+
+	//			PDASSERT(rightIter->mLogicGateType == kLogicStandalone
+	//				|| rightIter->mLogicGateType == kLogicAnd);
+
+	//			std::vector<Predicate> leftPredicateList;
+	//			std::vector<Predicate> rightPredicateList;
+
+	//			if (leftIter->mLogicGateType == kLogicStandalone)
+	//			{
+	//				leftPredicateList.push_back(*leftIter);
+	//			}
+	//			else
+	//			{
+	//				leftPredicateList = leftIter->mPredicateList;
+	//			}
+
+	//			if (rightIter->mLogicGateType == kLogicStandalone)
+	//			{
+	//				rightPredicateList.push_back(*rightIter);
+	//			}
+	//			else
+	//			{
+	//				rightPredicateList = rightIter->mPredicateList;
+	//			}
+
+
+	//			std::vector<Predicate>::iterator subLeftIter = leftPredicateList.begin();
+	//			
+	//			for (;subLeftIter != leftPredicateList.end();subLeftIter++)
+	//			{
+	//				std::vector<Predicate>::iterator subRightIter = rightPredicateList.begin();
+	//				std::vector<Predicate> onePredicateList;
+	//				
+	//				//Push the left item
+	//				onePredicateList.push_back(*subLeftIter);
+
+	//				for (;subRightIter != rightPredicateList.end();subRightIter++)
+	//				{
+	//					//Push the right item
+	//					onePredicateList.push_back(*subRightIter);
+	//					
+	//					Predicate onePredicate;
+	//					onePredicate.SetOrPredicateWithSubpredicates(onePredicateList);
+	//					
+	//					newPredicateList.push_back(onePredicate);
+	//					
+	//					//Pop the right item
+	//					onePredicateList.pop_back();
+	//				}		
+	//			}
+
+	//			leftIter = rightIter;
+	//			rightIter++;
+	//		}
+	//		
+	//		this->Reset();
+
+	//		this->SetAndPredicateWithSubpredicates(newPredicateList);
+	//	}
+	//}
+}
+
+void BooleanExpr::Print(uint32_t level) const
+{
+	//if (mLogicGateType != kLogicUnknown)
+	//{
+	//	std::string identation;
+
+	//	for (uint32_t i = 0; i < level; i++)
+	//	{
+	//		identation += "  ";
+	//	}
+
+	//	if (mLogicGateType == kLogicAnd
+	//		|| mLogicGateType == kLogicOr)
+	//	{
+	//		if (mLogicGateType == kLogicAnd)
+	//		{
+	//			std::cout << identation << "And" << std::endl;
+	//		}
+	//		else
+	//		{
+	//			std::cout << identation << "Or" << std::endl;
+	//		}
+
+	//		identation += "  ";
+
+	//		std::vector<Predicate>::const_iterator iter = mPredicateList.begin();
+
+	//		for (; iter != mPredicateList.end(); iter++)
+	//		{
+	//			iter->Print(level + 1);
+	//		}
+	//	}
+	//	else if (mLogicGateType == kLogicStandalone)
+	//	{
+	//		mPredicateItem.Print(level + 1);
+	//	}
+	//}	
+}
+
 bool BooleanExpr::IsTrue(const ExprContext &inExprContext) const
 {
 	bool result = true;

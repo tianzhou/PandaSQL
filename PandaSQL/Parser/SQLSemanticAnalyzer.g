@@ -494,7 +494,6 @@ row_value_predicand returns [PandaSQL::Expr *io_pExpr]
 where_clause
 @init
 {
-	PandaSQL::Predicate predicate;
 	PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
 }
 	:	^(TOK_WHERE sc=search_condition)
@@ -543,83 +542,7 @@ search_condition returns [PandaSQL::BooleanExpr *io_pBooleanExpr]
 		}
 	;
 
-//----------Predicates END----------	
-	
-predicate_list[PandaSQL::Predicate &o_Predicate]
-@init
-{
-	std::vector<PandaSQL::Predicate> predicateList;
-	PandaSQL::Predicate onePredicate;
-}
-	:	^(TOK_PREDICATE_OR_LIST
-			(predicate_or[onePredicate]
-			{
-				predicateList.push_back(onePredicate);
-				onePredicate.Reset();
-			})+
-		 )
-		 {
-			o_Predicate.SetOrPredicateWithSubpredicates(predicateList);
-		 }
-	;
-	
-predicate_or[PandaSQL::Predicate &o_Predicate]
-@init
-{
-	std::vector<PandaSQL::Predicate> predicateList;
-	PandaSQL::Predicate subPredicate;
-}
-	:	^(TOK_PREDICATE_AND_LIST
-			(predicate_and[subPredicate]
-			{
-				predicateList.push_back(subPredicate);
-			})+
-		 )
-		 {
-			o_Predicate.SetAndPredicateWithSubpredicates(predicateList);
-		 }
-	;
-	
-predicate_and[PandaSQL::Predicate &o_predicate]
-@init
-{
-	o_predicate = PandaSQL::Predicate();
-}
-	:	predicate_list[o_predicate]
-	|	^(TOK_BINARY_OP op=binary_op pLeftExpr=expr pRightExpr=expr)
-		{
-			PandaSQL::PredicateItem predicateItem;
-			predicateItem.SetFormat(*$pLeftExpr.o_pExpr, *$pRightExpr.o_pExpr, op);
-			o_predicate.SetSinglePredicateItem(predicateItem);
-		}
-	;
-	
-binary_op returns [PandaSQL::PredicateItem::PredicateComparisonType comparisonType]
-	:	EQUAL
-		{
-			comparisonType =  PandaSQL::PredicateItem::kEqual;
-		}
-	|	NEQ
-		{
-			comparisonType =  PandaSQL::PredicateItem::kNotEqual;
-		}
-	|	GREATER
-		{
-			comparisonType =  PandaSQL::PredicateItem::kGreater;
-		}
-	|	GEQ
-		{
-			comparisonType =  PandaSQL::PredicateItem::kGreaterEqual;
-		}
-	|	LESS
-		{
-			comparisonType =  PandaSQL::PredicateItem::kLess;
-		}
-	|	LEQ
-		{
-			comparisonType =  PandaSQL::PredicateItem::kLessEqual;
-		}
-	;
+//----------Predicates END----------
 	
 update_stmt
 @init

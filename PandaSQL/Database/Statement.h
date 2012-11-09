@@ -5,8 +5,6 @@
 
 #include "Optimizer/Join/Join.h"
 
-#include "Utils/Predicate.h"
-
 namespace PandaSQL
 {
 
@@ -65,8 +63,6 @@ public:
 	//For create_index_stmt
 	void SetIndexRef(const std::string &inIndexRef);
 
-	void SetPredicate(const Predicate &inPredicate);
-
 	//Rewrite statment. e.g. Translate to fully qualified column name
 	Status Prepare();
 
@@ -99,8 +95,6 @@ private:
 	bool	mAllColumns;
 
 	JoinList mJoinList;
-
-	Predicate mPredicate;
 
 	std::string mIndexRef;
 

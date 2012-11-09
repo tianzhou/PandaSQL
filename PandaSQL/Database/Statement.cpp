@@ -110,11 +110,6 @@ void Statement::SetIndexRef(const std::string &inIndexRef)
 	mIndexRef = inIndexRef;
 }
 
-void Statement::SetPredicate(const Predicate &inPredicate)
-{
-	mPredicate = inPredicate;
-}
-
 Status Statement::Prepare()
 {
 	Status result;
@@ -122,9 +117,6 @@ Status Statement::Prepare()
 	if (mStmtType != kStmtUnknown
 		&& mStmtType != kStmtEmpty)
 	{
-		result = mPredicate.Prepare(*mpDB, mTableRefs);
-		mPredicate.TransformToCNF();
-
 		if (mpWhereExpr)
 		{
 			TableAndColumnSetMap validTableAndColumnSetMap;
@@ -291,8 +283,6 @@ Status Statement::Execute(bool createTable /* = true */)
 
 void Statement::PrintStatement()
 {
-	mPredicate.Print(0);
-
 	std::cout << "*********ColumnDef*********" << std::endl;
 
 	for (size_t i = 0; i < mColumnDefs.size(); i++)

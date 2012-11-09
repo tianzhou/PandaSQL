@@ -326,28 +326,6 @@ search_condition
 	;
 	
 //----------Predicates END----------
-	
-predicate_or
-	:	predicate_and (KW_AND predicate_and)* -> ^(TOK_PREDICATE_AND_LIST predicate_and+)
-	;
-	
-predicate_and
-	:	LPAREN! predicate_list RPAREN!
-	|	lexpr=expr binary_op rexpr=expr	-> ^(TOK_BINARY_OP binary_op $lexpr $rexpr)
-	;
-	
-predicate_list
-	:
-	;
-	
-binary_op
-	:	EQUAL
-	|	NEQ
-	|	GREATER
-	|	GEQ
-	|	LESS
-	|	LEQ
-	;
 
 group_by_clause
 	:	KW_GROUP KW_BY

@@ -32,6 +32,9 @@ public:
 
 	const BooleanList& GetBooleanList() const;
 	void AddExpr(Expr *inExpr);
+	
+	void TransformToCNF();
+	void Print(uint32_t level) const;
 
 	virtual bool IsTrue(const ExprContext &inExprContext) const;
 	

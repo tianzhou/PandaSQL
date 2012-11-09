@@ -488,14 +488,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Utils\Predicate.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Utils\Predicate.h"
-					>
-				</File>
-				<File
 					RelativePath=".\utils\Status.cpp"
 					>
 				</File>
