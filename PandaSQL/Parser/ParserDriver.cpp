@@ -3,7 +3,6 @@
 #include "Parser/ParserDriver.h"
 
 #include <fstream>
-#include <iostream>
 #include <sstream>
 
 #include "Parser/SQLLexer.h"

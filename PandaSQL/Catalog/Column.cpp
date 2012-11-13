@@ -35,6 +35,12 @@ bool ColumnQualifiedName::operator<(const ColumnQualifiedName &rhs) const
 	return this->tableName < rhs.tableName;
 }
 
+std::ostream& operator<<(std::ostream &os, const ColumnQualifiedName &columnQualifiedName)
+{
+	os << columnQualifiedName.tableName << "." << columnQualifiedName.columnName;
+	return os;
+}
+
 ColumnDef::ColumnDef()
 :
 qualifiedName()

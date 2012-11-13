@@ -2,8 +2,6 @@
 
 #include "DB.h"
 
-#include <iostream>
-
 #include "Database/DBImpl.h"
 #include "Database/Statement.h"
 

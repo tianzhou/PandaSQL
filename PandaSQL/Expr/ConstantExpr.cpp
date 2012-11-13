@@ -67,4 +67,11 @@ Expr* ConstantExpr::Clone() const
 	return result;
 }
 
+void ConstantExpr::Print(uint32_t level) const
+{
+	this->PrintIndention(level);
+
+	std::cout << mConstantValue.GetAsString() << std::endl;
+}
+
 }	// PandaSQL

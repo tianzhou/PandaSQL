@@ -2,8 +2,6 @@
 
 #include "Database/Statement.h"
 
-#include <iostream>
-
 #include "Database/DBImpl.h"
 
 #include "Executor/Executor.h"
@@ -283,6 +281,11 @@ Status Statement::Execute(bool createTable /* = true */)
 
 void Statement::PrintStatement()
 {
+	if (mpWhereExpr)
+	{
+		mpWhereExpr->Print(0);
+	}
+
 	std::cout << "*********ColumnDef*********" << std::endl;
 
 	for (size_t i = 0; i < mColumnDefs.size(); i++)

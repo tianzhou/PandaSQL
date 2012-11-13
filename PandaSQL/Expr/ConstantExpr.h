@@ -36,6 +36,7 @@ public:
 	virtual Expr* CreateSubExprForPushdown(const std::vector<std::string> &inTableNameList) const;
 
 	virtual Expr* Clone() const;
+	virtual void  Print(uint32_t level) const;
 
 private:
 	

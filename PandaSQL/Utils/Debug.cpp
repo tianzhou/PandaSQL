@@ -2,8 +2,6 @@
 
 #include "Utils/Debug.h"
 
-#include <iostream>
-
 namespace PandaSQL
 {
 

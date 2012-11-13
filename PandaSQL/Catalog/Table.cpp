@@ -2,8 +2,6 @@
 
 #include "Catalog/Table.h"
 
-#include <iostream>
-
 #include "Access/Tuple.h"
 #include "Access/Iterator.h"
 

@@ -100,4 +100,11 @@ Expr* ColumnExpr::Clone() const
 	return result;
 }
 
+void ColumnExpr::Print(uint32_t level) const
+{
+	this->PrintIndention(level);
+
+	std::cout << mQualifiedColumnName << std::endl;
+}
+
 }	// PandaSQL

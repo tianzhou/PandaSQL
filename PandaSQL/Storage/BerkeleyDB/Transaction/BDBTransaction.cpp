@@ -2,7 +2,6 @@
 
 #include "Storage/BerkeleyDB/Transaction/BDBTransaction.h"
 
-#include <iostream>
 
 namespace PandaSQL
 {

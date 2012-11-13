@@ -34,7 +34,6 @@ public:
 	void AddExpr(Expr *inExpr);
 	
 	void TransformToCNF();
-	void Print(uint32_t level) const;
 
 	virtual bool IsTrue(const ExprContext &inExprContext) const;
 	
@@ -43,6 +42,7 @@ public:
 	virtual void Walk(ExprWalker *io_walker) const;
 	virtual void MutableWalk(MutableExprWalker *io_walker);
 	virtual Expr* Clone() const;
+	virtual void  Print(uint32_t level) const;
 
 protected:
 	

@@ -26,6 +26,7 @@ public:
 	virtual void Walk(ExprWalker *io_walker) const;
 	virtual void MutableWalk(MutableExprWalker *io_walker);
 	virtual Expr* Clone() const;
+	virtual void  Print(uint32_t level) const;
 
 private:
 	

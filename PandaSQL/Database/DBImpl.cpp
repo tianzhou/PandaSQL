@@ -2,8 +2,6 @@
 
 #include "Database/DBImpl.h"
 
-#include <iostream>
-
 #include "Access/TupleIterator.h"
 #include "Access/Tuple.h"
 

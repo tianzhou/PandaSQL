@@ -210,4 +210,61 @@ Expr* BinaryExpr::Clone() const
 	return result;
 }
 
+void BinaryExpr::Print(uint32_t level) const
+{
+	this->PrintIndention(level);
+	level++;
+
+	switch (mOpType)
+	{
+	case kBinaryUnknown:
+		{
+			std::cout << "Unknown" << std::endl;
+			break;
+		}
+	case kBinaryEqual:
+		{
+			std::cout << "=" << std::endl;
+			break;
+		}
+	case kBinaryNotEqual:
+		{
+			std::cout << "!=" << std::endl;
+			break;
+		}
+	case kBinaryGreater:
+		{
+			std::cout << ">" << std::endl;
+			break;
+		}
+	case kBinaryGreaterEqual:
+		{
+			std::cout << ">=" << std::endl;
+			break;
+		}
+	case kBinaryLess:
+		{
+			std::cout << "<" << std::endl;
+			break;
+		}
+	case kBinaryLessEqual:
+		{
+			std::cout << "<=" << std::endl;
+			break;
+		}
+	default:
+		break;
+	}
+
+	if (mpLeftOperand)
+	{
+		mpLeftOperand->Print(level);
+	}
+
+	if (mpRightOperand)
+	{
+		mpRightOperand->Print(level);
+	}
+}
+
 }	// PandaSQL

@@ -86,4 +86,16 @@ Expr* Expr::Clone() const
 	return result;
 }
 
+void Expr::Print(uint32_t level) const
+{
+}
+
+void Expr::PrintIndention(uint32_t level) const
+{
+	while (level-- > 0)
+	{
+		std::cout << "  ";
+	}
+}
+
 }	// PandaSQL

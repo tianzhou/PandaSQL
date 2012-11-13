@@ -36,6 +36,8 @@ struct ColumnQualifiedName
 	bool operator<(const ColumnQualifiedName &rhs) const;
 };
 
+std::ostream& operator<<(std::ostream &os, const ColumnQualifiedName &columnQualifiedName);
+
 struct ColumnDef
 {
 	ColumnQualifiedName qualifiedName;

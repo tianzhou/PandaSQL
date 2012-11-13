@@ -140,6 +140,42 @@ void BooleanExpr::TransformToCNF()
 
 void BooleanExpr::Print(uint32_t level) const
 {
+	if (mType != kBooleanNormal)
+	{
+		this->PrintIndention(level);
+		level++;
+	}
+
+	switch (mType)
+	{
+	case kBooleanNormal:
+		{
+			break;
+		}
+	case kBooleanAndList:
+		{
+			std::cout << "AND" << std::endl;
+			break;
+		}
+	case kBooleanOrList:
+		{
+			std::cout << "OR" << std::endl;
+			break;
+		}
+	case kBooleanUnknown:
+	default:
+		{
+			PDASSERT(0);
+			break;
+		}
+	}
+
+	BooleanList::const_iterator iter = mBooleanList.begin();
+	for (; iter != mBooleanList.end(); iter++)
+	{
+		(*iter)->Print(level);
+	}
+
 	//if (mLogicGateType != kLogicUnknown)
 	//{
 	//	std::string identation;
