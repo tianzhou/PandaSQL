@@ -456,18 +456,18 @@ boolean_primary returns [PandaSQL::BooleanExpr *io_pBooleanExpr]
 		}
 	|	^(TOK_BOOLEAN_PRIMARY bp=boolean_predicand)
 		{
-			$io_pBooleanExpr = PandaSQL::ParserDriver::CreateExprForBooleanPrimary($bp.io_pExpr);
+			$io_pBooleanExpr = $bp.io_pExpr;
 		}
 	;
 	
-boolean_predicand returns [PandaSQL::Expr *io_pExpr]
+boolean_predicand returns [PandaSQL::BooleanExpr *io_pExpr]
 	:	bve=bool_value_expression
 		{
 			$io_pExpr = $bve.io_pBooleanExpr;
 		}
 	|	vep=value_expression_primary
 		{
-			$io_pExpr = $vep.io_pExpr;
+			$io_pExpr = PandaSQL::ParserDriver::CreateExprForBooleanPrimary($vep.io_pExpr);
 		}
 	;
 	

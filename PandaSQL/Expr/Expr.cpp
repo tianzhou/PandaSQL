@@ -81,7 +81,7 @@ void Expr::MutableWalk(MutableExprWalker *io_walker)
 
 Expr* Expr::Clone() const
 {
-	Expr *result = new Expr(this->GetType());
+	Expr *result = new Expr(this->GetExprType());
 
 	return result;
 }

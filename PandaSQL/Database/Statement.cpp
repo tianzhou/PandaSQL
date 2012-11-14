@@ -150,6 +150,10 @@ Status Statement::Prepare()
 				AmendColumnWalker amendColumnWalker(validTableAndColumnSetMap);	
 				mpWhereExpr->MutableWalk(&amendColumnWalker);
 			}
+			
+			//This would flatten the expr and transform it
+			//to be more friendly to index
+			mpWhereExpr->TransformToCNF();
 		}
 
 		if (result.OK())

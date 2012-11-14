@@ -51,7 +51,7 @@ public:
 
 	virtual ~Expr();
 
-	ExprType GetType() const { return mExprType; }
+	ExprType GetExprType() const { return mExprType; }
 
 	virtual bool IsTrue(const ExprContext &inExprContext) const;
 	virtual Status Eval(const ExprContext &inExprContext, Value *io_value) const;

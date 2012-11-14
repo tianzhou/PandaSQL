@@ -408,7 +408,7 @@ BooleanExpr* ParserDriver::CreateExprForBooleanPrimary(Expr *io_subExpr)
 	BooleanExpr *pBooleanExpr = new BooleanExpr();
 
 	pBooleanExpr->AddExpr(io_subExpr);
-	pBooleanExpr->SetType(BooleanExpr::kBooleanNormal);
+	pBooleanExpr->SetBooleanType(BooleanExpr::kBooleanSingle);
 
 	return pBooleanExpr;
 }
@@ -417,7 +417,7 @@ BooleanExpr* ParserDriver::CreateExprForBooleanAndList()
 {
 	BooleanExpr *pBooleanExpr = new BooleanExpr();
 
-	pBooleanExpr->SetType(BooleanExpr::kBooleanAndList);
+	pBooleanExpr->SetBooleanType(BooleanExpr::kBooleanAndList);
 
 	return pBooleanExpr;
 }
@@ -426,7 +426,7 @@ BooleanExpr* ParserDriver::CreateExprForBooleanOrList()
 {
 	BooleanExpr *pBooleanExpr = new BooleanExpr();
 
-	pBooleanExpr->SetType(BooleanExpr::kBooleanOrList);
+	pBooleanExpr->SetBooleanType(BooleanExpr::kBooleanOrList);
 
 	return pBooleanExpr;
 }

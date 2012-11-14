@@ -14,7 +14,7 @@ public:
 	enum
 	{
 		kBooleanUnknown = 0,
-		kBooleanNormal = 1,
+		kBooleanSingle = 1,
 		kBooleanAndList = 2,
 		kBooleanOrList = 3
 	};
@@ -27,8 +27,9 @@ public:
 	~BooleanExpr();
 
 	void SetNegate(bool isNegate);
+	void SwitchNegate();
 
-	void SetType(BooleanType inType);
+	void SetBooleanType(BooleanType inType);
 
 	const BooleanList& GetBooleanList() const;
 	void AddExpr(Expr *inExpr);
@@ -44,9 +45,11 @@ public:
 	virtual Expr* Clone() const;
 	virtual void  Print(uint32_t level) const;
 
-protected:
+private:
+
+	void Flatten_Private();
 	
-	BooleanType mType;
+	BooleanType mBooleanType;
 	bool		mNegate;
 	BooleanList mBooleanList;
 };

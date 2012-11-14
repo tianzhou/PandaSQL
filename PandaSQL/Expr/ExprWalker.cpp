@@ -24,7 +24,7 @@ DependentColumnListWalker::~DependentColumnListWalker()
 
 void DependentColumnListWalker::Visit(const Expr *io_expr)
 {
-	switch (io_expr->GetType())
+	switch (io_expr->GetExprType())
 	{
 	case Expr::kExprColumnRef:
 		{
@@ -62,7 +62,7 @@ void AmendColumnWalker::Visit(const Expr *io_expr)
 
 void AmendColumnWalker::MutableVisit(Expr *io_expr)
 {
-	switch (io_expr->GetType())
+	switch (io_expr->GetExprType())
 	{
 	case Expr::kExprColumnRef:
 		{
