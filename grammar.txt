@@ -1,4 +1,4 @@
-refer:http://www.sqlite.org/syntaxdiagrams.html
+similar to:http://www.sqlite.org/syntaxdiagrams.html
 
 select-stmt:
 select-core
@@ -48,6 +48,10 @@ column-constraint:
 create-index-stmt:
 CREATE [UNIQUE] INDEX
 index-name on table-name ( indexed-column{,indexed-column}* )
+
+drop-index-stmt:
+DROP INDEX
+index-name on table-name
 
 indexed-column:
 column-name [ASC | DESC]
