@@ -23,8 +23,8 @@ public:
 		kStmtUpdate = 4,
 		kStmtDelete = 5,
 		kStmtCreateTable = 6,
-		kStmtCreateIndex = 7,
-		kStmtDropTable = 8,
+		kStmtDropTable = 7,
+		kStmtCreateIndex = 8,
 		kStmtDropIndex = 9,
 	};
 
@@ -62,6 +62,7 @@ public:
 
 	//For create_index_stmt
 	void SetIndexRef(const std::string &inIndexRef);
+	void SetUniqueIndex(bool isUnique);
 
 	//Rewrite statment. e.g. Translate to fully qualified column name
 	Status Prepare();
@@ -97,6 +98,7 @@ private:
 	JoinList mJoinList;
 
 	std::string mIndexRef;
+	bool	mUniqueIndex;
 
 	BooleanExpr *mpWhereExpr;
 };

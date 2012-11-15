@@ -38,8 +38,6 @@ TOK_INSERT_STMT;
 TOK_INSERT_VALUES;
 TOK_NONPARENTHESIZED_VALUE_EXPRESSION_EXPRESSION;
 TOK_PREDICATE;
-TOK_PREDICATE_OR_LIST;
-TOK_PREDICATE_AND_LIST;
 TOK_ROW_VALUE_CONSTRUCTOR_PREDICAND;
 TOK_ROW_VALUE_PREDICAND;
 TOK_SEARCH_CONDITION;
@@ -115,12 +113,8 @@ column_constraint
 	;
 	
 create_index_stmt
-	:	KW_CREATE KW_INDEX index_ref KW_ON table_ref LPAREN column_reference RPAREN
-		-> ^(TOK_CREATE_INDEX_STMT index_ref table_ref column_reference)
-	;
-	
-index_ref
-	:	IDENTIFIER -> ^(TOK_INDEX_REF IDENTIFIER)
+	:	KW_CREATE KW_UNIQUE? KW_INDEX index_ref KW_ON table_ref LPAREN column_reference RPAREN
+		-> ^(TOK_CREATE_INDEX_STMT KW_UNIQUE? index_ref table_ref column_reference)
 	;
 	
 drop_table_stmt
@@ -128,7 +122,7 @@ drop_table_stmt
 	;
 	
 drop_index_stmt
-	:	KW_DROP KW_INDEX index_ref -> ^(TOK_DROP_INDEX index_ref)
+	:	KW_DROP KW_INDEX index_ref KW_ON table_ref -> ^(TOK_DROP_INDEX index_ref table_ref)
 	;
 	
 select_stmt
@@ -333,6 +327,10 @@ group_by_clause
 	
 table_ref
 	:	IDENTIFIER -> ^(TOK_TABLE_REF IDENTIFIER)
+	;
+	
+index_ref
+	:	IDENTIFIER -> ^(TOK_INDEX_REF IDENTIFIER)
 	;
 	
 expr

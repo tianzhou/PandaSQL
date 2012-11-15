@@ -23,6 +23,7 @@ Statement::Statement(StatementType inStmtType, DBImpl *io_pDB)
 mpDB(io_pDB)
 ,mStmtType(inStmtType)
 ,mAllColumns(false)
+,mUniqueIndex(false)
 ,mpWhereExpr(NULL)
 {
 }
@@ -106,6 +107,11 @@ void Statement::AddAllColumns()
 void Statement::SetIndexRef(const std::string &inIndexRef)
 {
 	mIndexRef = inIndexRef;
+}
+
+void Statement::SetUniqueIndex(bool isUnique)
+{
+	mUniqueIndex = isUnique;
 }
 
 Status Statement::Prepare()
@@ -273,6 +279,16 @@ Status Statement::Execute(bool createTable /* = true */)
 	case kStmtDropTable:
 		{
 			result = mpDB->DropTable(mTableRefs[0]);
+			break;
+		}
+	case kStmtCreateIndex:
+		{
+			result = mpDB->CreateIndex(mIndexRef, mTableRefs[0], mUniqueIndex);
+			break;
+		}
+	case kStmtDropIndex:
+		{
+			result = mpDB->DropIndex(mIndexRef, mTableRefs[0]);
 			break;
 		}
 

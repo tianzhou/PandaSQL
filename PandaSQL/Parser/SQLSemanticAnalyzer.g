@@ -35,8 +35,8 @@ scope
 	
 ddl_stmt
 	:	create_table_stmt
-	|	create_index_stmt
 	|	drop_table_stmt
+	|	create_index_stmt
 	|	drop_index_stmt
 	;
 	
@@ -109,25 +109,6 @@ column_constraint returns[PandaSQL::ConstraintType constraintType]
 		}
 	;
 	
-create_index_stmt
-@init
-{
-	std::string indexRef;
-	std::string tableRef;
-	PandaSQL::ColumnQualifiedName qualifiedName;
-	
-	PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-	pDriver->PushNewStatement(PandaSQL::Statement::kStmtCreateIndex);
-}
-	:	^(TOK_CREATE_INDEX_STMT index_ref[&indexRef] table_ref[&tableRef] column_reference[&qualifiedName])
-		{
-			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
-			pDriver->GetCurrentStatement().SetIndexRef(indexRef);
-			pDriver->GetCurrentStatement().AddTableRef(tableRef);
-			pDriver->GetCurrentStatement().AddColumnWithQualifiedName(qualifiedName);
-		}
-	;
-	
 drop_table_stmt
 @init
 {
@@ -143,18 +124,41 @@ drop_table_stmt
 		}
 	;
 	
+create_index_stmt
+@init
+{
+	std::string indexRef;
+	std::string tableRef;
+	PandaSQL::ColumnQualifiedName qualifiedName;
+	bool isUnique = false;
+	
+	PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+	pDriver->PushNewStatement(PandaSQL::Statement::kStmtCreateIndex);
+}
+	:	^(TOK_CREATE_INDEX_STMT (KW_UNIQUE { isUnique = true; })? index_ref[&indexRef] table_ref[&tableRef] column_reference[&qualifiedName])
+		{
+			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
+			pDriver->GetCurrentStatement().SetIndexRef(indexRef);
+			pDriver->GetCurrentStatement().SetUniqueIndex(isUnique);
+			pDriver->GetCurrentStatement().AddTableRef(tableRef);
+			pDriver->GetCurrentStatement().AddColumnWithQualifiedName(qualifiedName);
+		}
+	;
+	
 drop_index_stmt
 @init
 {
 	std::string indexRef;
+	std::string tableRef;
 	
 	PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
 	pDriver->PushNewStatement(PandaSQL::Statement::kStmtDropIndex);
 }
-	:	^(TOK_DROP_INDEX index_ref[&indexRef])
+	:	^(TOK_DROP_INDEX index_ref[&indexRef] table_ref[&tableRef])
 		{
 			PandaSQL::ParserDriver *pDriver = $stmt::pDriver;
 			pDriver->GetCurrentStatement().SetIndexRef(indexRef);
+			pDriver->GetCurrentStatement().AddTableRef(tableRef);
 		}
 	;
 	

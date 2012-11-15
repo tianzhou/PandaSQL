@@ -285,6 +285,20 @@ Status DBImpl::DropTable(const std::string &tableName)
 	return result;
 }
 
+Status DBImpl::CreateIndex(const std::string &indexName, const std::string &tableName, bool isUnique)
+{
+	Status result;
+
+	return result;
+}
+
+Status DBImpl::DropIndex(const std::string &indexName, const std::string &tableName)
+{
+	Status result;
+
+	return result;
+}
+
 Status DBImpl::InsertData(const std::string &tableName, const ColumnDefList &columnList, const ExprList &columnExprList)
 {
 	Status result;
