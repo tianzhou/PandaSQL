@@ -47,7 +47,8 @@ Status BDBBackend::Open()
 	{
 		int ret = mpDBEnv->open(mpDBEnv
 			, mRootPath.c_str()
-			, DB_CREATE | DB_INIT_LOG | DB_INIT_LOCK | DB_INIT_MPOOL | DB_INIT_TXN
+			, DB_CREATE | DB_INIT_LOG | DB_INIT_LOCK | DB_INIT_MPOOL 
+			  | DB_PRIVATE // restric to single process
 			, 0);
 
 		if (ret != 0)
