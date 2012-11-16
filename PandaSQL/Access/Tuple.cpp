@@ -8,13 +8,51 @@
 namespace PandaSQL
 {
 
+void StringToTupleElmentOffsetAndLength(const TupleDesc &desc, const std::string &inString, uint32_t inElementIndex, uint32_t *o_offset, uint32_t *o_length)
+{
+	*o_offset = 0;
+	*o_length = 0;
+
+	PDASSERT(inElementIndex < desc.size());
+
+	uint32_t currentElmentOffset = 0;
+
+	for (size_t i = 0; i <= inElementIndex; i++)
+	{
+		const TupleDescElement &element = desc[i];
+
+		if (element.mDataType == kInt)
+		{
+			*o_offset = currentElmentOffset;
+			*o_length = sizeof(int32_t);
+
+			currentElmentOffset += sizeof(int32_t);
+		}
+		else if (element.mDataType == kText)
+		{
+			*o_offset = currentElmentOffset;
+
+			size_t length = *(const size_t *)(inString.c_str() + *o_offset);
+			*o_offset += sizeof(length);
+			currentElmentOffset += sizeof(length);
+
+			*o_length = length;
+			currentElmentOffset += *o_length;
+		}
+		else
+		{
+			PDASSERT(0);
+		}	
+	}
+}
+
 void StringToTupleElement(const TupleDescElement &descElement, const std::string &inString, uint32_t *io_offset, Value *o_tupleValue)
 {
 	if (descElement.mDataType == kInt)
 	{
 		int32_t numberValue = *(const int32_t *)(inString.c_str() + *io_offset);
 		o_tupleValue->SetAsNumber(numberValue);
-		*io_offset += sizeof(int);
+		*io_offset += sizeof(int32_t);
 	}
 	else if (descElement.mDataType == kText)
 	{

@@ -45,9 +45,15 @@ Status BDBBackend::Open()
 
 	if (!mIsOpen)
 	{
-		int ret = mpDBEnv->open(mpDBEnv
+		//Set DB_AUTO_COMMIT to the environment, so all operation would be transactional protected
+		//If set on DB, seems like it would causing crash if adding index for that DB
+		int ret = mpDBEnv->set_flags(mpDBEnv, DB_AUTO_COMMIT, 1);
+
+		PDASSERT(ret == 0);
+
+		ret = mpDBEnv->open(mpDBEnv
 			, mRootPath.c_str()
-			, DB_CREATE | DB_INIT_LOG | DB_INIT_LOCK | DB_INIT_MPOOL 
+			, DB_CREATE | DB_INIT_LOG | DB_INIT_LOCK | DB_INIT_MPOOL | DB_INIT_TXN
 			  | DB_PRIVATE // restric to single process
 			, 0);
 
@@ -95,7 +101,7 @@ Status BDBBackend::OpenTable(const std::string &inTableName, OpenMode openMode)
 
 	PDASSERT(ret == 0);
 
-	u_int32_t flags = DB_AUTO_COMMIT;
+	u_int32_t flags = 0;
 
 	if (openMode & kCreate)
 	{
@@ -201,6 +207,112 @@ Status BDBBackend::DropTable(const std::string &tableName)
 	return result;
 }
 
+static int IndexBinder(DB *secondary, const DBT *pkey, const DBT *pdata, DBT *skey)
+{
+	memset(skey, 0, sizeof(DBT));
+
+	const BDBBackend::IndexInfo *indexInfo = (const BDBBackend::IndexInfo *)secondary->app_private;
+
+	std::string rowString;	
+	rowString.append((const char *)pdata->data, pdata->size);
+
+	uint32_t offset;
+	uint32_t length;
+
+	StringToTupleElmentOffsetAndLength(indexInfo->tupleDesc, rowString, indexInfo->indexList[0], &offset, &length); 
+	
+	skey->data = (char *)pdata->data + offset;
+	skey->size = length;
+
+	std::string keyStr;
+	keyStr.append((const char *)skey->data, skey->size);
+
+	db_recno_t recno = *(db_recno_t *)(pkey->data);
+
+	std::cout << "Index Key-Value: " << keyStr << ", " << recno << std::endl;
+
+	return 0;
+}
+
+Status BDBBackend::CreateIndex(const std::string &indexName, const std::string &tableName, const TupleDesc &tupleDesc, const std::vector<int32_t> &indexList, bool isUnique)
+{
+	Status result;
+
+	DB *pTable = NULL;
+	
+	result = this->GetTableByName_Private(tableName, &pTable);
+
+	if (result.OK())
+	{
+		DB *pIndex = NULL;
+		int ret;
+
+		ret = db_create(&pIndex, mpDBEnv, 0);
+
+		PDASSERT(ret == 0);
+
+		u_int32_t flags = DB_AUTO_COMMIT;
+
+		if (!isUnique)
+		{
+			flags = DB_DUPSORT;
+		}
+
+		ret = pIndex->set_flags(pIndex, flags);
+
+		PDASSERT(ret == 0);
+
+		ret = pIndex->open(pIndex
+			, NULL
+			, kDBName
+			, indexName.c_str()
+			, DB_BTREE
+			, DB_CREATE
+			, 0);
+
+		if (ret != 0)
+		{
+			PDDebugOutputVerbose(db_strerror(ret));
+
+			if (ret == EEXIST)
+			{
+				result = Status::kIndexAlreadyExists;
+			}
+			else
+			{
+				result = Status::kInternalError;
+			}
+
+			ret = pIndex->close(pIndex, 0);
+
+			//Assume we can close it after failling creating the index
+			PDASSERT(ret == 0);
+		}
+
+		if (result.OK())
+		{
+			IndexInfo indexInfo;
+			indexInfo.tupleDesc = tupleDesc;
+			indexInfo.indexList = indexList;
+
+			mIndexMap[pIndex] = indexInfo;
+
+			pIndex->app_private = (void *)&mIndexMap[pIndex];
+
+			ret = pTable->associate(pTable, NULL, pIndex, IndexBinder, 0);
+
+			if (ret != 0)
+			{
+				result = Status::kInternalError;
+			}
+		}
+       
+
+	}
+
+	return result;
+}
+
 Status BDBBackend::InsertData(const std::string &tableName, const TupleDesc &tupleDesc, const ValueList &tupleValueList, int32_t keyIndex)
 {
 	Status result;
@@ -262,7 +374,7 @@ Status BDBBackend::DeleteData(const std::string &tableName, const TuplePredicate
 	{
 		DBC *dbcp = NULL;
 		DB_TXN *tid = NULL;
-		int ret;
+		int ret = 0;
 
 		ret = TransactionBegin(mpDBEnv, NULL, &tid);
 

@@ -39,6 +39,8 @@ public:
 	virtual Status OpenTable(const std::string &tableName, OpenMode openMode) = 0;
 	virtual Status CloseTable(const std::string &tableName) = 0;
 	virtual Status DropTable(const std::string &tableName) = 0;
+	
+	virtual Status CreateIndex(const std::string &indexName, const std::string &tableName, const TupleDesc &tupleDesc, const std::vector<int32_t> &indexList, bool isUnique) = 0;
 
 	virtual Status InsertData(const std::string &tableName, const TupleDesc &tupleDesc, const ValueList &tupleValueList, int32_t keyIndex) = 0;
 	virtual Status DeleteData(const std::string &tableName, const TuplePredicate *inTuplePredicate = NULL) = 0;

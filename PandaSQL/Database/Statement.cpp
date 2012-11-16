@@ -283,7 +283,7 @@ Status Statement::Execute(bool createTable /* = true */)
 		}
 	case kStmtCreateIndex:
 		{
-			result = mpDB->CreateIndex(mIndexRef, mTableRefs[0], mUniqueIndex);
+			result = mpDB->CreateIndex(mIndexRef, mTableRefs[0], mColumnDefs, mUniqueIndex);
 			break;
 		}
 	case kStmtDropIndex:

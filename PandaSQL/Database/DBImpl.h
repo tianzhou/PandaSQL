@@ -33,7 +33,7 @@ public:
 	Status OpenTable(const std::string &tableName, const ColumnDefList &columnList);
 	Status DropTable(const std::string &tableName);
 	
-	Status CreateIndex(const std::string &indexName, const std::string &tableName, bool isUnique);
+	Status CreateIndex(const std::string &indexName, const std::string &tableName, const ColumnDefList &columnList, bool isUnique);
 	Status DropIndex(const std::string &indexName, const std::string &tableName);
 
 	Status InsertData(const std::string &tableName, const ColumnDefList &columnList, const ExprList &columnExprList);

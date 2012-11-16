@@ -24,6 +24,9 @@ public:
 	virtual Status OpenTable(const std::string &inTableName, OpenMode openMode);
 	virtual Status CloseTable(const std::string &inTableName);
 	virtual Status DropTable(const std::string &tableName);
+	
+	virtual Status CreateIndex(const std::string &indexName, const std::string &tableName, const TupleDesc &tupleDesc, const std::vector<int32_t> &indexList, bool isUnique);
+	//virtual Status CreateIndex(
 	//virtual Status InsertRecord(const TupleData &inTuple) = 0;
 	//virtual Status FindFirstRecordWithPredicate(const Predicate *inPredicate, Iterator **o_iterator) = 0;
 
@@ -32,6 +35,14 @@ public:
 	virtual Status SelectData(const std::string &tableName, const ColumnDefList &columnList, const TuplePredicate *inTuplePredicate = NULL);
 
 	virtual TupleIterator* CreateScanIterator(const std::string &tableName, const TupleDesc &tupleDesc, const TuplePredicate *inTuplePredicate = NULL);
+
+privileged:
+
+	struct IndexInfo
+	{
+		TupleDesc tupleDesc;
+		std::vector<int32_t> indexList;
+	};
 
 private:
 
@@ -43,8 +54,12 @@ private:
 	typedef std::map<std::string, DB*> TableMap;
 	typedef std::pair<std::string, DB*> TableMapEntry;
 
+	typedef std::map<DB*, IndexInfo> IndexMap;
+	typedef std::pair<DB*, IndexInfo> IndexMapEntry;
+
 	DB_ENV *mpDBEnv;
 	TableMap mTableMap;
+	IndexMap mIndexMap;
 	bool mIsOpen;
 };
 

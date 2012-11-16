@@ -18,7 +18,7 @@ BDBScanIterator::BDBScanIterator(const TupleDesc &inTupleDesc, DB *io_dbTable, D
 ,mpDBTXN(NULL)
 {
 	DBC *dbcp = NULL;
-	int ret;
+	int ret = 0;
 
 	//Must use transaction, otherwise del will fail
 	ret = TransactionBegin(io_dbEnv, NULL, &mpDBTXN);
@@ -46,7 +46,7 @@ BDBScanIterator::BDBScanIterator(const TupleDesc &inTupleDesc, DB *io_dbTable, D
 
 BDBScanIterator::~BDBScanIterator()
 {
-	int ret;
+	int ret = 0;
 
 	//No need to close the cursor here. Transaction commit will first
 	//close the cursor and commit if succesful or abort on error

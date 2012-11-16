@@ -285,9 +285,32 @@ Status DBImpl::DropTable(const std::string &tableName)
 	return result;
 }
 
-Status DBImpl::CreateIndex(const std::string &indexName, const std::string &tableName, bool isUnique)
+Status DBImpl::CreateIndex(const std::string &indexName, const std::string &tableName, const ColumnDefList &columnList, bool isUnique)
 {
 	Status result;
+
+	const Table *pTable = NULL;
+
+	result = this->GetTableByName(tableName, &pTable);
+
+	if (result.OK())
+	{
+		TupleDesc tupleDesc;
+		const ColumnDefList &columnDefList = pTable->GetAllColumns();
+
+		ColumnDefListToTupleDesc(columnDefList, &tupleDesc); 
+		
+		std::vector<int32_t> indexList;
+
+		for (ColumnDefList::const_iterator iter = columnList.begin()
+			; iter != columnList.end()
+			; iter++)
+		{
+			indexList.push_back(iter->index);
+		}
+
+		result = mpBackend->CreateIndex(indexName, tableName, tupleDesc, indexList, isUnique);
+	}
 
 	return result;
 }

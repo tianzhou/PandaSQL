@@ -19,8 +19,9 @@ public:
 		kInvalidExpression = 7,
 		kInvalidCommand = 8,
 		kTableAlreadyExists = 9,
-		kAmbiguousColumn = 10,
-		kSQLSyntaxError = 11,
+		kIndexAlreadyExists = 10,
+		kAmbiguousColumn = 11,
+		kSQLSyntaxError = 12,
 	};
 
 	Status() : mState(kOK) {}
