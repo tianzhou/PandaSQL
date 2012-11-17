@@ -1,0 +1,393 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Utils">
+      <UniqueIdentifier>{0ef284ba-9a66-4f4f-966c-1327acc70a23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Parser">
+      <UniqueIdentifier>{64304742-faa7-4e71-bfaf-acd9754d8e34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Parser\antlr">
+      <UniqueIdentifier>{eec87aef-c6a5-4f6e-ba81-7d2f70af06fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Parser\antlr\grammar">
+      <UniqueIdentifier>{b50c493d-c172-43d9-b36a-17bf6b386d03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Parser\antlr\Generated">
+      <UniqueIdentifier>{1d8fd168-4cb8-4993-b185-2dac17a7ea93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\VFS">
+      <UniqueIdentifier>{4e9f2923-931a-4995-af8f-709218eeff41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Catalog">
+      <UniqueIdentifier>{8107674c-d18b-47ab-80d5-e3344b32f426}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Storage">
+      <UniqueIdentifier>{84aee3cb-cd2a-401c-b22e-e4acd7558e86}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Storage\BerkeleyDB">
+      <UniqueIdentifier>{3d982f67-9518-4854-b328-167fdc18e0f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Storage\BerkeleyDB\Transaction">
+      <UniqueIdentifier>{ba33c864-f64e-44d5-9c80-063a8de9f565}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Access">
+      <UniqueIdentifier>{4f9ad4f9-576e-49dd-9a18-08c9d82c0de5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Optimizer">
+      <UniqueIdentifier>{73c83895-81be-4d7b-a666-926ced1e711a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Optimizer\Plan">
+      <UniqueIdentifier>{53f60ca8-9856-4d25-86a3-74450634493c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Optimizer\Plan\Result">
+      <UniqueIdentifier>{9e1d3592-69f9-4a94-8093-b8530f84edac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Optimizer\Plan\Join">
+      <UniqueIdentifier>{d4ac93ea-7ba9-4a9e-b6ad-cb26223d6320}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Executor">
+      <UniqueIdentifier>{3877c665-5888-4775-85bb-3ec992fa2456}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Node">
+      <UniqueIdentifier>{7a6b66a1-2ecf-4d1b-a126-781c73c96f34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Expr">
+      <UniqueIdentifier>{e7516999-ee64-44fe-aa8d-48e05dae3613}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Database">
+      <UniqueIdentifier>{99cf259c-803d-42a4-a496-ef511ff91b0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="DB.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\Bitmask.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\Common.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\Debug.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Status.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\Types.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\Value.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\WinUtils.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Parser\ParserDriver.cpp">
+      <Filter>Source Files\Parser</Filter>
+    </ClCompile>
+    <ClCompile Include="Parser\SQLLexer.c">
+      <Filter>Source Files\Parser\antlr\Generated</Filter>
+    </ClCompile>
+    <ClCompile Include="Parser\SQLParser.c">
+      <Filter>Source Files\Parser\antlr\Generated</Filter>
+    </ClCompile>
+    <ClCompile Include="Parser\SQLSemanticAnalyzer.c">
+      <Filter>Source Files\Parser\antlr\Generated</Filter>
+    </ClCompile>
+    <ClCompile Include="VFS\File.cpp">
+      <Filter>Source Files\VFS</Filter>
+    </ClCompile>
+    <ClCompile Include="VFS\IVFS.cpp">
+      <Filter>Source Files\VFS</Filter>
+    </ClCompile>
+    <ClCompile Include="VFS\WinFile.cpp">
+      <Filter>Source Files\VFS</Filter>
+    </ClCompile>
+    <ClCompile Include="VFS\WinVFS.cpp">
+      <Filter>Source Files\VFS</Filter>
+    </ClCompile>
+    <ClCompile Include="Catalog\Column.cpp">
+      <Filter>Source Files\Catalog</Filter>
+    </ClCompile>
+    <ClCompile Include="Catalog\Table.cpp">
+      <Filter>Source Files\Catalog</Filter>
+    </ClCompile>
+    <ClCompile Include="Catalog\TableCatalog.cpp">
+      <Filter>Source Files\Catalog</Filter>
+    </ClCompile>
+    <ClCompile Include="Storage\IDBBackend.cpp">
+      <Filter>Source Files\Storage</Filter>
+    </ClCompile>
+    <ClCompile Include="Storage\BerkeleyDB\BDBBackend.cpp">
+      <Filter>Source Files\Storage\BerkeleyDB</Filter>
+    </ClCompile>
+    <ClCompile Include="Storage\BerkeleyDB\BDBScanIterator.cpp">
+      <Filter>Source Files\Storage\BerkeleyDB</Filter>
+    </ClCompile>
+    <ClCompile Include="Storage\BerkeleyDB\Transaction\BDBTransaction.cpp">
+      <Filter>Source Files\Storage\BerkeleyDB\Transaction</Filter>
+    </ClCompile>
+    <ClCompile Include="Access\Iterator.cpp">
+      <Filter>Source Files\Access</Filter>
+    </ClCompile>
+    <ClCompile Include="Access\Tuple.cpp">
+      <Filter>Source Files\Access</Filter>
+    </ClCompile>
+    <ClCompile Include="Access\TupleIterator.cpp">
+      <Filter>Source Files\Access</Filter>
+    </ClCompile>
+    <ClCompile Include="Optimizer\Plan\PlanContext.cpp">
+      <Filter>Source Files\Optimizer\Plan</Filter>
+    </ClCompile>
+    <ClCompile Include="Optimizer\Plan\Planner.cpp">
+      <Filter>Source Files\Optimizer\Plan</Filter>
+    </ClCompile>
+    <ClCompile Include="Optimizer\Plan\PlanResult.cpp">
+      <Filter>Source Files\Optimizer\Plan\Result</Filter>
+    </ClCompile>
+    <ClCompile Include="Optimizer\Join\Join.cpp">
+      <Filter>Source Files\Optimizer\Plan\Join</Filter>
+    </ClCompile>
+    <ClCompile Include="Optimizer\Join\JoinPath.cpp">
+      <Filter>Source Files\Optimizer\Plan\Join</Filter>
+    </ClCompile>
+    <ClCompile Include="Executor\Executor.cpp">
+      <Filter>Source Files\Executor</Filter>
+    </ClCompile>
+    <ClCompile Include="Node\NestLoopNode.cpp">
+      <Filter>Source Files\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="Node\Node.cpp">
+      <Filter>Source Files\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="Node\PlanNode.cpp">
+      <Filter>Source Files\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="Node\RelNode.cpp">
+      <Filter>Source Files\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="Node\SeqScanNode.cpp">
+      <Filter>Source Files\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="Expr\BinaryExpr.cpp">
+      <Filter>Source Files\Expr</Filter>
+    </ClCompile>
+    <ClCompile Include="Expr\BooleanExpr.cpp">
+      <Filter>Source Files\Expr</Filter>
+    </ClCompile>
+    <ClCompile Include="Expr\ColumnExpr.cpp">
+      <Filter>Source Files\Expr</Filter>
+    </ClCompile>
+    <ClCompile Include="Expr\ConstantExpr.cpp">
+      <Filter>Source Files\Expr</Filter>
+    </ClCompile>
+    <ClCompile Include="Expr\Expr.cpp">
+      <Filter>Source Files\Expr</Filter>
+    </ClCompile>
+    <ClCompile Include="Expr\ExprContext.cpp">
+      <Filter>Source Files\Expr</Filter>
+    </ClCompile>
+    <ClCompile Include="Expr\ExprWalker.cpp">
+      <Filter>Source Files\Expr</Filter>
+    </ClCompile>
+    <ClCompile Include="Database\DBImpl.cpp">
+      <Filter>Source Files\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="Database\Statement.cpp">
+      <Filter>Source Files\Database</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DB.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Bitmask.h">
+      <Filter>Source Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Common.h">
+      <Filter>Source Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Debug.h">
+      <Filter>Source Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\Status.h">
+      <Filter>Source Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Types.h">
+      <Filter>Source Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Value.h">
+      <Filter>Source Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\WinUtils.h">
+      <Filter>Source Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Parser\ParserDriver.h">
+      <Filter>Source Files\Parser</Filter>
+    </ClInclude>
+    <ClInclude Include="parser\SQLLexer.h">
+      <Filter>Source Files\Parser\antlr\Generated</Filter>
+    </ClInclude>
+    <ClInclude Include="parser\SQLParser.h">
+      <Filter>Source Files\Parser\antlr\Generated</Filter>
+    </ClInclude>
+    <ClInclude Include="parser\SQLSemanticAnalyzer.h">
+      <Filter>Source Files\Parser\antlr\Generated</Filter>
+    </ClInclude>
+    <ClInclude Include="VFS\File.h">
+      <Filter>Source Files\VFS</Filter>
+    </ClInclude>
+    <ClInclude Include="VFS\IVFS.h">
+      <Filter>Source Files\VFS</Filter>
+    </ClInclude>
+    <ClInclude Include="VFS\WinFile.h">
+      <Filter>Source Files\VFS</Filter>
+    </ClInclude>
+    <ClInclude Include="VFS\WinVFS.h">
+      <Filter>Source Files\VFS</Filter>
+    </ClInclude>
+    <ClInclude Include="Catalog\Column.h">
+      <Filter>Source Files\Catalog</Filter>
+    </ClInclude>
+    <ClInclude Include="Catalog\Table.h">
+      <Filter>Source Files\Catalog</Filter>
+    </ClInclude>
+    <ClInclude Include="Catalog\TableCatalog.h">
+      <Filter>Source Files\Catalog</Filter>
+    </ClInclude>
+    <ClInclude Include="Storage\IDBBackend.h">
+      <Filter>Source Files\Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="Storage\BerkeleyDB\BDBBackend.h">
+      <Filter>Source Files\Storage\BerkeleyDB</Filter>
+    </ClInclude>
+    <ClInclude Include="Storage\BerkeleyDB\BDBScanIterator.h">
+      <Filter>Source Files\Storage\BerkeleyDB</Filter>
+    </ClInclude>
+    <ClInclude Include="Storage\BerkeleyDB\BDBTypes.h">
+      <Filter>Source Files\Storage\BerkeleyDB</Filter>
+    </ClInclude>
+    <ClInclude Include="Storage\BerkeleyDB\Transaction\BDBTransaction.h">
+      <Filter>Source Files\Storage\BerkeleyDB\Transaction</Filter>
+    </ClInclude>
+    <ClInclude Include="Access\Iterator.h">
+      <Filter>Source Files\Access</Filter>
+    </ClInclude>
+    <ClInclude Include="Access\Tuple.h">
+      <Filter>Source Files\Access</Filter>
+    </ClInclude>
+    <ClInclude Include="Access\TupleIterator.h">
+      <Filter>Source Files\Access</Filter>
+    </ClInclude>
+    <ClInclude Include="Optimizer\Plan\PlanContext.h">
+      <Filter>Source Files\Optimizer\Plan</Filter>
+    </ClInclude>
+    <ClInclude Include="Optimizer\Plan\Planner.h">
+      <Filter>Source Files\Optimizer\Plan</Filter>
+    </ClInclude>
+    <ClInclude Include="Optimizer\Plan\PlanResult.h">
+      <Filter>Source Files\Optimizer\Plan\Result</Filter>
+    </ClInclude>
+    <ClInclude Include="Optimizer\Join\Join.h">
+      <Filter>Source Files\Optimizer\Plan\Join</Filter>
+    </ClInclude>
+    <ClInclude Include="Optimizer\Join\JoinPath.h">
+      <Filter>Source Files\Optimizer\Plan\Join</Filter>
+    </ClInclude>
+    <ClInclude Include="Executor\Executor.h">
+      <Filter>Source Files\Executor</Filter>
+    </ClInclude>
+    <ClInclude Include="Node\NestLoopNode.h">
+      <Filter>Source Files\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="Node\Node.h">
+      <Filter>Source Files\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="Node\PlanNode.h">
+      <Filter>Source Files\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="Node\RelNode.h">
+      <Filter>Source Files\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="Node\SeqScanNode.h">
+      <Filter>Source Files\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="Expr\BinaryExpr.h">
+      <Filter>Source Files\Expr</Filter>
+    </ClInclude>
+    <ClInclude Include="Expr\BooleanExpr.h">
+      <Filter>Source Files\Expr</Filter>
+    </ClInclude>
+    <ClInclude Include="Expr\ColumnExpr.h">
+      <Filter>Source Files\Expr</Filter>
+    </ClInclude>
+    <ClInclude Include="Expr\ConstantExpr.h">
+      <Filter>Source Files\Expr</Filter>
+    </ClInclude>
+    <ClInclude Include="Expr\Expr.h">
+      <Filter>Source Files\Expr</Filter>
+    </ClInclude>
+    <ClInclude Include="Expr\ExprContext.h">
+      <Filter>Source Files\Expr</Filter>
+    </ClInclude>
+    <ClInclude Include="Expr\ExprWalker.h">
+      <Filter>Source Files\Expr</Filter>
+    </ClInclude>
+    <ClInclude Include="Database\DBImpl.h">
+      <Filter>Source Files\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="Database\Statement.h">
+      <Filter>Source Files\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Antlr3TreeParser Include="Parser\SQLSemanticAnalyzer.g">
+      <Filter>Source Files\Parser\antlr\grammar</Filter>
+    </Antlr3TreeParser>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="create_table.txt" />
+    <Text Include="delete.txt" />
+    <Text Include="drop_table.txt" />
+    <Text Include="insert.txt" />
+    <Text Include="ReadMe.txt" />
+    <Text Include="select.txt" />
+    <Text Include="select_data.txt" />
+    <Text Include="select_join_2table.txt" />
+    <Text Include="select_join_3table.txt" />
+    <Text Include="select_where.txt" />
+    <Text Include="select_where_join.txt" />
+    <Text Include="update.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Antlr3ParserLexer Include="Parser\SQL.g">
+      <Filter>Source Files\Parser\antlr\grammar</Filter>
+    </Antlr3ParserLexer>
+  </ItemGroup>
+</Project>

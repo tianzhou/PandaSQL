@@ -1,0 +1,388 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{E216E88F-A604-43F3-8DD1-3A6EDDFCF18E}</ProjectGuid>
+    <RootNamespace>PandaSQL</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Antlr3LexerAfterTargets>PreBuildEvent</Antlr3LexerAfterTargets>
+    <Antlr3ParserLexerAfterTargets>_Antlr3Lexer</Antlr3ParserLexerAfterTargets>
+    <Antlr3TreeParserAfterTargets>_Antlr3ParserLexer</Antlr3TreeParserAfterTargets>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="3rdParty\antlr\vsrulefiles\antlr3lexer.props" />
+    <Import Project="3rdParty\antlr\vsrulefiles\antlr3lexerandparser.props" />
+    <Import Project="3rdParty\antlr\vsrulefiles\antlr3parser.props" />
+    <Import Project="3rdParty\antlr\vsrulefiles\antlr3treeparser.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>11.0.50727.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <CustomBuildAfterTargets>_Antlr3TreeParser</CustomBuildAfterTargets>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>.;3rdParty\antlr\include;3rdParty\berkeleydb\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;PDDEBUG;_XKEYCHECK_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>antlr3c_dll.lib;libdb53_dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>3rdParty\antlr\lib\$(Platform);3rdParty\berkeleydb\lib\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y "3rdParty\antlr\lib\$(Platform)\*.dll" "$(OutDir)"
+xcopy /y "3rdParty\berkeleydb\lib\$(Platform)\*.dll" "$(OutDir)"
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>.;3rdParty\antlr\include;3rdParty\berkeleydb\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>x64;_DEBUG;_CONSOLE;PDDEBUG;_XKEYCHECK_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>antlr3c_dll.lib;libdb53_dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>3rdParty\antlr\lib\$(Platform);3rdParty\berkeleydb\lib\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y "3rdParty\antlr\lib\$(Platform)\*.dll" "$(OutDir)"
+xcopy /y "3rdParty\berkeleydb\lib\$(Platform)\*.dll" "$(OutDir)"
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>.;3rdParty\antlr\include;3rdParty\berkeleydb\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_XKEYCHECK_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>antlr3c_dll.lib;libdb53_dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>3rdParty\antlr\lib\$(Platform);3rdParty\berkeleydb\lib\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y "3rdParty\antlr\lib\$(Platform)\*.dll" "$(OutDir)"
+xcopy /y "3rdParty\berkeleydb\lib\$(Platform)\*.dll" "$(OutDir)"
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>.;3rdParty\antlr\include;3rdParty\berkeleydb\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>x64;NDEBUG;_CONSOLE;_XKEYCHECK_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>antlr3c_dll.lib;libdb53_dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>3rdParty\antlr\lib\$(Platform);3rdParty\berkeleydb\lib\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y "3rdParty\antlr\lib\$(Platform)\*.dll" "$(OutDir)"
+xcopy /y "3rdParty\berkeleydb\lib\$(Platform)\*.dll" "$(OutDir)"
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="DB.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Utils\Bitmask.cpp" />
+    <ClCompile Include="Utils\Common.cpp" />
+    <ClCompile Include="Utils\Debug.cpp" />
+    <ClCompile Include="utils\Status.cpp" />
+    <ClCompile Include="Utils\Types.cpp" />
+    <ClCompile Include="Utils\Value.cpp" />
+    <ClCompile Include="Utils\WinUtils.cpp" />
+    <ClCompile Include="Parser\ParserDriver.cpp" />
+    <ClCompile Include="Parser\SQLLexer.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsCpp</CompileAs>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </PrecompiledHeader>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsCpp</CompileAs>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
+    </ClCompile>
+    <ClCompile Include="Parser\SQLParser.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsCpp</CompileAs>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </PrecompiledHeader>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsCpp</CompileAs>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
+    </ClCompile>
+    <ClCompile Include="Parser\SQLSemanticAnalyzer.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsCpp</CompileAs>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </PrecompiledHeader>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsCpp</CompileAs>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
+    </ClCompile>
+    <ClCompile Include="VFS\File.cpp" />
+    <ClCompile Include="VFS\IVFS.cpp" />
+    <ClCompile Include="VFS\WinFile.cpp" />
+    <ClCompile Include="VFS\WinVFS.cpp" />
+    <ClCompile Include="Catalog\Column.cpp" />
+    <ClCompile Include="Catalog\Table.cpp" />
+    <ClCompile Include="Catalog\TableCatalog.cpp" />
+    <ClCompile Include="Storage\IDBBackend.cpp" />
+    <ClCompile Include="Storage\BerkeleyDB\BDBBackend.cpp" />
+    <ClCompile Include="Storage\BerkeleyDB\BDBScanIterator.cpp" />
+    <ClCompile Include="Storage\BerkeleyDB\Transaction\BDBTransaction.cpp" />
+    <ClCompile Include="Access\Iterator.cpp" />
+    <ClCompile Include="Access\Tuple.cpp" />
+    <ClCompile Include="Access\TupleIterator.cpp" />
+    <ClCompile Include="Optimizer\Plan\PlanContext.cpp" />
+    <ClCompile Include="Optimizer\Plan\Planner.cpp" />
+    <ClCompile Include="Optimizer\Plan\PlanResult.cpp" />
+    <ClCompile Include="Optimizer\Join\Join.cpp" />
+    <ClCompile Include="Optimizer\Join\JoinPath.cpp" />
+    <ClCompile Include="Executor\Executor.cpp" />
+    <ClCompile Include="Node\NestLoopNode.cpp" />
+    <ClCompile Include="Node\Node.cpp" />
+    <ClCompile Include="Node\PlanNode.cpp" />
+    <ClCompile Include="Node\RelNode.cpp" />
+    <ClCompile Include="Node\SeqScanNode.cpp" />
+    <ClCompile Include="Expr\BinaryExpr.cpp" />
+    <ClCompile Include="Expr\BooleanExpr.cpp" />
+    <ClCompile Include="Expr\ColumnExpr.cpp" />
+    <ClCompile Include="Expr\ConstantExpr.cpp" />
+    <ClCompile Include="Expr\Expr.cpp" />
+    <ClCompile Include="Expr\ExprContext.cpp" />
+    <ClCompile Include="Expr\ExprWalker.cpp" />
+    <ClCompile Include="Database\DBImpl.cpp" />
+    <ClCompile Include="Database\Statement.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DB.h" />
+    <ClInclude Include="Utils\Bitmask.h" />
+    <ClInclude Include="Utils\Common.h" />
+    <ClInclude Include="Utils\Debug.h" />
+    <ClInclude Include="utils\Status.h" />
+    <ClInclude Include="Utils\Types.h" />
+    <ClInclude Include="Utils\Value.h" />
+    <ClInclude Include="Utils\WinUtils.h" />
+    <ClInclude Include="Parser\ParserDriver.h" />
+    <ClInclude Include="parser\SQLLexer.h" />
+    <ClInclude Include="parser\SQLParser.h" />
+    <ClInclude Include="parser\SQLSemanticAnalyzer.h" />
+    <ClInclude Include="VFS\File.h" />
+    <ClInclude Include="VFS\IVFS.h" />
+    <ClInclude Include="VFS\WinFile.h" />
+    <ClInclude Include="VFS\WinVFS.h" />
+    <ClInclude Include="Catalog\Column.h" />
+    <ClInclude Include="Catalog\Table.h" />
+    <ClInclude Include="Catalog\TableCatalog.h" />
+    <ClInclude Include="Storage\IDBBackend.h" />
+    <ClInclude Include="Storage\BerkeleyDB\BDBBackend.h" />
+    <ClInclude Include="Storage\BerkeleyDB\BDBScanIterator.h" />
+    <ClInclude Include="Storage\BerkeleyDB\BDBTypes.h" />
+    <ClInclude Include="Storage\BerkeleyDB\Transaction\BDBTransaction.h" />
+    <ClInclude Include="Access\Iterator.h" />
+    <ClInclude Include="Access\Tuple.h" />
+    <ClInclude Include="Access\TupleIterator.h" />
+    <ClInclude Include="Optimizer\Plan\PlanContext.h" />
+    <ClInclude Include="Optimizer\Plan\Planner.h" />
+    <ClInclude Include="Optimizer\Plan\PlanResult.h" />
+    <ClInclude Include="Optimizer\Join\Join.h" />
+    <ClInclude Include="Optimizer\Join\JoinPath.h" />
+    <ClInclude Include="Executor\Executor.h" />
+    <ClInclude Include="Node\NestLoopNode.h" />
+    <ClInclude Include="Node\Node.h" />
+    <ClInclude Include="Node\PlanNode.h" />
+    <ClInclude Include="Node\RelNode.h" />
+    <ClInclude Include="Node\SeqScanNode.h" />
+    <ClInclude Include="Expr\BinaryExpr.h" />
+    <ClInclude Include="Expr\BooleanExpr.h" />
+    <ClInclude Include="Expr\ColumnExpr.h" />
+    <ClInclude Include="Expr\ConstantExpr.h" />
+    <ClInclude Include="Expr\Expr.h" />
+    <ClInclude Include="Expr\ExprContext.h" />
+    <ClInclude Include="Expr\ExprWalker.h" />
+    <ClInclude Include="Database\DBImpl.h" />
+    <ClInclude Include="Database\Statement.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Antlr3ParserLexer Include="Parser\SQL.g">
+      <OutputDirectory Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </OutputDirectory>
+      <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </AdditionalDependencies>
+    </Antlr3ParserLexer>
+    <Antlr3TreeParser Include="Parser\SQLSemanticAnalyzer.g">
+      <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)SQL.g;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)SQL.g;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(RootDir)%(Directory)SQL.g;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(RootDir)%(Directory)SQL.g;%(AdditionalDependencies)</AdditionalDependencies>
+    </Antlr3TreeParser>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="create_table.txt" />
+    <Text Include="delete.txt" />
+    <Text Include="drop_table.txt" />
+    <Text Include="insert.txt" />
+    <Text Include="ReadMe.txt" />
+    <Text Include="select.txt" />
+    <Text Include="select_data.txt" />
+    <Text Include="select_join_2table.txt" />
+    <Text Include="select_join_3table.txt" />
+    <Text Include="select_where.txt" />
+    <Text Include="select_where_join.txt" />
+    <Text Include="update.txt" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="3rdParty\antlr\vsrulefiles\antlr3lexer.targets" />
+    <Import Project="3rdParty\antlr\vsrulefiles\antlr3lexerandparser.targets" />
+    <Import Project="3rdParty\antlr\vsrulefiles\antlr3parser.targets" />
+    <Import Project="3rdParty\antlr\vsrulefiles\antlr3treeparser.targets" />
+  </ImportGroup>
+</Project>
