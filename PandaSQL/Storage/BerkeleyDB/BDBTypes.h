@@ -3,13 +3,6 @@
 
 namespace PandaSQL
 {
-//API Reference refers to these micros,
-//however, it seems to be not defined.
-//Define it here.
-
-#define EINVAL 1
-#define ENOENT 2
-#define EEXIST 17
 
 }
 
