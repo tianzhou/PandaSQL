@@ -1,3 +1,5 @@
 CREATE TABLE Master (master_id INT PRIMARY KEY, name TEXT NOT NULL);
---CREATE TABLE Detail (detail_id INT PRIMARY KEY, course TEXT NOT NULL, master_id_fk INT NOT NULL);
+CREATE TABLE Detail (detail_id INT PRIMARY KEY, course TEXT NOT NULL, master_id_fk INT NOT NULL);
 --CREATE TABLE Detail_Detail (detail_detail_id INT PRIMARY KEY, grade INT NOT NULL, detail_id_fk INT NOT NULL);
+
+CREATE INDEX idx_master_name ON Master(name);

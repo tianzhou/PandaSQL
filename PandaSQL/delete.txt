@@ -1,5 +1,5 @@
-DELETE FROM Master;
+DELETE FROM Master where master_id = 2;
 
-DELETE FROM Detail;
+--DELETE FROM Detail;
 
-DELETE FROM Detail_Detail;
+--DELETE FROM Detail_Detail;

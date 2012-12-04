@@ -25,12 +25,12 @@ public:
 	virtual Status CloseTable(const std::string &inTableName);
 	virtual Status DropTable(const std::string &tableName);
 	
-	virtual Status CreateIndex(const std::string &indexName, const std::string &tableName, const TupleDesc &tupleDesc, const std::vector<int32_t> &indexList, bool isUnique);
+	virtual Status OpenIndex(const std::string &indexName, const std::string &tableName, const TupleDesc &tupleDesc, const std::vector<int32_t> &indexList, bool isUnique, OpenMode openMode);
 	//virtual Status CreateIndex(
 	//virtual Status InsertRecord(const TupleData &inTuple) = 0;
 	//virtual Status FindFirstRecordWithPredicate(const Predicate *inPredicate, Iterator **o_iterator) = 0;
 
-	virtual Status InsertData(const std::string &tableName, const TupleDesc &tupleDesc, const ValueList &tupleValueList, int32_t keyIndex);
+	virtual Status InsertData(const std::string &tableName, const TupleDesc &tupleDesc, const ValueList &tupleValueList);
 	virtual Status DeleteData(const std::string &tableName, const TuplePredicate *inTuplePredicate = NULL);
 	virtual Status SelectData(const std::string &tableName, const ColumnDefList &columnList, const TuplePredicate *inTuplePredicate = NULL);
 

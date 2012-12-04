@@ -100,7 +100,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		result = ReadSQLScript("./insert.txt", pVFS, &db);
 
-		result = ReadSQLScript("./select.txt", pVFS, &db);
+		//result = ReadSQLScript("./select.txt", pVFS, &db);
 
 		//result = ReadSQLScript("./select_join_3table.txt", pVFS, &db);
 
@@ -108,7 +108,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		//result = ReadSQLScript("./delete.txt", pVFS, &db);
 
-		result = ReadSQLScript("./update.txt", pVFS, &db);
+		//result = ReadSQLScript("./update.txt", pVFS, &db);
 
 		result = ReadSQLScript("./select.txt", pVFS, &db);
 #else

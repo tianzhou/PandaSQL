@@ -1,15 +1,15 @@
 Master:
-1, "Bob"
-2, "Peter"
-3, "Mary"
+1, 'Bob'
+2, 'Peter'
+3, 'Mary'
 
 Detail:
-1, "Math", 1
-2, "Math", 3
-3, "Physics", 1
-4, "History", 1
-5, "History", 2
-6, "History", 3
+1, 'Math', 1
+2, 'Math', 3
+3, 'Physics', 1
+4, 'History', 1
+5, 'History', 2
+6, 'History', 3
 
 Detail_Detail:
 1, 90, 3

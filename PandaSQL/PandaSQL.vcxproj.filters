@@ -216,6 +216,12 @@
     <ClCompile Include="Database\Statement.cpp">
       <Filter>Source Files\Database</Filter>
     </ClCompile>
+    <ClCompile Include="Catalog\Index.cpp">
+      <Filter>Source Files\Catalog</Filter>
+    </ClCompile>
+    <ClCompile Include="Catalog\IndexCatalog.cpp">
+      <Filter>Source Files\Catalog</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DB.h">
@@ -364,6 +370,12 @@
     </ClInclude>
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Catalog\Index.h">
+      <Filter>Source Files\Catalog</Filter>
+    </ClInclude>
+    <ClInclude Include="Catalog\IndexCatalog.h">
+      <Filter>Source Files\Catalog</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -5,9 +5,6 @@
 #include "Access/TupleIterator.h"
 #include "Access/Tuple.h"
 
-#include "Catalog/Column.h"
-#include "Catalog/Table.h"
-
 #include "Expr/BooleanExpr.h"
 #include "Expr/ExprContext.h"
 
@@ -24,7 +21,8 @@ namespace PandaSQL
 {
 
 bool s_initSystemTable = false;
-const std::string kSchemaTableName = "PD_Schema";
+
+const std::string kSchemaTableName = "PD_Table";
 
 enum
 {
@@ -32,9 +30,23 @@ enum
 	kSchemaTableCreationStmtIndex = 1
 };
 
-ColumnDefList s_schemaColumnDefList;
-const ColumnDefList *s_pSchemaColumnDefList = &s_schemaColumnDefList;
-TupleDesc s_tupleDesc;
+ColumnDefList s_schemaTableColumnDefList;
+const ColumnDefList *s_pSchemaTableColumnDefList = &s_schemaTableColumnDefList;
+TupleDesc s_schemaTableTupleDesc;
+
+//Index schema
+
+const std::string kSchemaIndexName = "PD_Index";
+
+enum
+{
+	kSchemaIndexNameIndex = 0,
+	kSchemaIndexCreationStmtIndex = 1,
+};
+
+ColumnDefList s_schemaIndexColumnDefList;
+const ColumnDefList *s_pSchemaIndexColumnDefList = &s_schemaIndexColumnDefList;
+TupleDesc s_schemaIndexTupleDesc;
 
 DBImpl::DBImpl(StorageType inStorageType)
 :
@@ -57,10 +69,10 @@ mStorageType(inStorageType)
 		schemaColumn.index = index++;
 		schemaColumn.dataType = kText;
 		schemaColumn.constraintType = kConstraintNone;
-		s_schemaColumnDefList.push_back(schemaColumn);
+		s_schemaTableColumnDefList.push_back(schemaColumn);
 
 		tupleDescElement.mDataType = schemaColumn.dataType;
-		s_tupleDesc.push_back(tupleDescElement);
+		s_schemaTableTupleDesc.push_back(tupleDescElement);
 
 		//create_stmt
 		PDASSERT(index == kSchemaTableCreationStmtIndex);
@@ -69,10 +81,37 @@ mStorageType(inStorageType)
 		schemaColumn.index = index++;
 		schemaColumn.dataType = kText;
 		schemaColumn.constraintType = kConstraintNone;
-		s_schemaColumnDefList.push_back(schemaColumn);
+		s_schemaTableColumnDefList.push_back(schemaColumn);
 
 		tupleDescElement.mDataType = schemaColumn.dataType;
-		s_tupleDesc.push_back(tupleDescElement);
+		s_schemaTableTupleDesc.push_back(tupleDescElement);
+
+
+		index = 0;
+
+		//index_name;
+		PDASSERT(index == kSchemaIndexNameIndex);
+		schemaColumn.qualifiedName.tableName = kSchemaIndexName;
+		schemaColumn.qualifiedName.columnName = "index_name";
+		schemaColumn.index = index++;
+		schemaColumn.dataType = kText;
+		schemaColumn.constraintType = kConstraintNone;
+		s_schemaIndexColumnDefList.push_back(schemaColumn);
+
+		tupleDescElement.mDataType = schemaColumn.dataType;
+		s_schemaIndexTupleDesc.push_back(tupleDescElement);
+
+		//create_index_stmt
+		PDASSERT(index == kSchemaIndexCreationStmtIndex);
+		schemaColumn.qualifiedName.tableName = kSchemaIndexName;
+		schemaColumn.qualifiedName.columnName = "create_index_stmt";
+		schemaColumn.index = index++;
+		schemaColumn.dataType = kText;
+		schemaColumn.constraintType = kConstraintNone;
+		s_schemaIndexColumnDefList.push_back(schemaColumn);
+
+		tupleDescElement.mDataType = schemaColumn.dataType;
+		s_schemaIndexTupleDesc.push_back(tupleDescElement);
 
 		s_initSystemTable = true;
 	}
@@ -105,11 +144,11 @@ Status DBImpl::Open(const std::string &inDBPath, const OpenOptions &inOptions)
 
 			if (result.OK())
 			{
-				this->AddTable_Private(kSchemaTableName, *s_pSchemaColumnDefList);
+				this->AddTable_Private(kSchemaTableName, *s_pSchemaTableColumnDefList);
 
 				TupleDesc tupleDesc;
 
-				ColumnDefListToTupleDesc(*s_pSchemaColumnDefList, &tupleDesc);
+				ColumnDefListToTupleDesc(*s_pSchemaTableColumnDefList, &tupleDesc);
 
 				TupleIterator *schemaTupleIter = mpBackend->CreateScanIterator(kSchemaTableName, tupleDesc);
 
@@ -134,6 +173,44 @@ Status DBImpl::Open(const std::string &inDBPath, const OpenOptions &inOptions)
 
 					delete schemaTupleIter;
 				}	
+			}
+
+			if (result.OK())
+			{
+				result = mpBackend->OpenTable(kSchemaIndexName, IDBBackend::kCreate);
+
+				if (result.OK())
+				{
+					this->AddTable_Private(kSchemaIndexName, *s_pSchemaIndexColumnDefList);
+
+					TupleDesc tupleDesc;
+
+					ColumnDefListToTupleDesc(*s_pSchemaIndexColumnDefList, &tupleDesc);
+
+					TupleIterator *schemaTupleIter = mpBackend->CreateScanIterator(kSchemaIndexName, tupleDesc);
+
+					if (schemaTupleIter)
+					{				
+						ValueList indexInfoValueList;
+
+						schemaTupleIter->Reset();
+
+						while(schemaTupleIter->Next())
+						{
+							if (schemaTupleIter->GetValue(&indexInfoValueList))
+							{
+								result = this->OpenIndexWithCreationStmt_Private(indexInfoValueList[kSchemaIndexCreationStmtIndex].GetAsString());
+
+								if (!result.OK())
+								{
+									break;
+								}
+							}
+						}
+
+						delete schemaTupleIter;
+					}	
+				}
 			}
 
 			if (result.OK())
@@ -179,8 +256,7 @@ Status DBImpl::CreateOpenTable(const std::string &tableName, const ColumnDefList
 			tupleValueList.push_back(oneValue);
 
 			//Insert this new table info into schema table
-			//TODO: Use tableName as key
-			result = mpBackend->InsertData(kSchemaTableName, s_tupleDesc, tupleValueList, -1);
+			result = mpBackend->InsertData(kSchemaTableName, s_schemaTableTupleDesc, tupleValueList);
 		
 			if (result.OK())
 			{
@@ -229,7 +305,7 @@ Status DBImpl::DropTable(const std::string &tableName)
 
 		if (result.OK())
 		{
-			TupleIterator *pTupleIterator = this->CreateTupleIteratorForTable(*pSchemaTable, s_tupleDesc);
+			TupleIterator *pTupleIterator = this->CreateTupleIteratorForTable(*pSchemaTable, s_schemaTableTupleDesc);
 
 			result = pTupleIterator->GetLastError();
 
@@ -285,7 +361,7 @@ Status DBImpl::DropTable(const std::string &tableName)
 	return result;
 }
 
-Status DBImpl::CreateIndex(const std::string &indexName, const std::string &tableName, const ColumnDefList &columnList, bool isUnique)
+Status DBImpl::CreateOpenIndex(const std::string &indexName, const std::string &tableName, const ColumnDefList &columnList, bool isUnique, const std::string &creationStmt)
 {
 	Status result;
 
@@ -309,9 +385,76 @@ Status DBImpl::CreateIndex(const std::string &indexName, const std::string &tabl
 			indexList.push_back(iter->index);
 		}
 
-		result = mpBackend->CreateIndex(indexName, tableName, tupleDesc, indexList, isUnique);
+		IDBBackend::OpenMode openMode = IDBBackend::kCreate | IDBBackend::kErrorIfExists;
+
+		result = mpBackend->OpenIndex(indexName, tableName, tupleDesc, indexList, isUnique, openMode);
+
+		if (result.OK())
+		{
+			ValueList tupleValueList;
+			Value oneValue;
+
+			oneValue.SetAsString(indexName);
+			tupleValueList.push_back(oneValue);
+
+			oneValue.SetAsString(creationStmt);
+			tupleValueList.push_back(oneValue);
+
+			//Insert this new index info into schema table
+			result = mpBackend->InsertData(kSchemaIndexName, s_schemaIndexTupleDesc, tupleValueList);
+
+			if (result.OK())
+			{
+				this->AddIndex_Private(indexName, tableName, indexList, isUnique);
+			}
+		}
+	}
+	else
+	{
+		result = Status::kTableMissing;
 	}
 
+	return result;
+}
+
+Status DBImpl::OpenIndex(const std::string &indexName, const std::string &tableName, const ColumnDefList &columnList, bool isUnique)
+{
+	Status result;
+
+	const Table *pTable = NULL;
+
+	result = this->GetTableByName(tableName, &pTable);
+
+	if (result.OK())
+	{
+		TupleDesc tupleDesc;
+		const ColumnDefList &columnDefList = pTable->GetAllColumns();
+
+		ColumnDefListToTupleDesc(columnDefList, &tupleDesc); 
+
+		std::vector<int32_t> indexList;
+
+		for (ColumnDefList::const_iterator iter = columnList.begin()
+			; iter != columnList.end()
+			; iter++)
+		{
+			indexList.push_back(iter->index);
+		}
+
+		IDBBackend::OpenMode openMode = 0;
+
+		result = mpBackend->OpenIndex(indexName, tableName, tupleDesc, indexList, isUnique, openMode);
+
+		if (result.OK())
+		{
+			this->AddIndex_Private(indexName, tableName, indexList, isUnique);
+		}
+	}
+	else
+	{
+		result = Status::kTableMissing;
+	}
+	
 	return result;
 }
 
@@ -336,7 +479,7 @@ Status DBImpl::InsertData(const std::string &tableName, const ColumnDefList &col
 	ExprContext exprContext;
 	Expr::EvalExprList(columnExprList, exprContext, &tupleValueList);
 	
-	result = mpBackend->InsertData(tableName, tupleDesc, tupleValueList, -1);
+	result = mpBackend->InsertData(tableName, tupleDesc, tupleValueList);
 
 	return result;
 }
@@ -758,11 +901,10 @@ Status DBImpl::OpenTableWithCreationStmt_Private(const std::string &inCreationSt
 	if (result.OK())
 	{
 		//We use inCreationStmt to open table only
-		result = pStmt->Execute(false); //createTable = false;
+		result = pStmt->Execute(false); //createTableOrIndex = false;
 		
 		delete pStmt;
 	}
-	
 
 	return result;
 }
@@ -780,6 +922,37 @@ void DBImpl::AddTable_Private(const std::string &tableName, const ColumnDefList 
 	}
 
 	mTableCatalog.AddTable(tableName, pTable);
+}
+
+Status	DBImpl::OpenIndexWithCreationStmt_Private(const std::string &inCreationStmt)
+{	
+	Status result;
+
+	ParserDriver parserDriver(this);
+	Statement *pStmt = NULL;
+
+	result = parserDriver.ParseQuery(inCreationStmt, &pStmt);
+
+	if (result.OK())
+	{
+		//We use inCreationStmt to open index only
+		result = pStmt->Execute(false); //createTableOrIndex = false;
+		
+		delete pStmt;
+	}
+
+	return result;
+}
+
+void DBImpl::AddIndex_Private(const std::string &indexName, const std::string &tableName, std::vector<int32_t> indexList, bool isUnique)
+{
+	Index *pIndex = new Index();
+	pIndex->SetIndexName(indexName);
+	pIndex->SetTableName(tableName);
+	pIndex->SetIndexList(indexList);
+	pIndex->SetIsUnique(isUnique);
+
+	mIndexCatalog.AddIndex(indexName, tableName, pIndex);
 }
 
 Table* DBImpl::GetTableByID(uint32_t inTableID) const

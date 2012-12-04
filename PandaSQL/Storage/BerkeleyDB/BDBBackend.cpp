@@ -234,7 +234,7 @@ static int IndexBinder(DB *secondary, const DBT *pkey, const DBT *pdata, DBT *sk
 	return 0;
 }
 
-Status BDBBackend::CreateIndex(const std::string &indexName, const std::string &tableName, const TupleDesc &tupleDesc, const std::vector<int32_t> &indexList, bool isUnique)
+Status BDBBackend::OpenIndex(const std::string &indexName, const std::string &tableName, const TupleDesc &tupleDesc, const std::vector<int32_t> &indexList, bool isUnique, OpenMode openMode)
 {
 	Status result;
 
@@ -313,7 +313,7 @@ Status BDBBackend::CreateIndex(const std::string &indexName, const std::string &
 	return result;
 }
 
-Status BDBBackend::InsertData(const std::string &tableName, const TupleDesc &tupleDesc, const ValueList &tupleValueList, int32_t keyIndex)
+Status BDBBackend::InsertData(const std::string &tableName, const TupleDesc &tupleDesc, const ValueList &tupleValueList)
 {
 	Status result;
 
@@ -331,15 +331,6 @@ Status BDBBackend::InsertData(const std::string &tableName, const TupleDesc &tup
 		
 		memset(&key, 0, sizeof(key));
 		memset(&data, 0, sizeof(data));
-
-		std::string keyString;
-		if (keyIndex >= 0)
-		{		
-			TupleElementToString(tupleDesc[keyIndex], tupleValueList[keyIndex], &keyString);
-			
-			key.data = (void *)keyString.c_str();
-			key.size = keyString.length();
-		}
 
 		std::string rowString;
 		TupleToString(tupleDesc, tupleValueList, &rowString);

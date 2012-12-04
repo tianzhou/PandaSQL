@@ -228,7 +228,7 @@ Status Statement::Prepare()
 	return result;
 }
 
-Status Statement::Execute(bool createTable /* = true */)
+Status Statement::Execute(bool createTableOrIndex /* = true */)
 {
 	Status result;
 
@@ -263,10 +263,8 @@ Status Statement::Execute(bool createTable /* = true */)
 		}
 	case kStmtCreateTable:
 		{
-			if (createTable)
+			if (createTableOrIndex)
 			{
-				//It will call Statement::Execute again and call mpDB->OpenTable
-				//to actually open the table
 				result = mpDB->CreateOpenTable(mTableRefs[0], mColumnDefs, mOrigStmtText);
 			}
 			else
@@ -283,7 +281,15 @@ Status Statement::Execute(bool createTable /* = true */)
 		}
 	case kStmtCreateIndex:
 		{
-			result = mpDB->CreateIndex(mIndexRef, mTableRefs[0], mColumnDefs, mUniqueIndex);
+			if (createTableOrIndex)
+			{
+				result = mpDB->CreateOpenIndex(mIndexRef, mTableRefs[0], mColumnDefs, mUniqueIndex, mOrigStmtText);
+			}
+			else
+			{
+				result = mpDB->OpenIndex(mIndexRef, mTableRefs[0], mColumnDefs, mUniqueIndex);				
+			}
+
 			break;
 		}
 	case kStmtDropIndex:

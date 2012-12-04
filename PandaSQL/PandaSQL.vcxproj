@@ -206,6 +206,8 @@ xcopy /y "3rdParty\berkeleydb\lib\$(Platform)\*.dll" "$(OutDir)"
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Catalog\Index.cpp" />
+    <ClCompile Include="Catalog\IndexCatalog.cpp" />
     <ClCompile Include="DB.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -300,6 +302,8 @@ xcopy /y "3rdParty\berkeleydb\lib\$(Platform)\*.dll" "$(OutDir)"
     <ClCompile Include="Database\Statement.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Catalog\Index.h" />
+    <ClInclude Include="Catalog\IndexCatalog.h" />
     <ClInclude Include="DB.h" />
     <ClInclude Include="Utils\Bitmask.h" />
     <ClInclude Include="Utils\Common.h" />

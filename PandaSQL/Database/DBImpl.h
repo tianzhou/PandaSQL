@@ -5,6 +5,8 @@
 #include <string>
 
 #include "Catalog/Column.h"
+#include "Catalog/Index.h"
+#include "Catalog/IndexCatalog.h"
 #include "Catalog/Table.h"
 #include "Catalog/TableCatalog.h"
 
@@ -33,7 +35,8 @@ public:
 	Status OpenTable(const std::string &tableName, const ColumnDefList &columnList);
 	Status DropTable(const std::string &tableName);
 	
-	Status CreateIndex(const std::string &indexName, const std::string &tableName, const ColumnDefList &columnList, bool isUnique);
+	Status CreateOpenIndex(const std::string &indexName, const std::string &tableName, const ColumnDefList &columnList, bool isUnique, const std::string &creationStmt);
+	Status OpenIndex(const std::string &indexName, const std::string &tableName, const ColumnDefList &columnList, bool isUnique);
 	Status DropIndex(const std::string &indexName, const std::string &tableName);
 
 	Status InsertData(const std::string &tableName, const ColumnDefList &columnList, const ExprList &columnExprList);
@@ -61,6 +64,9 @@ private:
 	Status	OpenTableWithCreationStmt_Private(const std::string &inCreationStmt);
 	void	AddTable_Private(const std::string &tableName, const ColumnDefList &columnList);
 
+	Status	OpenIndexWithCreationStmt_Private(const std::string &inCreationStmt);
+	void	AddIndex_Private(const std::string &indexName, const std::string &tableName, std::vector<int32_t> indexList, bool isUnique);
+
 	typedef Status (*PerformIterator)(TupleIterator *io_iterator, void *io_ctx);
 	Status	PerformIterator_Private(const std::string &tableName, const BooleanExpr *inPredicateExpr, PerformIterator performer, void *io_ctx);
 
@@ -68,6 +74,7 @@ private:
 	IDBBackend *mpBackend;
 
 	TableCatalog mTableCatalog;
+	IndexCatalog mIndexCatalog;
 
 	bool mIsOpen;
 	
