@@ -63,6 +63,12 @@ Status DB::Execute(const std::string &inQuery)
 			std::cout << "ERROR: " << result.GetCode() << std::endl;
 		}
 
+		if (pTopStatement->GetStatementType() != Statement::kStmtUnknown
+			&& pTopStatement->GetStatementType() != Statement::kStmtEmpty)
+		{
+			std::cout << "********************" << std::endl;
+		}
+
 		delete pTopStatement;
 	}
 	

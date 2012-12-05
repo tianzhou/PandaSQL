@@ -7,11 +7,29 @@
 #include "Storage/BerkeleyDB/Transaction/BDBTransaction.h"
 
 #include "Utils/Debug.h"
+#include "Utils/Common.h"
 
 namespace PandaSQL
 {
 
 static const char *const kDBName = "mydb.panda";
+
+bool BDBBackend::IndexEntryKey::operator==(const BDBBackend::IndexEntryKey &rhs) const
+{
+	return this->indexName == rhs.indexName
+		&& this->tableName == rhs.tableName
+		;
+}
+
+bool BDBBackend::IndexEntryKey::operator<(const BDBBackend::IndexEntryKey &rhs) const
+{
+	if (this->tableName == rhs.tableName)
+	{
+		return this->indexName < rhs.indexName;
+	}
+
+	return this->tableName < rhs.tableName;
+}
 
 BDBBackend::BDBBackend(const std::string &inRootPath)
 :
@@ -251,23 +269,36 @@ Status BDBBackend::OpenIndex(const std::string &indexName, const std::string &ta
 
 		PDASSERT(ret == 0);
 
-		u_int32_t flags = DB_AUTO_COMMIT;
+		u_int32_t flags = 0;
 
 		if (!isUnique)
 		{
-			flags = DB_DUPSORT;
+			flags |= DB_DUPSORT;
 		}
 
 		ret = pIndex->set_flags(pIndex, flags);
 
 		PDASSERT(ret == 0);
 
+		u_int32_t openFlags = 0;
+		
+		if (openMode & kCreate)
+		{
+			openFlags |= DB_CREATE;
+
+			// It would return error if table already exists
+			if (openMode & kErrorIfExists)
+			{
+				openFlags |= DB_EXCL;
+			}
+		}
+
 		ret = pIndex->open(pIndex
 			, NULL
 			, kDBName
-			, indexName.c_str()
+			, GetFullIndexName(indexName, tableName).c_str()
 			, DB_BTREE
-			, DB_CREATE
+			, openFlags
 			, 0);
 
 		if (ret != 0)
@@ -291,13 +322,18 @@ Status BDBBackend::OpenIndex(const std::string &indexName, const std::string &ta
 
 		if (result.OK())
 		{
+			IndexEntryKey entryKey;
+			entryKey.indexName = indexName;
+			entryKey.tableName = tableName;
+
 			IndexInfo indexInfo;
+			indexInfo.indexDB = pIndex;
 			indexInfo.tupleDesc = tupleDesc;
 			indexInfo.indexList = indexList;
 
-			mIndexMap[pIndex] = indexInfo;
+			mIndexMap[entryKey] = indexInfo;
 
-			pIndex->app_private = (void *)&mIndexMap[pIndex];
+			pIndex->app_private = (void *)&mIndexMap[entryKey];
 
 			ret = pTable->associate(pTable, NULL, pIndex, IndexBinder, 0);
 
@@ -308,6 +344,62 @@ Status BDBBackend::OpenIndex(const std::string &indexName, const std::string &ta
 		}
        
 
+	}
+
+	return result;
+}
+
+Status BDBBackend::DropIndex(const std::string &indexName, const std::string &tableName)
+{
+	Status result;
+
+	DB *pIndex = NULL;
+
+	result = this->GetIndexByName_Private(indexName, tableName, &pIndex);
+
+	if (result.OK())
+	{
+		IndexEntryKey entryKey;
+		entryKey.indexName = indexName;
+		entryKey.tableName = tableName;
+
+		IndexMap::iterator iter = mIndexMap.find(entryKey);
+
+		if (iter != mIndexMap.end())
+		{
+			mIndexMap.erase(iter);
+		}
+
+		int ret = pIndex->close(pIndex, 0);
+
+		if (ret != 0)
+		{
+			PDDebugOutputVerbose(db_strerror(ret));
+			result = Status::kInternalError;
+		}
+
+		if (result.OK())
+		{
+			int ret = mpDBEnv->dbremove(mpDBEnv
+				, NULL
+				, kDBName
+				, GetFullIndexName(indexName, tableName).c_str()
+				, 0);
+
+			if (ret != 0)
+			{
+				PDDebugOutputVerbose(db_strerror(ret));
+
+				if (ret == ENOENT)
+				{
+					result = Status::kIndexMissing;
+				}
+				else
+				{
+					result = Status::kInternalError;
+				}
+			}
+		}
 	}
 
 	return result;
@@ -526,6 +618,34 @@ Status BDBBackend::GetTableByName_Private(const std::string &name, DB **o_table)
 		PDASSERT(0);
 
 		*o_table = NULL;
+
+		result = Status::kInternalError;
+	}
+
+	return result;
+}
+
+Status BDBBackend::GetIndexByName_Private(const std::string &indexName, const std::string &tableName, DB **o_index) const
+{	
+	Status result;
+
+	IndexEntryKey entryKey;
+	entryKey.indexName = indexName;
+	entryKey.tableName = tableName;
+
+	BDBBackend::IndexMap::const_iterator iter = mIndexMap.find(entryKey);
+
+	if (iter != mIndexMap.end())
+	{
+		*o_index = iter->second.indexDB;
+	}
+	else
+	{
+		//The caller should always get a valid index.
+		//kTableMissing error should be returned by higher layer
+		PDASSERT(0);
+
+		*o_index = NULL;
 
 		result = Status::kInternalError;
 	}

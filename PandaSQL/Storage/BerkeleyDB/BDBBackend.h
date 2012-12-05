@@ -26,6 +26,7 @@ public:
 	virtual Status DropTable(const std::string &tableName);
 	
 	virtual Status OpenIndex(const std::string &indexName, const std::string &tableName, const TupleDesc &tupleDesc, const std::vector<int32_t> &indexList, bool isUnique, OpenMode openMode);
+	virtual Status DropIndex(const std::string &indexName, const std::string &tableName);
 	//virtual Status CreateIndex(
 	//virtual Status InsertRecord(const TupleData &inTuple) = 0;
 	//virtual Status FindFirstRecordWithPredicate(const Predicate *inPredicate, Iterator **o_iterator) = 0;
@@ -40,22 +41,33 @@ privileged:
 
 	struct IndexInfo
 	{
+		DB *indexDB;
 		TupleDesc tupleDesc;
 		std::vector<int32_t> indexList;
 	};
 
 private:
 
+	//Same structure in IndexCatalog
+	struct IndexEntryKey
+	{
+		std::string indexName;
+		std::string tableName;
+		bool operator==(const IndexEntryKey &rhs) const;
+		bool operator<(const IndexEntryKey &rhs) const;
+	};
+
 	BDBBackend(const BDBBackend &rhs);
 	BDBBackend& operator=(const BDBBackend &rhs);
 
 	Status GetTableByName_Private(const std::string &name, DB **o_table) const;
+	Status GetIndexByName_Private(const std::string &indexName, const std::string &tableName, DB **o_index) const;
 
 	typedef std::map<std::string, DB*> TableMap;
 	typedef std::pair<std::string, DB*> TableMapEntry;
 
-	typedef std::map<DB*, IndexInfo> IndexMap;
-	typedef std::pair<DB*, IndexInfo> IndexMapEntry;
+	typedef std::map<IndexEntryKey, IndexInfo> IndexMap;
+	typedef std::pair<IndexEntryKey, IndexInfo> IndexMapEntry;
 
 	DB_ENV *mpDBEnv;
 	TableMap mTableMap;

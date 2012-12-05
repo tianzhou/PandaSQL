@@ -2,4 +2,4 @@ DROP TABLE Master;
 DROP TABLE Detail;
 --DROP TABLE Detail_Detail;
 
-DROP INDEX idx_master_name;
+DROP INDEX idx_master_name ON Master;

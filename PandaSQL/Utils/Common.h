@@ -14,6 +14,8 @@ void NumberToString(const int32_t inNum, std::string *o_str);
 void StringToIntList(const std::string &inStr, std::vector<int32_t> *o_intList);
 void IntListToString(const std::vector<int32_t> &inIntList, std::string *o_str);
 
+std::string GetFullIndexName(const std::string &indexName, const std::string &tableName);
+
 }	// PandaSQL
 
 

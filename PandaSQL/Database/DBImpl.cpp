@@ -41,7 +41,8 @@ const std::string kSchemaIndexName = "PD_Index";
 enum
 {
 	kSchemaIndexNameIndex = 0,
-	kSchemaIndexCreationStmtIndex = 1,
+	kSchemaIndexTableNameIndex = 1,
+	kSchemaIndexCreationStmtIndex = 2
 };
 
 ColumnDefList s_schemaIndexColumnDefList;
@@ -93,6 +94,18 @@ mStorageType(inStorageType)
 		PDASSERT(index == kSchemaIndexNameIndex);
 		schemaColumn.qualifiedName.tableName = kSchemaIndexName;
 		schemaColumn.qualifiedName.columnName = "index_name";
+		schemaColumn.index = index++;
+		schemaColumn.dataType = kText;
+		schemaColumn.constraintType = kConstraintNone;
+		s_schemaIndexColumnDefList.push_back(schemaColumn);
+
+		tupleDescElement.mDataType = schemaColumn.dataType;
+		s_schemaIndexTupleDesc.push_back(tupleDescElement);
+
+		//table_name
+		PDASSERT(index == kSchemaIndexTableNameIndex);
+		schemaColumn.qualifiedName.tableName = kSchemaIndexName;
+		schemaColumn.qualifiedName.columnName = "table_name";
 		schemaColumn.index = index++;
 		schemaColumn.dataType = kText;
 		schemaColumn.constraintType = kConstraintNone;
@@ -290,6 +303,7 @@ Status DBImpl::OpenTable(const std::string &tableName, const ColumnDefList &colu
 
 Status DBImpl::DropTable(const std::string &tableName)
 {
+	//TODO: Make whole method atomic
 	Status result;
 
 	const Table *pTable = NULL;
@@ -338,6 +352,25 @@ Status DBImpl::DropTable(const std::string &tableName)
 			}
 
 			delete pTupleIterator;
+		}
+	}
+
+	//Drop all indexes for the table
+	if (result.OK())
+	{
+		std::vector<std::string> indexNameList;
+		mIndexCatalog.GetIndexNameListForTable(tableName, &indexNameList);
+
+		std::vector<std::string>::const_iterator indexNameIter = indexNameList.begin();
+
+		for (; indexNameIter != indexNameList.end(); indexNameIter++)
+		{
+			result = this->DropIndex(*indexNameIter, tableName);
+
+			if (!result.OK())
+			{
+				break;
+			}
 		}
 	}
 
@@ -395,6 +428,9 @@ Status DBImpl::CreateOpenIndex(const std::string &indexName, const std::string &
 			Value oneValue;
 
 			oneValue.SetAsString(indexName);
+			tupleValueList.push_back(oneValue);
+
+			oneValue.SetAsString(tableName);
 			tupleValueList.push_back(oneValue);
 
 			oneValue.SetAsString(creationStmt);
@@ -461,6 +497,66 @@ Status DBImpl::OpenIndex(const std::string &indexName, const std::string &tableN
 Status DBImpl::DropIndex(const std::string &indexName, const std::string &tableName)
 {
 	Status result;
+	const Table *pTable = NULL;
+
+	result = this->GetTableByName(tableName, &pTable);
+
+	//Remove the entry from schema table
+	if (result.OK())
+	{
+		const Table *pSchemaIndexTable = NULL;
+
+		result = this->GetTableByName(kSchemaIndexName, &pSchemaIndexTable);
+
+		if (result.OK())
+		{
+			TupleIterator *pTupleIterator = this->CreateTupleIteratorForTable(*pSchemaIndexTable, s_schemaIndexTupleDesc);
+
+			result = pTupleIterator->GetLastError();
+
+			if (result.OK())
+			{
+				while (pTupleIterator->Next())
+				{
+					ValueList theValueList;
+					if (pTupleIterator->GetValue(&theValueList))
+					{
+						if (theValueList[kSchemaIndexNameIndex].GetAsString() == indexName
+							&& theValueList[kSchemaIndexTableNameIndex].GetAsString() == tableName)
+						{
+							if (!pTupleIterator->Remove())
+							{
+								result = Status::kInternalError;
+							}
+
+							break;
+						}
+					}
+				}
+
+				if (!pTupleIterator->Valid())
+				{
+					//We should find a matching item
+					PDASSERT(0);
+
+					result = Status::kInternalError;
+				}
+			}
+
+			delete pTupleIterator;
+		}
+	}
+
+	//Drop the index
+	if (result.OK())
+	{
+		result = mpBackend->DropIndex(indexName, tableName);
+	}	
+
+	if (result.OK())
+	{
+		mIndexCatalog.RemoveIndex(indexName, tableName);		
+	}
 
 	return result;
 }

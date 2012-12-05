@@ -312,12 +312,14 @@ void Statement::PrintStatement()
 		mpWhereExpr->Print(0);
 	}
 
-	std::cout << "*********ColumnDef*********" << std::endl;
+	std::cout << std::endl;
 
 	for (size_t i = 0; i < mColumnDefs.size(); i++)
 	{
 		std::cout << "Column " << i << ": " << mColumnDefs[i].qualifiedName.tableName << "." << mColumnDefs[i].qualifiedName.columnName << std::endl;
 	}
+
+	std::cout << std::endl;
 }
 
 void Statement::SetWhereClauseExpression(BooleanExpr *inWhereExpr)

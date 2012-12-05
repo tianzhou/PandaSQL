@@ -2,6 +2,8 @@
 #define PANDASQL_INDEX_CATALOG_H
 
 #include <map>
+#include <string>
+#include <vector>
 
 namespace PandaSQL
 {
@@ -17,7 +19,8 @@ public:
 	~IndexCatalog();
 
 	const Index* GetIndexByName(const std::string &inIndexName, const std::string &inTableName) const;
-	
+	void GetIndexNameListForTable(const std::string &inTableName, std::vector<std::string> *o_indexNameList) const;
+
 	//Don't return value, instead it will throw assert
 	//It's an internal class, so the caller should make sure
 	//not adding duplicate index or not removing non-existing index

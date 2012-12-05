@@ -9,14 +9,14 @@
 namespace PandaSQL
 {
 
-bool IndexCatalog::IndexEntryKey::operator==(const IndexEntryKey &rhs) const
+bool IndexCatalog::IndexEntryKey::operator==(const IndexCatalog::IndexEntryKey &rhs) const
 {
 	return this->indexName == rhs.indexName
 		&& this->tableName == rhs.tableName
 		;
 }
 
-bool IndexCatalog::IndexEntryKey::operator<(const IndexEntryKey &rhs) const
+bool IndexCatalog::IndexEntryKey::operator<(const IndexCatalog::IndexEntryKey &rhs) const
 {
 	if (this->tableName == rhs.tableName)
 	{
@@ -50,6 +50,19 @@ const Index* IndexCatalog::GetIndexByName(const std::string &inIndexName, const 
 	}
 
 	return returnedIndex;
+}
+
+void IndexCatalog::GetIndexNameListForTable(const std::string &inTableName, std::vector<std::string> *o_indexNameList) const
+{
+	IndexStore::const_iterator iter = mIndexStore.begin();
+
+	for (; iter != mIndexStore.end(); iter++)
+	{
+		if (iter->first.tableName == inTableName)
+		{
+			o_indexNameList->push_back(iter->first.indexName);
+		}
+	}
 }
 
 void   IndexCatalog::AddIndex(const std::string &inIndexName, const std::string &inTableName, Index *io_index)

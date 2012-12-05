@@ -31,5 +31,10 @@ void IntListToString(const std::vector<int32_t> &inIntList, std::string *o_str)
 
 }
 
+std::string GetFullIndexName(const std::string &indexName, const std::string &tableName)
+{
+	return tableName + indexName;
+}
+
 
 }	// PandaSQL

@@ -246,7 +246,8 @@ Status ParserDriver::ParseQuery(std::string inQueryString, Statement **io_statem
 	if (psr->pParser->rec->state->errorCount > 0)
 	{
 		fprintf(stderr, "The parser returned %d errors, tree walking aborted.\n", psr->pParser->rec->state->errorCount);
-		
+		printf("\nstmt: %s\n\n", inQueryString.c_str());
+
 		result = Status::kSQLSyntaxError;
 	}
 	else

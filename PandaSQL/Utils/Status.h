@@ -16,12 +16,13 @@ public:
 		kIOError = 4,
 		kTableMissing = 5,
 		kColumnMissing = 6,
-		kInvalidExpression = 7,
-		kInvalidCommand = 8,
-		kTableAlreadyExists = 9,
-		kIndexAlreadyExists = 10,
-		kAmbiguousColumn = 11,
-		kSQLSyntaxError = 12,
+		kIndexMissing = 7,
+		kInvalidExpression = 8,
+		kInvalidCommand = 9,
+		kTableAlreadyExists = 10,
+		kIndexAlreadyExists = 11,
+		kAmbiguousColumn = 12,
+		kSQLSyntaxError = 13,
 	};
 
 	Status() : mState(kOK) {}
