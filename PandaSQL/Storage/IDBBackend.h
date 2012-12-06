@@ -44,10 +44,6 @@ public:
 	virtual Status DropIndex(const std::string &indexName, const std::string &tableName) = 0;
 
 	virtual Status InsertData(const std::string &tableName, const TupleDesc &tupleDesc, const ValueList &tupleValueList) = 0;
-	virtual Status DeleteData(const std::string &tableName, const TuplePredicate *inTuplePredicate = NULL) = 0;
-	virtual Status SelectData(const std::string &tableName, const ColumnDefList &columnList, const TuplePredicate *inTuplePredicate = NULL) = 0;
-	//virtual Status InsertRecord(const TupleData &inTuple) = 0;
-	//virtual Status FindFirstRecordWithPredicate(const Predicate *inPredicate, Iterator **o_iterator) = 0;
 
 	//Return NULL if table for tableName is not opened
 	virtual TupleIterator* CreateScanIterator(const std::string &tableName, const TupleDesc &tupleDesc, const TuplePredicate *inTuplePredicate = NULL) = 0;
