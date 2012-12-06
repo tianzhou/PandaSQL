@@ -21,6 +21,7 @@ public:
 	virtual void Reset();
 	virtual bool Next();
 	virtual bool Prev();
+	virtual bool First();
 	virtual bool Last();
 	virtual bool GetValue(ValueList *o_tupleValueList) const;
 	virtual bool Update(const ValueList &inValueList);

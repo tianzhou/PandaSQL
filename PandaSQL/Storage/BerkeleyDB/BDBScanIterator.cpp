@@ -109,11 +109,19 @@ bool BDBScanIterator::Prev()
 	return GetCursor_Private(DB_PREV);
 }
 
+bool BDBScanIterator::First()
+{
+	if (!mLastError.OK())
+	{
+		return false;
+	}
+
+	return GetCursor_Private(DB_FIRST);
+}
+
 bool BDBScanIterator::Last()
 {
-	if (!mLastError.OK()
-		|| (mInvalidCursor && !mJustReset)
-		)
+	if (!mLastError.OK())
 	{
 		return false;
 	}
