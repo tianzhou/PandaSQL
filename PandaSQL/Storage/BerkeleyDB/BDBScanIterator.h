@@ -21,6 +21,7 @@ public:
 	virtual void Reset();
 	virtual bool Next();
 	virtual bool Prev();
+	virtual bool Last();
 	virtual bool GetValue(ValueList *o_tupleValueList) const;
 	virtual bool Update(const ValueList &inValueList);
 	virtual bool Remove();
@@ -30,7 +31,8 @@ protected:
 	BDBScanIterator(const BDBScanIterator &rhs);
 	BDBScanIterator& operator=(const BDBScanIterator &rhs);
 
-	bool MoveCursor_Private(u_int32_t flags);
+	bool GetCursor_Private(u_int32_t flags);
+	bool PutCursor_Private(const ValueList &inValueList, u_int32_t flags);
 
 private:
 	

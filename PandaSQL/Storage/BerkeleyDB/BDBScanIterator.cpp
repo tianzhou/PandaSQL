@@ -85,11 +85,11 @@ bool BDBScanIterator::Next()
 	if (mJustReset)
 	{
 		mJustReset = false;
-		result = MoveCursor_Private(DB_FIRST);
+		result = GetCursor_Private(DB_FIRST);
 	}
 	else
 	{
-		result = MoveCursor_Private(DB_NEXT);
+		result = GetCursor_Private(DB_NEXT);
 	}
 
 	mInvalidCursor = !result;
@@ -106,7 +106,19 @@ bool BDBScanIterator::Prev()
 		return false;
 	}
 
-	return MoveCursor_Private(DB_PREV);
+	return GetCursor_Private(DB_PREV);
+}
+
+bool BDBScanIterator::Last()
+{
+	if (!mLastError.OK()
+		|| (mInvalidCursor && !mJustReset)
+		)
+	{
+		return false;
+	}
+
+	return GetCursor_Private(DB_LAST);
 }
 
 bool BDBScanIterator::GetValue(ValueList *o_tupleValueList) const
@@ -204,7 +216,7 @@ bool BDBScanIterator::Remove()
 	return result;
 }
 
-bool BDBScanIterator::MoveCursor_Private(u_int32_t flags)
+bool BDBScanIterator::GetCursor_Private(u_int32_t flags)
 {
 	bool result = true;
 
@@ -230,6 +242,36 @@ bool BDBScanIterator::MoveCursor_Private(u_int32_t flags)
 			mLastError = Status::kInternalError;
 		}
 
+		result = false;
+	}
+
+	return result;
+}
+
+bool BDBScanIterator::PutCursor_Private(const ValueList &inValueList, u_int32_t flags)
+{
+	bool result = true;
+
+	PDASSERT(mpDBCursor);
+
+	DBT key;
+	DBT data;
+	int ret;
+
+	memset(&key, 0, sizeof(key));
+	memset(&data, 0, sizeof(data));
+
+	std::string rowString;
+	TupleToString(mTupleDesc, inValueList, &rowString);
+	data.data = (void *)rowString.c_str();
+	data.size = rowString.length();
+
+	ret = mpDBCursor->put(mpDBCursor, &key, &data, flags);
+
+	if (ret != 0)
+	{
+		PDDebugOutputVerbose(db_strerror(ret));
+		mLastError = Status::kInternalError;
 		result = false;
 	}
 

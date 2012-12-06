@@ -43,6 +43,7 @@ public:
 	virtual Status OpenIndex(const std::string &indexName, const std::string &tableName, const TupleDesc &tupleDesc, const std::vector<int32_t> &indexList, bool isUnique, OpenMode openMode) = 0;
 	virtual Status DropIndex(const std::string &indexName, const std::string &tableName) = 0;
 
+	//Update/Delete/Select are through iterator
 	virtual Status InsertData(const std::string &tableName, const TupleDesc &tupleDesc, const ValueList &tupleValueList) = 0;
 
 	//Return NULL if table for tableName is not opened
