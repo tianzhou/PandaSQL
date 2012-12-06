@@ -27,7 +27,6 @@ public:
 	
 	virtual Status OpenIndex(const std::string &indexName, const std::string &tableName, const TupleDesc &tupleDesc, const std::vector<int32_t> &indexList, bool isUnique, OpenMode openMode);
 	virtual Status DropIndex(const std::string &indexName, const std::string &tableName);
-	//virtual Status CreateIndex(
 
 	virtual Status InsertData(const std::string &tableName, const TupleDesc &tupleDesc, const ValueList &tupleValueList);
 
