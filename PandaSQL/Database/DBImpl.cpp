@@ -497,47 +497,54 @@ Status DBImpl::DropIndex(const std::string &indexName, const std::string &tableN
 
 	//Remove the entry from schema table
 	if (result.OK())
-	{
-		const Table *pSchemaIndexTable = NULL;
+	{	
+		const Index *pIndex = NULL;
 
-		result = this->GetTableByName(kSchemaIndexName, &pSchemaIndexTable);
+		result = this->GetIndexByName(indexName, tableName, &pIndex);
 
 		if (result.OK())
 		{
-			TupleIterator *pTupleIterator = this->CreateTupleIteratorForTable(*pSchemaIndexTable, s_schemaIndexTupleDesc);
+			const Table *pSchemaIndexTable = NULL;
 
-			result = pTupleIterator->GetLastError();
+			result = this->GetTableByName(kSchemaIndexName, &pSchemaIndexTable);
 
 			if (result.OK())
 			{
-				while (pTupleIterator->Next())
-				{
-					ValueList theValueList;
-					if (pTupleIterator->GetValue(&theValueList))
-					{
-						if (theValueList[kSchemaIndexNameIndex].GetAsString() == indexName
-							&& theValueList[kSchemaIndexTableNameIndex].GetAsString() == tableName)
-						{
-							if (!pTupleIterator->Remove())
-							{
-								result = Status::kInternalError;
-							}
+				TupleIterator *pTupleIterator = this->CreateTupleIteratorForTable(*pSchemaIndexTable, s_schemaIndexTupleDesc);
 
-							break;
+				result = pTupleIterator->GetLastError();
+
+				if (result.OK())
+				{
+					while (pTupleIterator->Next())
+					{
+						ValueList theValueList;
+						if (pTupleIterator->GetValue(&theValueList))
+						{
+							if (theValueList[kSchemaIndexNameIndex].GetAsString() == indexName
+								&& theValueList[kSchemaIndexTableNameIndex].GetAsString() == tableName)
+							{
+								if (!pTupleIterator->Remove())
+								{
+									result = Status::kInternalError;
+								}
+
+								break;
+							}
 						}
+					}
+
+					if (!pTupleIterator->Valid())
+					{
+						//We should find a matching item
+						PDASSERT(0);
+
+						result = Status::kInternalError;
 					}
 				}
 
-				if (!pTupleIterator->Valid())
-				{
-					//We should find a matching item
-					PDASSERT(0);
-
-					result = Status::kInternalError;
-				}
+				delete pTupleIterator;
 			}
-
-			delete pTupleIterator;
 		}
 	}
 
@@ -814,6 +821,20 @@ Status DBImpl::GetTableByName(const std::string &tableName, const Table **o_tabl
 	if (*o_table == NULL)
 	{
 		result = Status::kTableMissing;
+	}
+
+	return result;
+}
+
+Status DBImpl::GetIndexByName(const std::string &indexName, const std::string &tableName, const Index **o_index) const
+{
+	Status result;
+
+	*o_index = mIndexCatalog.GetIndexByName(indexName, tableName);
+
+	if (*o_index == NULL)
+	{
+		result = Status::kIndexMissing;
 	}
 
 	return result;
