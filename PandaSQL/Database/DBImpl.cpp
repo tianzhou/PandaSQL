@@ -153,12 +153,10 @@ Status DBImpl::Open(const std::string &inDBPath, const OpenOptions &inOptions)
 		if (result.OK())
 		{
 			IDBBackend::PayloadPtr payload;
-			result = mpBackend->OpenTable(kSchemaTableName, IDBBackend::kCreate, &payload);
+			result = this->OpenTable_Private(kSchemaTableName, *s_pSchemaTableColumnDefList, IDBBackend::kCreate, &payload);
 
 			if (result.OK())
 			{
-				this->AddTable_Private(kSchemaTableName, *s_pSchemaTableColumnDefList, payload);
-
 				TupleDesc tupleDesc;
 
 				ColumnDefListToTupleDesc(*s_pSchemaTableColumnDefList, &tupleDesc);
@@ -191,12 +189,10 @@ Status DBImpl::Open(const std::string &inDBPath, const OpenOptions &inOptions)
 			if (result.OK())
 			{
 				IDBBackend::PayloadPtr payload;
-				result = mpBackend->OpenTable(kSchemaIndexName, IDBBackend::kCreate, &payload);
+				result = this->OpenTable_Private(kSchemaIndexName, *s_pSchemaIndexColumnDefList, IDBBackend::kCreate, &payload);
 
 				if (result.OK())
 				{
-					this->AddTable_Private(kSchemaIndexName, *s_pSchemaIndexColumnDefList, payload);
-
 					TupleDesc tupleDesc;
 
 					ColumnDefListToTupleDesc(*s_pSchemaIndexColumnDefList, &tupleDesc);
@@ -257,7 +253,7 @@ Status DBImpl::CreateOpenTable(const std::string &tableName, const ColumnDefList
 		IDBBackend::OpenMode openMode = IDBBackend::kCreate | IDBBackend::kErrorIfExists;
 
 		IDBBackend::PayloadPtr payload;
-		result = mpBackend->OpenTable(tableName, openMode, &payload);
+		result = this->OpenTable_Private(tableName, columnList, openMode, &payload);
 
 		if (result.OK())
 		{
@@ -282,11 +278,6 @@ Status DBImpl::CreateOpenTable(const std::string &tableName, const ColumnDefList
 			{
 				//Insert this new table info into schema table
 				result = mpBackend->InsertData(kSchemaTableName, s_schemaTableTupleDesc, tupleValueList, (IDBBackend::PayloadPtr)pSchemaTable->GetPayload());
-
-				if (result.OK())
-				{
-					this->AddTable_Private(tableName, columnList, payload);
-				}
 			}
 		}		
 	}
@@ -303,14 +294,9 @@ Status DBImpl::OpenTable(const std::string &tableName, const ColumnDefList &colu
 	Status result;
 
 	IDBBackend::OpenMode openMode = 0;
-
 	IDBBackend::PayloadPtr payload;
-	result = mpBackend->OpenTable(tableName, openMode, &payload);
 
-	if (result.OK())
-	{
-		this->AddTable_Private(tableName, columnList, payload);
-	}
+	result = this->OpenTable_Private(tableName, columnList, openMode, &payload);
 	
 	return result;
 }
@@ -888,6 +874,20 @@ Status DBImpl::Close_Private(bool forceClose)
 	return result;
 }
 
+Status DBImpl::OpenTable_Private(const std::string &tableName, const ColumnDefList &columnList, IDBBackend::OpenMode openMode, IDBBackend::PayloadPtr *io_payload)
+{
+	Status result;
+
+	result = mpBackend->OpenTable(tableName, openMode, io_payload);
+
+	if (result.OK())
+	{
+		this->AddTable_Private(tableName, columnList, *io_payload);
+	}
+
+	return result;
+}
+
 Status DBImpl::OpenTableWithCreationStmt_Private(const std::string &inCreationStmt)
 {
 	Status result;
@@ -908,7 +908,7 @@ Status DBImpl::OpenTableWithCreationStmt_Private(const std::string &inCreationSt
 	return result;
 }
 
-void DBImpl::AddTable_Private(const std::string &tableName, const ColumnDefList &columnList, IDBBackend::PayloadPtr payload)
+void DBImpl::AddTable_Private(const std::string &tableName, const ColumnDefList &columnList, void *payload)
 {		
 	Table *pTable = new Table(payload);
 	pTable->SetName(tableName);
@@ -943,7 +943,7 @@ Status	DBImpl::OpenIndexWithCreationStmt_Private(const std::string &inCreationSt
 	return result;
 }
 
-void DBImpl::AddIndex_Private(const std::string &indexName, const std::string &tableName, std::vector<int32_t> indexList, bool isUnique, IDBBackend::PayloadPtr payload)
+void DBImpl::AddIndex_Private(const std::string &indexName, const std::string &tableName, std::vector<int32_t> indexList, bool isUnique, void *payload)
 {
 	Index *pIndex = new Index(payload);
 	pIndex->SetIndexName(indexName);
