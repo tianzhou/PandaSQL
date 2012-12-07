@@ -21,52 +21,36 @@ public:
 	virtual Status Open();
 	virtual Status Close();
 
-	virtual Status OpenTable(const std::string &tableName, OpenMode openMode);
-	virtual Status DropTable(const std::string &tableName);
+	virtual Status OpenTable(const std::string &tableName, OpenMode openMode, PayloadPtr *io_payload);
+	virtual Status DropTable(const std::string &tableName, PayloadPtr payload);
 	
-	virtual Status OpenIndex(const std::string &indexName, const std::string &tableName, const TupleDesc &tupleDesc, const std::vector<int32_t> &indexList, bool isUnique, OpenMode openMode);
-	virtual Status DropIndex(const std::string &indexName, const std::string &tableName);
+	virtual Status OpenIndex(const std::string &indexName, const std::string &tableName, const TupleDesc &tupleDesc, const std::vector<int32_t> &indexList, bool isUnique, OpenMode openMode, PayloadPtr tablePayload, PayloadPtr *io_indexPayload);
+	virtual Status DropIndex(const std::string &indexName, const std::string &tableName, PayloadPtr indexPayload);
 
-	virtual Status InsertData(const std::string &tableName, const TupleDesc &tupleDesc, const ValueList &tupleValueList);
+	virtual Status InsertData(const std::string &tableName, const TupleDesc &tupleDesc, const ValueList &tupleValueList, PayloadPtr payload);
 
-	virtual TupleIterator* CreateScanIterator(const std::string &tableName, const TupleDesc &tupleDesc, const TuplePredicate *inTuplePredicate = NULL);
+	virtual TupleIterator* CreateScanIterator(const std::string &tableName, const TupleDesc &tupleDesc, const TuplePredicate *inTuplePredicate, PayloadPtr payload);
 
 privileged:
 
 	struct IndexInfo
 	{
-		DB *indexDB;
 		TupleDesc tupleDesc;
 		std::vector<int32_t> indexList;
 	};
 
 private:
 
-	//Same structure in IndexCatalog
-	struct IndexEntryKey
-	{
-		std::string indexName;
-		std::string tableName;
-		bool operator==(const IndexEntryKey &rhs) const;
-		bool operator<(const IndexEntryKey &rhs) const;
-	};
-
 	BDBBackend(const BDBBackend &rhs);
 	BDBBackend& operator=(const BDBBackend &rhs);
 
-	Status GetTableByName_Private(const std::string &name, DB **o_table) const;
-	Status GetIndexByName_Private(const std::string &indexName, const std::string &tableName, DB **o_index) const;
-
-	typedef std::map<std::string, DB*> TableMap;
-	typedef std::pair<std::string, DB*> TableMapEntry;
-
-	typedef std::map<IndexEntryKey, IndexInfo> IndexMap;
-	typedef std::pair<IndexEntryKey, IndexInfo> IndexMapEntry;
+	typedef std::map<DB*, IndexInfo> IndexMap;
+	typedef std::pair<DB*, IndexInfo> IndexMapEntry;
 
 	DB_ENV *mpDBEnv;
-	TableMap mTableMap;
-	IndexMap mIndexMap;
 	bool mIsOpen;
+
+	IndexMap mIndexMap;
 };
 
 

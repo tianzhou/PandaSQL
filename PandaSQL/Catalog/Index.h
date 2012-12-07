@@ -14,8 +14,10 @@ class Index
 
 public:
 
-	Index();
+	Index(void *payload);
 	~Index();
+
+	void* GetPayload() const { return mPayload; }
 	
 	void SetIndexName(const std::string &inName) { mIndexName = inName; }
 	std::string GetIndexName() const { return mIndexName; }
@@ -33,6 +35,10 @@ private:
 	
 	Index(const Index &rhs);
 	Index& operator=(const Index &rhs);
+
+	//payload is not owned by this class, 
+	//so it's reasonable to make it mutable
+	mutable void *mPayload;
 
 	std::string mIndexName;
 	std::string mTableName;

@@ -29,6 +29,8 @@ public:
 
 	typedef uint8_t OpenMode;
 
+	typedef char* PayloadPtr;
+
 	static IDBBackend *CreateBackend(const std::string &inRootPath, StorageType inType);
 
 	virtual ~IDBBackend() = 0 {}
@@ -36,17 +38,17 @@ public:
 	virtual Status Open() = 0;
 	virtual Status Close() = 0;
 
-	virtual Status OpenTable(const std::string &tableName, OpenMode openMode) = 0;
-	virtual Status DropTable(const std::string &tableName) = 0;
+	virtual Status OpenTable(const std::string &tableName, OpenMode openMode, PayloadPtr *io_payload) = 0;
+	virtual Status DropTable(const std::string &tableName, PayloadPtr payload) = 0;
 	
-	virtual Status OpenIndex(const std::string &indexName, const std::string &tableName, const TupleDesc &tupleDesc, const std::vector<int32_t> &indexList, bool isUnique, OpenMode openMode) = 0;
-	virtual Status DropIndex(const std::string &indexName, const std::string &tableName) = 0;
+	virtual Status OpenIndex(const std::string &indexName, const std::string &tableName, const TupleDesc &tupleDesc, const std::vector<int32_t> &indexList, bool isUnique, OpenMode openMode, PayloadPtr tablePayload, PayloadPtr *io_indexPayload) = 0;
+	virtual Status DropIndex(const std::string &indexName, const std::string &tableName, PayloadPtr indexPayload) = 0;
 
 	//Update/Delete/Select are through iterator
-	virtual Status InsertData(const std::string &tableName, const TupleDesc &tupleDesc, const ValueList &tupleValueList) = 0;
+	virtual Status InsertData(const std::string &tableName, const TupleDesc &tupleDesc, const ValueList &tupleValueList, PayloadPtr tablePayload) = 0;
 
 	//Return NULL if table for tableName is not opened
-	virtual TupleIterator* CreateScanIterator(const std::string &tableName, const TupleDesc &tupleDesc, const TuplePredicate *inTuplePredicate = NULL) = 0;
+	virtual TupleIterator* CreateScanIterator(const std::string &tableName, const TupleDesc &tupleDesc, const TuplePredicate *inTuplePredicate, PayloadPtr payload) = 0;
 
 protected:
 	IDBBackend(const std::string &inRootPath);

@@ -11,9 +11,10 @@
 namespace PandaSQL
 {
 
-Table::Table()
+Table::Table(void *payload)
 :
-mpDataHost(NULL)
+mPayload(payload)
+, mpDataHost(NULL)
 {
 	//if (inType == IStorage::kCVS)
 	//{

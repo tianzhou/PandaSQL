@@ -12,13 +12,14 @@
 
 #include "Optimizer/Join/Join.h"
 
+#include "Storage/IDBBackend.h"
+
 #include "Utils/Status.h"
 
 namespace PandaSQL
 {
 
 class BooleanExpr;
-class IDBBackend;
 class TupleIterator;
 
 class DBImpl
@@ -62,10 +63,10 @@ private:
 	Status  Close_Private(bool forceClose);
 
 	Status	OpenTableWithCreationStmt_Private(const std::string &inCreationStmt);
-	void	AddTable_Private(const std::string &tableName, const ColumnDefList &columnList);
+	void	AddTable_Private(const std::string &tableName, const ColumnDefList &columnList, IDBBackend::PayloadPtr payload);
 
 	Status	OpenIndexWithCreationStmt_Private(const std::string &inCreationStmt);
-	void	AddIndex_Private(const std::string &indexName, const std::string &tableName, std::vector<int32_t> indexList, bool isUnique);
+	void	AddIndex_Private(const std::string &indexName, const std::string &tableName, std::vector<int32_t> indexList, bool isUnique, IDBBackend::PayloadPtr payload);
 
 	typedef Status (*PerformIterator)(TupleIterator *io_iterator, void *io_ctx);
 	Status	PerformIterator_Private(const std::string &tableName, const BooleanExpr *inPredicateExpr, PerformIterator performer, void *io_ctx);

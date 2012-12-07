@@ -25,8 +25,10 @@ public:
 
 	typedef std::vector<std::string> TableRefList;
 
-	Table();
+	Table(void *payload);
 	~Table();
+
+	void* GetPayload() const { return mPayload; }
 	
 	void SetName(const std::string &inName) { mName = inName; }
 	std::string GetName() const { return mName; }
@@ -49,6 +51,10 @@ private:
 	Table& operator=(const Table &rhs);
 
 	Iterator* GetScanIterator();
+
+	//payload is not owned by this class, 
+	//so it's reasonable to make it mutable
+	mutable void *mPayload;
 
 	std::string mName;
 	ColumnDefList mColumnList;

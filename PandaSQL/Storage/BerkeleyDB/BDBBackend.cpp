@@ -14,23 +14,6 @@ namespace PandaSQL
 
 static const char *const kDBName = "mydb.panda";
 
-bool BDBBackend::IndexEntryKey::operator==(const BDBBackend::IndexEntryKey &rhs) const
-{
-	return this->indexName == rhs.indexName
-		&& this->tableName == rhs.tableName
-		;
-}
-
-bool BDBBackend::IndexEntryKey::operator<(const BDBBackend::IndexEntryKey &rhs) const
-{
-	if (this->tableName == rhs.tableName)
-	{
-		return this->indexName < rhs.indexName;
-	}
-
-	return this->tableName < rhs.tableName;
-}
-
 BDBBackend::BDBBackend(const std::string &inRootPath)
 :
 IDBBackend(inRootPath)
@@ -107,10 +90,8 @@ Status BDBBackend::Close()
 	return result;
 }
 
-Status BDBBackend::OpenTable(const std::string &tableName, OpenMode openMode)
+Status BDBBackend::OpenTable(const std::string &tableName, OpenMode openMode, PayloadPtr *io_payload)
 {
-	PDASSERT(mTableMap.find(tableName) == mTableMap.end());
-
 	Status result;
 
 	DB *pTable = NULL;
@@ -162,59 +143,50 @@ Status BDBBackend::OpenTable(const std::string &tableName, OpenMode openMode)
 
 	if (result.OK())
 	{
-		TableMapEntry tableEntry(tableName.c_str(), pTable);
-		mTableMap.insert(tableEntry);
+		*io_payload = (PayloadPtr)pTable;
+	}
+	else
+	{
+		*io_payload = NULL;
 	}
 
 	return result;
 }
 
-Status BDBBackend::DropTable(const std::string &tableName)
+Status BDBBackend::DropTable(const std::string &tableName, PayloadPtr payload)
 {
 	Status result;
 
-	DB *pTable = NULL;
+	DB *pTable = (DB *)payload;
 
-	result = this->GetTableByName_Private(tableName, &pTable);
+	//First close the table
+	int ret = pTable->close(pTable, 0);
+
+	if (ret != 0)
+	{
+		PDDebugOutputVerbose(db_strerror(ret));
+		result = Status::kInternalError;
+	}
 
 	if (result.OK())
 	{
-		TableMap::iterator iter = mTableMap.find(tableName);
-
-		if (iter != mTableMap.end())
-		{
-			mTableMap.erase(iter);
-		}
-
-		//First close the table
-		int ret = pTable->close(pTable, 0);
+		ret = mpDBEnv->dbremove(mpDBEnv
+			, NULL
+			, kDBName
+			, tableName.c_str()
+			, 0);
 
 		if (ret != 0)
 		{
 			PDDebugOutputVerbose(db_strerror(ret));
-			result = Status::kInternalError;
-		}
 
-		if (result.OK())
-		{
-			ret = mpDBEnv->dbremove(mpDBEnv
-				, NULL
-				, kDBName
-				, tableName.c_str()
-				, 0);
-
-			if (ret != 0)
+			if (ret == ENOENT)
 			{
-				PDDebugOutputVerbose(db_strerror(ret));
-
-				if (ret == ENOENT)
-				{
-					result = Status::kTableMissing;
-				}
-				else
-				{
-					result = Status::kInternalError;
-				}
+				result = Status::kTableMissing;
+			}
+			else
+			{
+				result = Status::kInternalError;
 			}
 		}
 	}
@@ -249,13 +221,11 @@ static int IndexBinder(DB *secondary, const DBT *pkey, const DBT *pdata, DBT *sk
 	return 0;
 }
 
-Status BDBBackend::OpenIndex(const std::string &indexName, const std::string &tableName, const TupleDesc &tupleDesc, const std::vector<int32_t> &indexList, bool isUnique, OpenMode openMode)
+Status BDBBackend::OpenIndex(const std::string &indexName, const std::string &tableName, const TupleDesc &tupleDesc, const std::vector<int32_t> &indexList, bool isUnique, OpenMode openMode, PayloadPtr tablePayload, PayloadPtr *io_indexPayload)
 {
 	Status result;
 
-	DB *pTable = NULL;
-	
-	result = this->GetTableByName_Private(tableName, &pTable);
+	DB *pTable = (DB *)tablePayload;
 
 	if (result.OK())
 	{
@@ -319,18 +289,15 @@ Status BDBBackend::OpenIndex(const std::string &indexName, const std::string &ta
 
 		if (result.OK())
 		{
-			IndexEntryKey entryKey;
-			entryKey.indexName = indexName;
-			entryKey.tableName = tableName;
+			IndexMapEntry indexEntry;
 
 			IndexInfo indexInfo;
-			indexInfo.indexDB = pIndex;
 			indexInfo.tupleDesc = tupleDesc;
 			indexInfo.indexList = indexList;
 
-			mIndexMap[entryKey] = indexInfo;
+			mIndexMap[pIndex] = indexInfo;
 
-			pIndex->app_private = (void *)&mIndexMap[entryKey];
+			pIndex->app_private = (void *)&mIndexMap[pIndex];
 
 			ret = pTable->associate(pTable, NULL, pIndex, IndexBinder, 0);
 
@@ -339,62 +306,60 @@ Status BDBBackend::OpenIndex(const std::string &indexName, const std::string &ta
 				result = Status::kInternalError;
 			}
 		}
-       
 
+		if (result.OK())
+		{
+			*io_indexPayload = (PayloadPtr)pIndex;
+		}
+		else
+		{
+			*io_indexPayload = NULL;
+		}
 	}
 
 	return result;
 }
 
-Status BDBBackend::DropIndex(const std::string &indexName, const std::string &tableName)
+Status BDBBackend::DropIndex(const std::string &indexName, const std::string &tableName, PayloadPtr indexPayload)
 {
 	Status result;
 
-	DB *pIndex = NULL;
+	DB *pIndex = (DB *)indexPayload;
 
-	result = this->GetIndexByName_Private(indexName, tableName, &pIndex);
+	IndexMap::iterator iter = mIndexMap.find(pIndex);
+
+	if (iter != mIndexMap.end())
+	{
+		mIndexMap.erase(iter);
+	}
+
+	int ret = pIndex->close(pIndex, 0);
+
+	if (ret != 0)
+	{
+		PDDebugOutputVerbose(db_strerror(ret));
+		result = Status::kInternalError;
+	}
 
 	if (result.OK())
 	{
-		IndexEntryKey entryKey;
-		entryKey.indexName = indexName;
-		entryKey.tableName = tableName;
-
-		IndexMap::iterator iter = mIndexMap.find(entryKey);
-
-		if (iter != mIndexMap.end())
-		{
-			mIndexMap.erase(iter);
-		}
-
-		int ret = pIndex->close(pIndex, 0);
+		int ret = mpDBEnv->dbremove(mpDBEnv
+			, NULL
+			, kDBName
+			, GetFullIndexName(indexName, tableName).c_str()
+			, 0);
 
 		if (ret != 0)
 		{
 			PDDebugOutputVerbose(db_strerror(ret));
-			result = Status::kInternalError;
-		}
 
-		if (result.OK())
-		{
-			int ret = mpDBEnv->dbremove(mpDBEnv
-				, NULL
-				, kDBName
-				, GetFullIndexName(indexName, tableName).c_str()
-				, 0);
-
-			if (ret != 0)
+			if (ret == ENOENT)
 			{
-				PDDebugOutputVerbose(db_strerror(ret));
-
-				if (ret == ENOENT)
-				{
-					result = Status::kIndexMissing;
-				}
-				else
-				{
-					result = Status::kInternalError;
-				}
+				result = Status::kIndexMissing;
+			}
+			else
+			{
+				result = Status::kInternalError;
 			}
 		}
 	}
@@ -402,110 +367,48 @@ Status BDBBackend::DropIndex(const std::string &indexName, const std::string &ta
 	return result;
 }
 
-Status BDBBackend::InsertData(const std::string &tableName, const TupleDesc &tupleDesc, const ValueList &tupleValueList)
+Status BDBBackend::InsertData(const std::string &tableName, const TupleDesc &tupleDesc, const ValueList &tupleValueList, PayloadPtr tablePayload)
 {
 	Status result;
 
-	DB *pTable = NULL;
-	
-	result = this->GetTableByName_Private(tableName, &pTable);
+	DB *pTable = (DB *)tablePayload;
 
-	if (result.OK())
+	DBT key;
+	DBT data;
+	int ret;
+
+	db_recno_t recno;
+
+	memset(&key, 0, sizeof(key));
+	memset(&data, 0, sizeof(data));
+
+	std::string rowString;
+	TupleToString(tupleDesc, tupleValueList, &rowString);
+	data.data = (void *)rowString.c_str();
+	data.size = rowString.length();
+
+	ret = pTable->put(pTable, NULL, &key, &data, DB_APPEND);
+
+	if (ret != 0)
 	{
-		DBT key;
-		DBT data;
-		int ret;
-
-		db_recno_t recno;
-		
-		memset(&key, 0, sizeof(key));
-		memset(&data, 0, sizeof(data));
-
-		std::string rowString;
-		TupleToString(tupleDesc, tupleValueList, &rowString);
-		data.data = (void *)rowString.c_str();
-		data.size = rowString.length();
-
-		ret = pTable->put(pTable, NULL, &key, &data, DB_APPEND);
-
-		if (ret != 0)
-		{
-			PDDebugOutputVerbose(db_strerror(ret));
-		}
-		else
-		{
-			recno = *(db_recno_t *)(key.data);
-			printf("new record number is %u\n", recno);
-		}
+		PDDebugOutputVerbose(db_strerror(ret));
+	}
+	else
+	{
+		recno = *(db_recno_t *)(key.data);
+		printf("new record number is %u\n", recno);
 	}
 
 	return result;
 }
 
-TupleIterator* BDBBackend::CreateScanIterator(const std::string &tableName, const TupleDesc &tupleDesc, const TuplePredicate *inTuplePredicate /*= NULL*/)
+TupleIterator* BDBBackend::CreateScanIterator(const std::string &tableName, const TupleDesc &tupleDesc, const TuplePredicate *inTuplePredicate, PayloadPtr payload)
 {
 	TupleIterator *result = NULL;
 
-	DB *pTable = NULL;
+	DB *pTable = (DB *)payload;
 	
-	Status localResult = this->GetTableByName_Private(tableName, &pTable);
-
-	if (localResult.OK())
-	{
-		result = new BDBScanIterator(tupleDesc, pTable, mpDBEnv);
-	}
-
-	return result;
-}
-
-Status BDBBackend::GetTableByName_Private(const std::string &name, DB **o_table) const
-{
-	Status result;
-
-	BDBBackend::TableMap::const_iterator iter = mTableMap.find(name);
-
-	if (iter != mTableMap.end())
-	{
-		*o_table = iter->second;
-	}
-	else
-	{
-		//The caller should always get a valid table.
-		//kTableMissing error should be returned by higher layer
-		PDASSERT(0);
-
-		*o_table = NULL;
-
-		result = Status::kInternalError;
-	}
-
-	return result;
-}
-
-Status BDBBackend::GetIndexByName_Private(const std::string &indexName, const std::string &tableName, DB **o_index) const
-{	
-	Status result;
-
-	IndexEntryKey entryKey;
-	entryKey.indexName = indexName;
-	entryKey.tableName = tableName;
-
-	BDBBackend::IndexMap::const_iterator iter = mIndexMap.find(entryKey);
-
-	if (iter != mIndexMap.end())
-	{
-		*o_index = iter->second.indexDB;
-	}
-	else
-	{
-		//The caller should always get a valid index.
-		//kTableMissing error should be returned by higher layer
-		PDASSERT(0);
-
-		*o_index = NULL;
-
-		result = Status::kInternalError;
-	}
+	result = new BDBScanIterator(tupleDesc, pTable, mpDBEnv);
 
 	return result;
 }

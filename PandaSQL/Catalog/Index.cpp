@@ -5,9 +5,10 @@
 namespace PandaSQL
 {
 
-Index::Index()
+Index::Index(void *payload)
 :
-mUnique(false)
+mPayload(payload)
+, mUnique(false)
 {
 }
 
