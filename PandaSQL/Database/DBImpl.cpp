@@ -398,24 +398,10 @@ Status DBImpl::CreateOpenIndex(const std::string &indexName, const std::string &
 
 	if (result.OK())
 	{
-		TupleDesc tupleDesc;
-		const ColumnDefList &columnDefList = pTable->GetAllColumns();
-
-		ColumnDefListToTupleDesc(columnDefList, &tupleDesc); 
-		
-		std::vector<int32_t> indexList;
-
-		for (ColumnDefList::const_iterator iter = columnList.begin()
-			; iter != columnList.end()
-			; iter++)
-		{
-			indexList.push_back(iter->index);
-		}
-
 		IDBBackend::OpenMode openMode = IDBBackend::kCreate | IDBBackend::kErrorIfExists;
 		IDBBackend::PayloadPtr indexPayload;
 
-		result = mpBackend->OpenIndex(indexName, tableName, tupleDesc, indexList, isUnique, openMode, (IDBBackend::PayloadPtr)pTable->GetPayload(), &indexPayload);
+		result = this->OpenIndex_Private(indexName, tableName, columnList, isUnique, openMode, &indexPayload);
 
 		if (result.OK())
 		{
@@ -442,11 +428,6 @@ Status DBImpl::CreateOpenIndex(const std::string &indexName, const std::string &
 			if (result.OK())
 			{
 				result = mpBackend->InsertData(kSchemaIndexName, s_schemaIndexTupleDesc, tupleValueList, (IDBBackend::PayloadPtr)pSchemaIndexTable->GetPayload());
-
-				if (result.OK())
-				{
-					this->AddIndex_Private(indexName, tableName, indexList, isUnique, indexPayload);
-				}
 			}
 		}
 	}
@@ -458,40 +439,10 @@ Status DBImpl::OpenIndex(const std::string &indexName, const std::string &tableN
 {
 	Status result;
 
-	const Table *pTable = NULL;
+	IDBBackend::OpenMode openMode = 0;
+	IDBBackend::PayloadPtr indexPayload;
 
-	result = this->GetTableByName(tableName, &pTable);
-
-	if (result.OK())
-	{
-		TupleDesc tupleDesc;
-		const ColumnDefList &columnDefList = pTable->GetAllColumns();
-
-		ColumnDefListToTupleDesc(columnDefList, &tupleDesc); 
-
-		std::vector<int32_t> indexList;
-
-		for (ColumnDefList::const_iterator iter = columnList.begin()
-			; iter != columnList.end()
-			; iter++)
-		{
-			indexList.push_back(iter->index);
-		}
-
-		IDBBackend::OpenMode openMode = 0;
-		IDBBackend::PayloadPtr indexPayload;
-
-		result = mpBackend->OpenIndex(indexName, tableName, tupleDesc, indexList, isUnique, openMode, (IDBBackend::PayloadPtr)pTable->GetPayload(), &indexPayload);
-
-		if (result.OK())
-		{
-			this->AddIndex_Private(indexName, tableName, indexList, isUnique, indexPayload);
-		}
-	}
-	else
-	{
-		result = Status::kTableMissing;
-	}
+	result = this->OpenIndex_Private(indexName, tableName, columnList, isUnique, openMode, &indexPayload);
 	
 	return result;
 }
@@ -921,6 +872,41 @@ void DBImpl::AddTable_Private(const std::string &tableName, const ColumnDefList 
 	}
 
 	mTableCatalog.AddTable(tableName, pTable);
+}
+
+Status	DBImpl::OpenIndex_Private(const std::string &indexName, const std::string &tableName, const ColumnDefList &columnList, bool isUnique, IDBBackend::OpenMode openMode, IDBBackend::PayloadPtr *io_indexPayload)
+{
+	Status result;
+
+	const Table *pTable = NULL;
+
+	result = this->GetTableByName(tableName, &pTable);
+
+	if (result.OK())
+	{
+		TupleDesc tupleDesc;
+		const ColumnDefList &columnDefList = pTable->GetAllColumns();
+
+		ColumnDefListToTupleDesc(columnDefList, &tupleDesc); 
+
+		std::vector<int32_t> indexList;
+
+		for (ColumnDefList::const_iterator iter = columnList.begin()
+			; iter != columnList.end()
+			; iter++)
+		{
+			indexList.push_back(iter->index);
+		}
+
+		result = mpBackend->OpenIndex(indexName, tableName, tupleDesc, indexList, isUnique, openMode, (IDBBackend::PayloadPtr)pTable->GetPayload(), io_indexPayload);
+
+		if (result.OK())
+		{
+			this->AddIndex_Private(indexName, tableName, indexList, isUnique, *io_indexPayload);
+		}
+	}
+
+	return result;
 }
 
 Status	DBImpl::OpenIndexWithCreationStmt_Private(const std::string &inCreationStmt)
