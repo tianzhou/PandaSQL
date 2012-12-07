@@ -173,7 +173,7 @@ Status DBImpl::Open(const std::string &inDBPath, const OpenOptions &inOptions)
 					{
 						if (schemaTupleIter->GetValue(&tableInfoValueList))
 						{
-							result = this->OpenTableWithCreationStmt_Private(tableInfoValueList[kSchemaTableCreationStmtIndex].GetAsString());
+							result = this->OpenTableOrIndexWithCreationStmt_Private(tableInfoValueList[kSchemaTableCreationStmtIndex].GetAsString());
 
 							if (!result.OK())
 							{
@@ -209,7 +209,7 @@ Status DBImpl::Open(const std::string &inDBPath, const OpenOptions &inOptions)
 						{
 							if (schemaTupleIter->GetValue(&indexInfoValueList))
 							{
-								result = this->OpenIndexWithCreationStmt_Private(indexInfoValueList[kSchemaIndexCreationStmtIndex].GetAsString());
+								result = this->OpenTableOrIndexWithCreationStmt_Private(indexInfoValueList[kSchemaIndexCreationStmtIndex].GetAsString());
 
 								if (!result.OK())
 								{
@@ -839,7 +839,7 @@ Status DBImpl::OpenTable_Private(const std::string &tableName, const ColumnDefLi
 	return result;
 }
 
-Status DBImpl::OpenTableWithCreationStmt_Private(const std::string &inCreationStmt)
+Status DBImpl::OpenTableOrIndexWithCreationStmt_Private(const std::string &inCreationStmt)
 {
 	Status result;
 
@@ -850,7 +850,7 @@ Status DBImpl::OpenTableWithCreationStmt_Private(const std::string &inCreationSt
 
 	if (result.OK())
 	{
-		//We use inCreationStmt to open table only
+		//Use inCreationStmt to open table/index
 		result = pStmt->Execute(false); //createTableOrIndex = false;
 		
 		delete pStmt;
@@ -904,26 +904,6 @@ Status	DBImpl::OpenIndex_Private(const std::string &indexName, const std::string
 		{
 			this->AddIndex_Private(indexName, tableName, indexList, isUnique, *io_indexPayload);
 		}
-	}
-
-	return result;
-}
-
-Status	DBImpl::OpenIndexWithCreationStmt_Private(const std::string &inCreationStmt)
-{	
-	Status result;
-
-	ParserDriver parserDriver(this);
-	Statement *pStmt = NULL;
-
-	result = parserDriver.ParseQuery(inCreationStmt, &pStmt);
-
-	if (result.OK())
-	{
-		//We use inCreationStmt to open index only
-		result = pStmt->Execute(false); //createTableOrIndex = false;
-		
-		delete pStmt;
 	}
 
 	return result;

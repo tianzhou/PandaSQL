@@ -62,12 +62,12 @@ private:
 
 	Status  Close_Private(bool forceClose);
 
+	Status	OpenTableOrIndexWithCreationStmt_Private(const std::string &inCreationStmt);
+
 	Status	OpenTable_Private(const std::string &tableName, const ColumnDefList &columnList, IDBBackend::OpenMode openMode, IDBBackend::PayloadPtr *io_payload);
-	Status	OpenTableWithCreationStmt_Private(const std::string &inCreationStmt);
 	void	AddTable_Private(const std::string &tableName, const ColumnDefList &columnList, void * payload);
 
 	Status	OpenIndex_Private(const std::string &indexName, const std::string &tableName, const ColumnDefList &columnList, bool isUnique, IDBBackend::OpenMode openMode, IDBBackend::PayloadPtr *io_payload);
-	Status	OpenIndexWithCreationStmt_Private(const std::string &inCreationStmt);
 	void	AddIndex_Private(const std::string &indexName, const std::string &tableName, std::vector<int32_t> indexList, bool isUnique, void *io_indexPayload);
 
 	typedef Status (*PerformIterator)(TupleIterator *io_iterator, void *io_ctx);
