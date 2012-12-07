@@ -21,8 +21,7 @@ public:
 	virtual Status Open();
 	virtual Status Close();
 
-	virtual Status OpenTable(const std::string &inTableName, OpenMode openMode);
-	virtual Status CloseTable(const std::string &inTableName);
+	virtual Status OpenTable(const std::string &tableName, OpenMode openMode);
 	virtual Status DropTable(const std::string &tableName);
 	
 	virtual Status OpenIndex(const std::string &indexName, const std::string &tableName, const TupleDesc &tupleDesc, const std::vector<int32_t> &indexList, bool isUnique, OpenMode openMode);

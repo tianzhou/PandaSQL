@@ -107,9 +107,9 @@ Status BDBBackend::Close()
 	return result;
 }
 
-Status BDBBackend::OpenTable(const std::string &inTableName, OpenMode openMode)
+Status BDBBackend::OpenTable(const std::string &tableName, OpenMode openMode)
 {
-	PDASSERT(mTableMap.find(inTableName) == mTableMap.end());
+	PDASSERT(mTableMap.find(tableName) == mTableMap.end());
 
 	Status result;
 
@@ -135,7 +135,7 @@ Status BDBBackend::OpenTable(const std::string &inTableName, OpenMode openMode)
 	ret = pTable->open(pTable,
 		NULL
 		, kDBName
-		, inTableName.c_str()
+		, tableName.c_str()
 		, DB_RECNO
 		, flags
 		, 0);
@@ -162,37 +162,8 @@ Status BDBBackend::OpenTable(const std::string &inTableName, OpenMode openMode)
 
 	if (result.OK())
 	{
-		TableMapEntry tableEntry(inTableName.c_str(), pTable);
+		TableMapEntry tableEntry(tableName.c_str(), pTable);
 		mTableMap.insert(tableEntry);
-	}
-
-	return result;
-}
-
-Status BDBBackend::CloseTable(const std::string &inTableName)
-{
-	Status result;
-
-	DB *pTable = NULL;
-
-	result = this->GetTableByName_Private(inTableName, &pTable);
-
-	if (result.OK())
-	{
-		TableMap::iterator iter = mTableMap.find(inTableName);
-
-		if (iter != mTableMap.end())
-		{
-			mTableMap.erase(iter);
-		}
-
-		int ret = pTable->close(pTable, 0);
-
-		if (ret != 0)
-		{
-			PDDebugOutputVerbose(db_strerror(ret));
-			result = Status::kInternalError;
-		}
 	}
 
 	return result;
@@ -202,23 +173,49 @@ Status BDBBackend::DropTable(const std::string &tableName)
 {
 	Status result;
 
-	int ret = mpDBEnv->dbremove(mpDBEnv
-		, NULL
-		, kDBName
-		, tableName.c_str()
-		, 0);
+	DB *pTable = NULL;
 
-	if (ret != 0)
+	result = this->GetTableByName_Private(tableName, &pTable);
+
+	if (result.OK())
 	{
-		PDDebugOutputVerbose(db_strerror(ret));
+		TableMap::iterator iter = mTableMap.find(tableName);
 
-		if (ret == ENOENT)
+		if (iter != mTableMap.end())
 		{
-			result = Status::kTableMissing;
+			mTableMap.erase(iter);
 		}
-		else
+
+		//First close the table
+		int ret = pTable->close(pTable, 0);
+
+		if (ret != 0)
 		{
+			PDDebugOutputVerbose(db_strerror(ret));
 			result = Status::kInternalError;
+		}
+
+		if (result.OK())
+		{
+			ret = mpDBEnv->dbremove(mpDBEnv
+				, NULL
+				, kDBName
+				, tableName.c_str()
+				, 0);
+
+			if (ret != 0)
+			{
+				PDDebugOutputVerbose(db_strerror(ret));
+
+				if (ret == ENOENT)
+				{
+					result = Status::kTableMissing;
+				}
+				else
+				{
+					result = Status::kInternalError;
+				}
+			}
 		}
 	}
 

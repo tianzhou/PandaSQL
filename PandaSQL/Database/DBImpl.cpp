@@ -374,12 +374,6 @@ Status DBImpl::DropTable(const std::string &tableName)
 		}
 	}
 
-	//Close the table
-	if (result.OK())
-	{
-		result = mpBackend->CloseTable(tableName);
-	}
-
 	//Drop the table
 	if (result.OK())
 	{
