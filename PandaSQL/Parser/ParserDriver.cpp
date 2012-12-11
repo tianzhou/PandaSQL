@@ -14,8 +14,6 @@
 #include "Expr/ColumnExpr.h"
 #include "Expr/ConstantExpr.h"
 
-#include "Storage/IStorage.h"
-
 #include "Utils/Common.h"
 #include "Utils/Debug.h"
 #include "Utils/Status.h"

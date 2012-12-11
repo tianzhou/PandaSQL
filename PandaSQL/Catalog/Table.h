@@ -8,8 +8,6 @@
 
 #include "Expr/Expr.h"
 
-#include "Storage/IStorage.h"
-
 #include "Utils/Types.h"
 #include "Utils/Status.h"
 
@@ -37,14 +35,6 @@ public:
 	const ColumnDefList& GetAllColumns() const { return mColumnList; }
 	Status GetColumnByName(const std::string &name, ColumnDef *o_columnDef) const;
 
-	Status Open(IStorage::OpenMode openMode);
-	Status AddRecord(const ColumnDefList &columnList, const ColumnValueList &columnValueList);
-	Status DeleteRecord(const TuplePredicate *inTuplePredicate = NULL);
-	Status SelectRecords(const ColumnDefList &columnList, const TuplePredicate *inTuplePredicate = NULL);
-
-	Iterator* CreateScanIterator(const TuplePredicate *inTuplePredicate = NULL);
-	Iterator* CreateIndexIterator(); 
-
 private:
 	
 	Table(const Table &rhs);
@@ -58,8 +48,6 @@ private:
 
 	std::string mName;
 	ColumnDefList mColumnList;
-
-	IStorage *mpDataHost;
 };
 
 }	// PandaSQL
