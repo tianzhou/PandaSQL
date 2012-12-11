@@ -3,7 +3,6 @@
 #include "Catalog/Table.h"
 
 #include "Access/Tuple.h"
-#include "Access/Iterator.h"
 
 #include "Utils/Common.h"
 #include "Utils/Debug.h"

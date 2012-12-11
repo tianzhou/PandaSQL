@@ -147,9 +147,6 @@
     <ClCompile Include="Storage\BerkeleyDB\Transaction\BDBTransaction.cpp">
       <Filter>Source Files\Storage\BerkeleyDB\Transaction</Filter>
     </ClCompile>
-    <ClCompile Include="Access\Iterator.cpp">
-      <Filter>Source Files\Access</Filter>
-    </ClCompile>
     <ClCompile Include="Access\Tuple.cpp">
       <Filter>Source Files\Access</Filter>
     </ClCompile>
@@ -295,9 +292,6 @@
     </ClInclude>
     <ClInclude Include="Storage\BerkeleyDB\Transaction\BDBTransaction.h">
       <Filter>Source Files\Storage\BerkeleyDB\Transaction</Filter>
-    </ClInclude>
-    <ClInclude Include="Access\Iterator.h">
-      <Filter>Source Files\Access</Filter>
     </ClInclude>
     <ClInclude Include="Access\Tuple.h">
       <Filter>Source Files\Access</Filter>

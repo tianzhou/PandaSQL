@@ -277,7 +277,6 @@ xcopy /y "3rdParty\berkeleydb\lib\$(Platform)\*.dll" "$(OutDir)"
     <ClCompile Include="Storage\BerkeleyDB\BDBBackend.cpp" />
     <ClCompile Include="Storage\BerkeleyDB\BDBScanIterator.cpp" />
     <ClCompile Include="Storage\BerkeleyDB\Transaction\BDBTransaction.cpp" />
-    <ClCompile Include="Access\Iterator.cpp" />
     <ClCompile Include="Access\Tuple.cpp" />
     <ClCompile Include="Access\TupleIterator.cpp" />
     <ClCompile Include="Optimizer\Plan\PlanContext.cpp" />
@@ -328,7 +327,6 @@ xcopy /y "3rdParty\berkeleydb\lib\$(Platform)\*.dll" "$(OutDir)"
     <ClInclude Include="Storage\BerkeleyDB\BDBScanIterator.h" />
     <ClInclude Include="Storage\BerkeleyDB\BDBTypes.h" />
     <ClInclude Include="Storage\BerkeleyDB\Transaction\BDBTransaction.h" />
-    <ClInclude Include="Access\Iterator.h" />
     <ClInclude Include="Access\Tuple.h" />
     <ClInclude Include="Access\TupleIterator.h" />
     <ClInclude Include="Optimizer\Plan\PlanContext.h" />

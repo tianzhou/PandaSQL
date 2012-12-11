@@ -2,8 +2,6 @@
 
 #include "Expr/ExprContext.h"
 
-#include "Access/Iterator.h"
-
 #include "Utils/Debug.h"
 
 namespace PandaSQL
