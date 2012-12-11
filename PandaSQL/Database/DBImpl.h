@@ -68,7 +68,7 @@ private:
 	void	AddTable_Private(const std::string &tableName, const ColumnDefList &columnList, void * payload);
 
 	Status	OpenIndex_Private(const std::string &indexName, const std::string &tableName, const ColumnDefList &columnList, bool isUnique, IDBBackend::OpenMode openMode, IDBBackend::PayloadPtr *io_payload);
-	void	AddIndex_Private(const std:: string &indexName, const std::string &tableName, std::vector<int32_t> indexList, bool isUnique, void *io_indexPayload);
+	void	AddIndex_Private(const std:: string &indexName, const std::string &tableName, std::vector<int32_t> columnIndexList, bool isUnique, void *io_indexPayload);
 
 	typedef Status (*PerformIterator)(TupleIterator *io_iterator, void *io_ctx);
 	Status	PerformIterator_Private(const std::string &tableName, const BooleanExpr *inPredicateExpr, PerformIterator performer, void *io_ctx);

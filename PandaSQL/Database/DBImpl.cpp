@@ -887,32 +887,32 @@ Status	DBImpl::OpenIndex_Private(const std::string &indexName, const std::string
 
 		ColumnDefListToTupleDesc(columnDefList, &tupleDesc); 
 
-		std::vector<int32_t> indexList;
+		std::vector<int32_t> columnIndexList;
 
 		for (ColumnDefList::const_iterator iter = columnList.begin()
 			; iter != columnList.end()
 			; iter++)
 		{
-			indexList.push_back(iter->index);
+			columnIndexList.push_back(iter->index);
 		}
 
-		result = mpBackend->OpenIndex(indexName, tableName, tupleDesc, indexList, isUnique, openMode, (IDBBackend::PayloadPtr)pTable->GetPayload(), io_indexPayload);
+		result = mpBackend->OpenIndex(indexName, tableName, tupleDesc, columnIndexList, isUnique, openMode, (IDBBackend::PayloadPtr)pTable->GetPayload(), io_indexPayload);
 
 		if (result.OK())
 		{
-			this->AddIndex_Private(indexName, tableName, indexList, isUnique, *io_indexPayload);
+			this->AddIndex_Private(indexName, tableName, columnIndexList, isUnique, *io_indexPayload);
 		}
 	}
 
 	return result;
 }
 
-void DBImpl::AddIndex_Private(const std::string &indexName, const std::string &tableName, std::vector<int32_t> indexList, bool isUnique, void *payload)
+void DBImpl::AddIndex_Private(const std::string &indexName, const std::string &tableName, std::vector<int32_t> columnIndexList, bool isUnique, void *payload)
 {
 	Index *pIndex = new Index(payload);
 	pIndex->SetIndexName(indexName);
 	pIndex->SetTableName(tableName);
-	pIndex->SetIndexList(indexList);
+	pIndex->SetColumnIndexList(columnIndexList);
 	pIndex->SetIsUnique(isUnique);
 
 	mIndexCatalog.AddIndex(indexName, tableName, pIndex);

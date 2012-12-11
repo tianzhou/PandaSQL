@@ -206,7 +206,8 @@ static int IndexBinder(DB *secondary, const DBT *pkey, const DBT *pdata, DBT *sk
 	uint32_t offset;
 	uint32_t length;
 
-	StringToTupleElmentOffsetAndLength(indexInfo->tupleDesc, rowString, indexInfo->indexList[0], &offset, &length); 
+	//For now, only single index
+	StringToTupleElmentOffsetAndLength(indexInfo->tupleDesc, rowString, indexInfo->columnIndexList[0], &offset, &length); 
 	
 	skey->data = (char *)pdata->data + offset;
 	skey->size = length;
@@ -221,7 +222,7 @@ static int IndexBinder(DB *secondary, const DBT *pkey, const DBT *pdata, DBT *sk
 	return 0;
 }
 
-Status BDBBackend::OpenIndex(const std::string &indexName, const std::string &tableName, const TupleDesc &tupleDesc, const std::vector<int32_t> &indexList, bool isUnique, OpenMode openMode, PayloadPtr tablePayload, PayloadPtr *io_indexPayload)
+Status BDBBackend::OpenIndex(const std::string &indexName, const std::string &tableName, const TupleDesc &tupleDesc, const std::vector<int32_t> &columnIndexList, bool isUnique, OpenMode openMode, PayloadPtr tablePayload, PayloadPtr *io_indexPayload)
 {
 	Status result;
 
@@ -293,7 +294,7 @@ Status BDBBackend::OpenIndex(const std::string &indexName, const std::string &ta
 
 			IndexInfo indexInfo;
 			indexInfo.tupleDesc = tupleDesc;
-			indexInfo.indexList = indexList;
+			indexInfo.columnIndexList = columnIndexList;
 
 			mIndexMap[pIndex] = indexInfo;
 

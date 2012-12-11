@@ -36,7 +36,7 @@ privileged:
 	struct IndexInfo
 	{
 		TupleDesc tupleDesc;
-		std::vector<int32_t> indexList;
+		std::vector<int32_t> columnIndexList;
 	};
 
 private:
