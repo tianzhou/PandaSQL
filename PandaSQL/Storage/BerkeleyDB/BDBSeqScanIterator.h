@@ -1,5 +1,5 @@
-#ifndef PANDASQL_BDB_SCANITERATOR_H
-#define PANDASQL_BDB_SCANITERATOR_H
+#ifndef PANDASQL_BDB_SEQ_SCANITERATOR_H
+#define PANDASQL_BDB_SEQ_SCANITERATOR_H
 
 #include <db_cxx.h>
 
@@ -10,12 +10,12 @@
 namespace PandaSQL
 {
 
-class BDBScanIterator : public TupleIterator
+class BDBSeqScanIterator : public TupleIterator
 {
 public:
 
-	BDBScanIterator(const TupleDesc &inTupleDesc, DB *io_dbTable, DB_ENV *io_dbEnv);
-	virtual ~BDBScanIterator();
+	BDBSeqScanIterator(const TupleDesc &inTupleDesc, DB *io_dbTable, DB_ENV *io_dbEnv);
+	virtual ~BDBSeqScanIterator();
 
 	virtual bool Valid() const;
 	virtual void Reset();
@@ -29,8 +29,8 @@ public:
 
 protected:
  
-	BDBScanIterator(const BDBScanIterator &rhs);
-	BDBScanIterator& operator=(const BDBScanIterator &rhs);
+	BDBSeqScanIterator(const BDBSeqScanIterator &rhs);
+	BDBSeqScanIterator& operator=(const BDBSeqScanIterator &rhs);
 
 	bool GetCursor_Private(u_int32_t flags);
 	bool PutCursor_Private(const ValueList &inValueList, u_int32_t flags);
@@ -47,4 +47,4 @@ private:
 
 }	// PandaSQL
 
-#endif	// PANDASQL_BDB_SCANITERATOR_H
+#endif	// PANDASQL_BDB_SEQ_SCANITERATOR_H

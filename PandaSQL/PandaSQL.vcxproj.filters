@@ -141,9 +141,6 @@
     <ClCompile Include="Storage\BerkeleyDB\BDBBackend.cpp">
       <Filter>Source Files\Storage\BerkeleyDB</Filter>
     </ClCompile>
-    <ClCompile Include="Storage\BerkeleyDB\BDBScanIterator.cpp">
-      <Filter>Source Files\Storage\BerkeleyDB</Filter>
-    </ClCompile>
     <ClCompile Include="Storage\BerkeleyDB\Transaction\BDBTransaction.cpp">
       <Filter>Source Files\Storage\BerkeleyDB\Transaction</Filter>
     </ClCompile>
@@ -219,6 +216,9 @@
     <ClCompile Include="Catalog\IndexCatalog.cpp">
       <Filter>Source Files\Catalog</Filter>
     </ClCompile>
+    <ClCompile Include="Storage\BerkeleyDB\BDBSeqScanIterator.cpp">
+      <Filter>Source Files\Storage\BerkeleyDB</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DB.h">
@@ -282,9 +282,6 @@
       <Filter>Source Files\Storage</Filter>
     </ClInclude>
     <ClInclude Include="Storage\BerkeleyDB\BDBBackend.h">
-      <Filter>Source Files\Storage\BerkeleyDB</Filter>
-    </ClInclude>
-    <ClInclude Include="Storage\BerkeleyDB\BDBScanIterator.h">
       <Filter>Source Files\Storage\BerkeleyDB</Filter>
     </ClInclude>
     <ClInclude Include="Storage\BerkeleyDB\BDBTypes.h">
@@ -370,6 +367,9 @@
     </ClInclude>
     <ClInclude Include="Catalog\IndexCatalog.h">
       <Filter>Source Files\Catalog</Filter>
+    </ClInclude>
+    <ClInclude Include="Storage\BerkeleyDB\BDBSeqScanIterator.h">
+      <Filter>Source Files\Storage\BerkeleyDB</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

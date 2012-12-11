@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "Storage/BerkeleyDB/BDBScanIterator.h"
+#include "Storage/BerkeleyDB/BDBSeqScanIterator.h"
 #include "Storage/BerkeleyDB/BDBTypes.h"
 #include "Storage/BerkeleyDB/Transaction/BDBTransaction.h"
 
@@ -11,7 +11,7 @@ namespace PandaSQL
 
 static char kDeleteMark[] = " ";
 
-BDBScanIterator::BDBScanIterator(const TupleDesc &inTupleDesc, DB *io_dbTable, DB_ENV *io_dbEnv)
+BDBSeqScanIterator::BDBSeqScanIterator(const TupleDesc &inTupleDesc, DB *io_dbTable, DB_ENV *io_dbEnv)
 :TupleIterator(inTupleDesc)
 ,mpDBTable(io_dbTable)
 ,mpDBCursor(NULL)
@@ -44,7 +44,7 @@ BDBScanIterator::BDBScanIterator(const TupleDesc &inTupleDesc, DB *io_dbTable, D
 	}
 }
 
-BDBScanIterator::~BDBScanIterator()
+BDBSeqScanIterator::~BDBSeqScanIterator()
 {
 	int ret = 0;
 
@@ -58,20 +58,20 @@ BDBScanIterator::~BDBScanIterator()
 	}
 }
 
-bool BDBScanIterator::Valid() const
+bool BDBSeqScanIterator::Valid() const
 {
 	return mpDBCursor
 		&&!mInvalidCursor
 		&& mLastError.OK();
 }
 
-void BDBScanIterator::Reset()
+void BDBSeqScanIterator::Reset()
 {
 	mJustReset = true;
 	mInvalidCursor = true;
 }
 
-bool BDBScanIterator::Next()
+bool BDBSeqScanIterator::Next()
 {
 	if (!mLastError.OK()
 		|| (mInvalidCursor && !mJustReset)
@@ -97,7 +97,7 @@ bool BDBScanIterator::Next()
 	return result;
 }
 
-bool BDBScanIterator::Prev()
+bool BDBSeqScanIterator::Prev()
 {	
 	if (!mLastError.OK()
 		|| (mInvalidCursor && !mJustReset)
@@ -109,7 +109,7 @@ bool BDBScanIterator::Prev()
 	return GetCursor_Private(DB_PREV);
 }
 
-bool BDBScanIterator::First()
+bool BDBSeqScanIterator::First()
 {
 	if (!mLastError.OK())
 	{
@@ -119,7 +119,7 @@ bool BDBScanIterator::First()
 	return GetCursor_Private(DB_FIRST);
 }
 
-bool BDBScanIterator::Last()
+bool BDBSeqScanIterator::Last()
 {
 	if (!mLastError.OK())
 	{
@@ -129,7 +129,7 @@ bool BDBScanIterator::Last()
 	return GetCursor_Private(DB_LAST);
 }
 
-bool BDBScanIterator::GetValue(ValueList *o_tupleValueList) const
+bool BDBSeqScanIterator::GetValue(ValueList *o_tupleValueList) const
 {
 	if (mInvalidCursor || !mLastError.OK())
 	{
@@ -166,7 +166,7 @@ bool BDBScanIterator::GetValue(ValueList *o_tupleValueList) const
 	return result;
 }
 
-bool BDBScanIterator::Update(const ValueList &inValueList)
+bool BDBSeqScanIterator::Update(const ValueList &inValueList)
 {
 	if (mInvalidCursor || !mLastError.OK())
 	{
@@ -201,7 +201,7 @@ bool BDBScanIterator::Update(const ValueList &inValueList)
 	return result;
 }
 
-bool BDBScanIterator::Remove()
+bool BDBSeqScanIterator::Remove()
 {
 	if (mInvalidCursor || !mLastError.OK())
 	{
@@ -224,7 +224,7 @@ bool BDBScanIterator::Remove()
 	return result;
 }
 
-bool BDBScanIterator::GetCursor_Private(u_int32_t flags)
+bool BDBSeqScanIterator::GetCursor_Private(u_int32_t flags)
 {
 	bool result = true;
 
@@ -256,7 +256,7 @@ bool BDBScanIterator::GetCursor_Private(u_int32_t flags)
 	return result;
 }
 
-bool BDBScanIterator::PutCursor_Private(const ValueList &inValueList, u_int32_t flags)
+bool BDBSeqScanIterator::PutCursor_Private(const ValueList &inValueList, u_int32_t flags)
 {
 	bool result = true;
 

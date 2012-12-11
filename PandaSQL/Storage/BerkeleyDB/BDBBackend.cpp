@@ -2,7 +2,7 @@
 
 #include "Storage/BerkeleyDB/BDBBackend.h"
 
-#include "Storage/BerkeleyDB/BDBScanIterator.h"
+#include "Storage/BerkeleyDB/BDBSeqScanIterator.h"
 #include "Storage/BerkeleyDB/BDBTypes.h"
 #include "Storage/BerkeleyDB/Transaction/BDBTransaction.h"
 
@@ -408,7 +408,7 @@ TupleIterator* BDBBackend::CreateScanIterator(const std::string &tableName, cons
 
 	DB *pTable = (DB *)payload;
 	
-	result = new BDBScanIterator(tupleDesc, pTable, mpDBEnv);
+	result = new BDBSeqScanIterator(tupleDesc, pTable, mpDBEnv);
 
 	return result;
 }
