@@ -1,5 +1,5 @@
-#ifndef PANDASQL_SEQ_SCAN_NODE_H
-#define PANDASQL_SEQ_SCAN_NODE_H
+#ifndef PANDASQL_INDEX_SCAN_NODE_H
+#define PANDASQL_INDEX_SCAN_NODE_H
 
 #include "Node/PlanNode.h"
 
@@ -11,13 +11,13 @@ namespace PandaSQL
 class RelNode;
 class TupleIterator;
 
-class SeqScanNode : public PlanNode
+class IndexScanNode : public PlanNode
 {
 
 public:
 
-	SeqScanNode(PlanContext *io_pPlanContext, uint32_t inRelIndex);
-	virtual ~SeqScanNode();
+	IndexScanNode(PlanContext *io_pPlanContext, uint32_t inRelIndex);
+	virtual ~IndexScanNode();
 
 	virtual void Reset();
 	virtual bool Step();
@@ -36,4 +36,4 @@ private:
 
 }	// namespace PandaSQL
 
-#endif	// PANDASQL_SEQ_SCAN_NODE_H
+#endif	// PANDASQL_INDEX_SCAN_NODE_H

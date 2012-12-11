@@ -31,7 +31,7 @@ public:
 
 	virtual ~IStorage() = 0 {}
 
-	virtual Iterator *CreateScanIterator(const TuplePredicate *inTuplePredicate = NULL) = 0;
+	virtual Iterator *CreateSeqScanIterator(const TuplePredicate *inTuplePredicate = NULL) = 0;
 	virtual Iterator *CreateIndexIterator() = 0; 
 
 	virtual void ReleaseScanIterator(Iterator *iter) = 0;

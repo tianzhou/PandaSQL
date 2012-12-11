@@ -3,6 +3,7 @@
 
 #include "Access/Tuple.h"
 
+
 #include "Optimizer/Join/Join.h"
 
 #include "Utils/Status.h"
@@ -41,14 +42,15 @@ public:
 	virtual Status OpenTable(const std::string &tableName, OpenMode openMode, PayloadPtr *io_payload) = 0;
 	virtual Status DropTable(const std::string &tableName, PayloadPtr payload) = 0;
 	
-	virtual Status OpenIndex(const std::string &indexName, const std::string &tableName, const TupleDesc &tupleDesc, const std::vector<int32_t> &indexList, bool isUnique, OpenMode openMode, PayloadPtr tablePayload, PayloadPtr *io_indexPayload) = 0;
+	virtual Status OpenIndex(const std::string &indexName, const std::string &tableName, const TupleDesc &tupleDesc, const UInt32List &tupleIndexList, bool isUnique, OpenMode openMode, PayloadPtr tablePayload, PayloadPtr *io_indexPayload) = 0;
 	virtual Status DropIndex(const std::string &indexName, const std::string &tableName, PayloadPtr indexPayload) = 0;
 
 	//Update/Delete/Select are through iterator
 	virtual Status InsertData(const std::string &tableName, const TupleDesc &tupleDesc, const ValueList &tupleValueList, PayloadPtr tablePayload) = 0;
 
 	//Return NULL if table for tableName is not opened
-	virtual TupleIterator* CreateScanIterator(const std::string &tableName, const TupleDesc &tupleDesc, const TuplePredicate *inTuplePredicate, PayloadPtr payload) = 0;
+	virtual TupleIterator* CreateSeqScanIterator(const std::string &tableName, const TupleDesc &tupleDesc, const TuplePredicate *inTuplePredicate, PayloadPtr payload) = 0;
+	virtual TupleIterator* CreateIndexScanIterator(const std::string &indexName, const UInt32List &tupleIndexList, const TupleDesc &tupleDesc, const TuplePredicate *inTuplePredicate, PayloadPtr payload) = 0;
 
 protected:
 	IDBBackend(const std::string &inRootPath);

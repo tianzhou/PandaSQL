@@ -159,7 +159,7 @@ Status DBImpl::Open(const std::string &inDBPath, const OpenOptions &inOptions)
 
 				ColumnDefListToTupleDesc(*s_pSchemaTableColumnDefList, &tupleDesc);
 
-				TupleIterator *schemaTupleIter = mpBackend->CreateScanIterator(kSchemaTableName, tupleDesc, NULL, payload);
+				TupleIterator *schemaTupleIter = mpBackend->CreateSeqScanIterator(kSchemaTableName, tupleDesc, NULL, payload);
 
 				if (schemaTupleIter)
 				{				
@@ -195,7 +195,7 @@ Status DBImpl::Open(const std::string &inDBPath, const OpenOptions &inOptions)
 
 					ColumnDefListToTupleDesc(*s_pSchemaIndexColumnDefList, &tupleDesc);
 
-					TupleIterator *schemaTupleIter = mpBackend->CreateScanIterator(kSchemaIndexName, tupleDesc, NULL, payload);
+					TupleIterator *schemaTupleIter = mpBackend->CreateSeqScanIterator(kSchemaIndexName, tupleDesc, NULL, payload);
 
 					if (schemaTupleIter)
 					{				
@@ -317,7 +317,7 @@ Status DBImpl::DropTable(const std::string &tableName)
 
 		if (result.OK())
 		{
-			TupleIterator *pTupleIterator = this->CreateTupleIteratorForTable(*pSchemaTable, s_schemaTableTupleDesc);
+			TupleIterator *pTupleIterator = this->CreateSeqScanIteratorForTable(*pSchemaTable, s_schemaTableTupleDesc);
 
 			result = pTupleIterator->GetLastError();
 
@@ -467,7 +467,7 @@ Status DBImpl::DropIndex(const std::string &indexName, const std::string &tableN
 
 			if (result.OK())
 			{
-				TupleIterator *pTupleIterator = this->CreateTupleIteratorForTable(*pSchemaIndexTable, s_schemaIndexTupleDesc);
+				TupleIterator *pTupleIterator = this->CreateSeqScanIteratorForTable(*pSchemaIndexTable, s_schemaIndexTupleDesc);
 
 				result = pTupleIterator->GetLastError();
 
@@ -657,7 +657,7 @@ Status DBImpl::PerformIterator_Private(const std::string &tableName, const Boole
 
 		ColumnDefListToTupleDesc(columnDefList, &tupleDesc); 
 
-		TupleIterator *pTupleIterator = this->CreateTupleIteratorForTable(*pTable, tupleDesc);
+		TupleIterator *pTupleIterator = this->CreateSeqScanIteratorForTable(*pTable, tupleDesc);
 
 		result = pTupleIterator->GetLastError();
 
@@ -767,11 +767,20 @@ Status DBImpl::GetColumnDefFromQualifiedName(const Table::TableRefList &inTableR
 	return result;
 }
 
-TupleIterator* DBImpl::CreateTupleIteratorForTable(const Table &inTable, const TupleDesc &inTupleDesc)
+TupleIterator* DBImpl::CreateSeqScanIteratorForTable(const Table &inTable, const TupleDesc &inTupleDesc)
 {
 	const ColumnDefList &allColumnList = inTable.GetAllColumns();
 
-	TupleIterator *theIter = mpBackend->CreateScanIterator(inTable.GetName(), inTupleDesc, NULL, (IDBBackend::PayloadPtr)inTable.GetPayload());
+	TupleIterator *theIter = mpBackend->CreateSeqScanIterator(inTable.GetName(), inTupleDesc, NULL, (IDBBackend::PayloadPtr)inTable.GetPayload());
+
+	return theIter;
+}
+
+TupleIterator* DBImpl::CreateIndexScanIteratorForTable(const Index &inIndex, const TupleDesc &inTupleDesc)
+{
+	const UInt32List &columnIndexList = inIndex.GetColumnIndexList();
+
+	TupleIterator *theIter = mpBackend->CreateIndexScanIterator(inIndex.GetIndexName(), columnIndexList, inTupleDesc, NULL, (IDBBackend::PayloadPtr)inIndex.GetPayload());
 
 	return theIter;
 }
@@ -799,6 +808,28 @@ Status DBImpl::GetIndexByName(const std::string &indexName, const std::string &t
 	if (*o_index == NULL)
 	{
 		result = Status::kIndexMissing;
+	}
+
+	return result;
+}
+
+Status DBImpl::GetAllIndexesByTableName(const std::string &tableName, std::vector<const Index *> *o_indexList) const
+{
+	Status result;
+
+	o_indexList->clear();
+
+	std::vector<std::string> indexNameList;
+	mIndexCatalog.GetIndexNameListForTable(tableName, &indexNameList);
+
+	std::vector<std::string>::const_iterator indexNameIter = indexNameList.begin();
+	for (; indexNameIter != indexNameList.end(); indexNameIter++)
+	{
+		const Index *index = mIndexCatalog.GetIndexByName(*indexNameIter, tableName);
+
+		PDASSERT(index);
+
+		o_indexList->push_back(index);
 	}
 
 	return result;
@@ -887,7 +918,7 @@ Status	DBImpl::OpenIndex_Private(const std::string &indexName, const std::string
 
 		ColumnDefListToTupleDesc(columnDefList, &tupleDesc); 
 
-		std::vector<int32_t> columnIndexList;
+		UInt32List columnIndexList;
 
 		for (ColumnDefList::const_iterator iter = columnList.begin()
 			; iter != columnList.end()
@@ -907,7 +938,7 @@ Status	DBImpl::OpenIndex_Private(const std::string &indexName, const std::string
 	return result;
 }
 
-void DBImpl::AddIndex_Private(const std::string &indexName, const std::string &tableName, std::vector<int32_t> columnIndexList, bool isUnique, void *payload)
+void DBImpl::AddIndex_Private(const std::string &indexName, const std::string &tableName, const UInt32List &columnIndexList, bool isUnique, void *payload)
 {
 	Index *pIndex = new Index(payload);
 	pIndex->SetIndexName(indexName);

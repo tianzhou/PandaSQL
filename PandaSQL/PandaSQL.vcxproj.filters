@@ -219,6 +219,12 @@
     <ClCompile Include="Storage\BerkeleyDB\BDBSeqScanIterator.cpp">
       <Filter>Source Files\Storage\BerkeleyDB</Filter>
     </ClCompile>
+    <ClCompile Include="Storage\BerkeleyDB\BDBIndexScanIterator.cpp">
+      <Filter>Source Files\Storage\BerkeleyDB</Filter>
+    </ClCompile>
+    <ClCompile Include="Node\IndexScanNode.cpp">
+      <Filter>Source Files\Node</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DB.h">
@@ -370,6 +376,12 @@
     </ClInclude>
     <ClInclude Include="Storage\BerkeleyDB\BDBSeqScanIterator.h">
       <Filter>Source Files\Storage\BerkeleyDB</Filter>
+    </ClInclude>
+    <ClInclude Include="Storage\BerkeleyDB\BDBIndexScanIterator.h">
+      <Filter>Source Files\Storage\BerkeleyDB</Filter>
+    </ClInclude>
+    <ClInclude Include="Node\IndexScanNode.h">
+      <Filter>Source Files\Node</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

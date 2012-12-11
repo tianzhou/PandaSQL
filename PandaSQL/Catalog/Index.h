@@ -25,8 +25,8 @@ public:
 	void SetTableName(const std::string &inName) { mTableName = inName; }
 	std::string GetTableName() const { return mTableName; }
 
-	void SetColumnIndexList(const std::vector<int32_t> &inColumnIndexList) { mColumnIndexList = inColumnIndexList; }
-	const std::vector<int32_t>& GetColumnIndexList() const { return mColumnIndexList; }
+	void SetColumnIndexList(const UInt32List &inColumnIndexList) { mColumnIndexList = inColumnIndexList; }
+	const UInt32List& GetColumnIndexList() const { return mColumnIndexList; }
 
 	void SetIsUnique(bool inUnique) { mUnique = inUnique; }
 	bool GetIsUnique() const { return mUnique; }
@@ -42,7 +42,7 @@ private:
 
 	std::string mIndexName;
 	std::string mTableName;
-	std::vector<int32_t> mColumnIndexList;
+	UInt32List mColumnIndexList;
 	bool mUnique;
 };
 

@@ -3,6 +3,7 @@
 #include "Storage/BerkeleyDB/BDBBackend.h"
 
 #include "Storage/BerkeleyDB/BDBSeqScanIterator.h"
+#include "Storage/BerkeleyDB/BDBIndexScanIterator.h"
 #include "Storage/BerkeleyDB/BDBTypes.h"
 #include "Storage/BerkeleyDB/Transaction/BDBTransaction.h"
 
@@ -207,7 +208,7 @@ static int IndexBinder(DB *secondary, const DBT *pkey, const DBT *pdata, DBT *sk
 	uint32_t length;
 
 	//For now, only single index
-	StringToTupleElmentOffsetAndLength(indexInfo->tupleDesc, rowString, indexInfo->columnIndexList[0], &offset, &length); 
+	StringToTupleElmentOffsetAndLength(indexInfo->tupleDesc, rowString, indexInfo->tupleIndexList[0], &offset, &length); 
 	
 	skey->data = (char *)pdata->data + offset;
 	skey->size = length;
@@ -222,7 +223,7 @@ static int IndexBinder(DB *secondary, const DBT *pkey, const DBT *pdata, DBT *sk
 	return 0;
 }
 
-Status BDBBackend::OpenIndex(const std::string &indexName, const std::string &tableName, const TupleDesc &tupleDesc, const std::vector<int32_t> &columnIndexList, bool isUnique, OpenMode openMode, PayloadPtr tablePayload, PayloadPtr *io_indexPayload)
+Status BDBBackend::OpenIndex(const std::string &indexName, const std::string &tableName, const TupleDesc &tupleDesc, const UInt32List &tupleIndexList, bool isUnique, OpenMode openMode, PayloadPtr tablePayload, PayloadPtr *io_indexPayload)
 {
 	Status result;
 
@@ -294,7 +295,7 @@ Status BDBBackend::OpenIndex(const std::string &indexName, const std::string &ta
 
 			IndexInfo indexInfo;
 			indexInfo.tupleDesc = tupleDesc;
-			indexInfo.columnIndexList = columnIndexList;
+			indexInfo.tupleIndexList = tupleIndexList;
 
 			mIndexMap[pIndex] = indexInfo;
 
@@ -403,13 +404,24 @@ Status BDBBackend::InsertData(const std::string &tableName, const TupleDesc &tup
 	return result;
 }
 
-TupleIterator* BDBBackend::CreateScanIterator(const std::string &tableName, const TupleDesc &tupleDesc, const TuplePredicate *inTuplePredicate, PayloadPtr payload)
+TupleIterator* BDBBackend::CreateSeqScanIterator(const std::string &tableName, const TupleDesc &tupleDesc, const TuplePredicate *inTuplePredicate, PayloadPtr payload)
 {
 	TupleIterator *result = NULL;
 
 	DB *pTable = (DB *)payload;
 	
 	result = new BDBSeqScanIterator(tupleDesc, pTable, mpDBEnv);
+
+	return result;
+}
+
+TupleIterator* BDBBackend::CreateIndexScanIterator(const std::string &indexName, const UInt32List &columnIndexList, const TupleDesc &tupleDesc, const TuplePredicate *inTuplePredicate, PayloadPtr payload)
+{
+	TupleIterator *result = NULL;
+
+	DB *pIndex = (DB *)payload;
+	
+	result = new BDBIndexScanIterator(columnIndexList, tupleDesc, pIndex, mpDBEnv);
 
 	return result;
 }

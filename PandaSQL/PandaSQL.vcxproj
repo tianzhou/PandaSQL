@@ -210,12 +210,14 @@ xcopy /y "3rdParty\berkeleydb\lib\$(Platform)\*.dll" "$(OutDir)"
     <ClCompile Include="Catalog\IndexCatalog.cpp" />
     <ClCompile Include="DB.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Node\IndexScanNode.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Storage\BerkeleyDB\BDBIndexScanIterator.cpp" />
     <ClCompile Include="Utils\Bitmask.cpp" />
     <ClCompile Include="Utils\Common.cpp" />
     <ClCompile Include="Utils\Debug.cpp" />
@@ -304,6 +306,8 @@ xcopy /y "3rdParty\berkeleydb\lib\$(Platform)\*.dll" "$(OutDir)"
     <ClInclude Include="Catalog\Index.h" />
     <ClInclude Include="Catalog\IndexCatalog.h" />
     <ClInclude Include="DB.h" />
+    <ClInclude Include="Node\IndexScanNode.h" />
+    <ClInclude Include="Storage\BerkeleyDB\BDBIndexScanIterator.h" />
     <ClInclude Include="Utils\Bitmask.h" />
     <ClInclude Include="Utils\Common.h" />
     <ClInclude Include="Utils\Debug.h" />

@@ -46,6 +46,7 @@ public:
 
 	Status GetTableByName(const std::string &tableName, const Table **o_table) const;
 	Status GetIndexByName(const std::string &indexName, const std::string &tableName, const Index **o_index) const;
+	Status GetAllIndexesByTableName(const std::string &tableName, std::vector<const Index *> *o_indexList) const;
 
 	Table* GetTableByID(uint32_t inTableID) const;
 	uint32_t GetTableIDByName(const std::string &inTableName) const;
@@ -53,7 +54,8 @@ public:
 
 	Status GetColumnDefFromQualifiedName(const Table::TableRefList &inTableRefList, const ColumnQualifiedName &inQualifiedName, ColumnDef *io_columnDef) const;
 
-	TupleIterator* CreateTupleIteratorForTable(const Table &inTable, const TupleDesc &inTupleDesc);
+	TupleIterator* CreateSeqScanIteratorForTable(const Table &inTable, const TupleDesc &inTupleDesc);
+	TupleIterator* CreateIndexScanIteratorForTable(const Index &inIndex, const TupleDesc &inTupleDesc);
 
 private:
 
@@ -68,7 +70,7 @@ private:
 	void	AddTable_Private(const std::string &tableName, const ColumnDefList &columnList, void * payload);
 
 	Status	OpenIndex_Private(const std::string &indexName, const std::string &tableName, const ColumnDefList &columnList, bool isUnique, IDBBackend::OpenMode openMode, IDBBackend::PayloadPtr *io_payload);
-	void	AddIndex_Private(const std:: string &indexName, const std::string &tableName, std::vector<int32_t> columnIndexList, bool isUnique, void *io_indexPayload);
+	void	AddIndex_Private(const std::string &indexName, const std::string &tableName, const UInt32List &columnIndexList, bool isUnique, void *io_indexPayload);
 
 	typedef Status (*PerformIterator)(TupleIterator *io_iterator, void *io_ctx);
 	Status	PerformIterator_Private(const std::string &tableName, const BooleanExpr *inPredicateExpr, PerformIterator performer, void *io_ctx);

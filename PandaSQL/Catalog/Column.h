@@ -50,7 +50,6 @@ struct ColumnDef
 };
 
 typedef std::vector<ColumnDef> ColumnDefList;
-typedef std::vector<uint32_t> ColumnIndexList;
 
 typedef std::set<std::string> ColumnNameSet;
 //<TableName, ColumnSet>

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "Node/SeqScanNode.h"
+#include "Node/IndexScanNode.h"
 
 #include <algorithm>
 
@@ -24,7 +24,7 @@
 namespace PandaSQL
 {
 
-SeqScanNode::SeqScanNode(PlanContext *io_pPlanContext, uint32_t inRelIndex)
+IndexScanNode::IndexScanNode(PlanContext *io_pPlanContext, uint32_t inRelIndex)
 :
 PlanNode(kNodeSeqScan, io_pPlanContext)
 ,mRelIndex(inRelIndex)
@@ -40,12 +40,12 @@ PlanNode(kNodeSeqScan, io_pPlanContext)
 	mLastStatus = mpTupleIterator->GetLastError();
 }
 
-SeqScanNode::~SeqScanNode()
+IndexScanNode::~IndexScanNode()
 {
 	PDASSERT(!mpTupleIterator);
 }
 
-void SeqScanNode::Reset()
+void IndexScanNode::Reset()
 {
 	PDASSERT(mpTupleIterator);
 	
@@ -54,7 +54,7 @@ void SeqScanNode::Reset()
 	mLastStatus = mpTupleIterator->GetLastError();
 }
 
-bool SeqScanNode::Step()
+bool IndexScanNode::Step()
 {
 	if (!mLastStatus.OK())
 	{
@@ -91,7 +91,7 @@ bool SeqScanNode::Step()
 	return result;
 }
 
-void SeqScanNode::End()
+void IndexScanNode::End()
 {
 	PDASSERT(mpTupleIterator);
 
@@ -99,7 +99,7 @@ void SeqScanNode::End()
 	mpTupleIterator = NULL;
 }
 
-void SeqScanNode::SetupProjection(const TableAndColumnSetMap &inRequiredColumns)
+void IndexScanNode::SetupProjection(const TableAndColumnSetMap &inRequiredColumns)
 {
 	PDASSERT(mProjectionList.empty());
 
@@ -125,7 +125,7 @@ void SeqScanNode::SetupProjection(const TableAndColumnSetMap &inRequiredColumns)
 	std::sort(mProjectionList.begin(), mProjectionList.end());
 }
 
-void SeqScanNode::SetupPredicate_Recursive(const BooleanExpr &inPredicateExpr, Bitmask *io_tableMask)
+void IndexScanNode::SetupPredicate_Recursive(const BooleanExpr &inPredicateExpr, Bitmask *io_tableMask)
 {
 	//The leaf node shouldn't have any table mask set
 	PDASSERT(io_tableMask->IsClear());
