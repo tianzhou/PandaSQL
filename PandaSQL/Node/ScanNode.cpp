@@ -30,14 +30,6 @@ PlanNode(inNodeType, io_pPlanContext)
 ,mRelIndex(inRelIndex)
 ,mpTupleIterator(NULL)
 {
-	const RelNode *pRelNode = mpPlanContext->mRelList[mRelIndex];
-	const Table *pTable = pRelNode->GetTable();
-
-	ColumnDefListToTupleDesc(pTable->GetAllColumns(), &mTupleDesc); 
-
-	mpTupleIterator = mpPlanContext->mpDB->CreateSeqScanIteratorForTable(*pTable, mTupleDesc);
-
-	mLastStatus = mpTupleIterator->GetLastError();
 }
 
 ScanNode::~ScanNode()
@@ -45,10 +37,31 @@ ScanNode::~ScanNode()
 	PDASSERT(!mpTupleIterator);
 }
 
-void ScanNode::Reset()
+void ScanNode::InitTupleIteratorIfNeeded()
 {
-	PDASSERT(mpTupleIterator);
+	if (!mpTupleIterator)
+	{
+		const RelNode *pRelNode = mpPlanContext->mRelList[mRelIndex];
+		const Table *pTable = pRelNode->GetTable();
+
+		ColumnDefListToTupleDesc(pTable->GetAllColumns(), &mTupleDesc); 
+
+		//Ask derived class to create iterator
+		mpTupleIterator = this->CreateScanIterator(pTable);
 	
+		mLastStatus = mpTupleIterator->GetLastError();
+	}
+}
+
+void ScanNode::Reset()
+{	
+	this->InitTupleIteratorIfNeeded();
+
+	if (!mLastStatus.OK())
+	{
+		return;
+	}
+
 	mpTupleIterator->Reset();
 
 	mLastStatus = mpTupleIterator->GetLastError();
@@ -56,6 +69,8 @@ void ScanNode::Reset()
 
 bool ScanNode::Step()
 {
+	this->InitTupleIteratorIfNeeded();
+
 	if (!mLastStatus.OK())
 	{
 		return false;

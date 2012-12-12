@@ -2,6 +2,10 @@
 
 #include "Node/SeqScanNode.h"
 
+#include "Database/DBImpl.h"
+
+#include "Optimizer/Plan/PlanContext.h"
+
 namespace PandaSQL
 {
 
@@ -13,6 +17,11 @@ ScanNode(kNodeSeqScan, io_pPlanContext, inRelIndex)
 
 SeqScanNode::~SeqScanNode()
 {
+}
+
+TupleIterator* SeqScanNode::CreateScanIterator(const Table *pTable)
+{
+	return mpPlanContext->mpDB->CreateSeqScanIteratorForTable(*pTable, mTupleDesc);
 }
 
 }	// PandaSQL

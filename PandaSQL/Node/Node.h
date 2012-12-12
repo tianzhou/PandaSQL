@@ -15,9 +15,12 @@ public:
 	{
 		kNodeUnknown = 0,
 
-		//Plan node
+		//Base node
 		kNodeSeqScan = 1,
-		kNodeNestLoop = 2,
+		kNodeIndexScan = 2,
+
+		//Intermediate node
+		kNodeNestLoop = 10,
 
 		//Object node
 		kNodeRelation = 100,

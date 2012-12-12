@@ -9,6 +9,7 @@ namespace PandaSQL
 {
 
 class RelNode;
+class Table;
 class TupleIterator;
 
 class ScanNode : public PlanNode
@@ -25,6 +26,15 @@ public:
 
 	virtual void SetupProjection(const TableAndColumnSetMap &inRequiredColumns);
 	virtual void SetupPredicate_Recursive(const BooleanExpr &inPredicateExpr, Bitmask *io_tableMask);
+
+protected:
+
+	//TODO: Better interface?
+	virtual TupleIterator* CreateScanIterator(const Table *pTable) = 0;
+
+private:
+
+	void InitTupleIteratorIfNeeded();
 
 protected:
 

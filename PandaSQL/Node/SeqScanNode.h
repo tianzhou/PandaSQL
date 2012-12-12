@@ -24,6 +24,10 @@ public:
 	//virtual void SetupProjection(const TableAndColumnSetMap &inRequiredColumns);
 	//virtual void SetupPredicate_Recursive(const BooleanExpr &inPredicateExpr, Bitmask *io_tableMask);
 
+protected:
+
+	virtual TupleIterator* CreateScanIterator(const Table *pTable);
+
 private:
 
 };
