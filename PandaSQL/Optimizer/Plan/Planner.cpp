@@ -62,6 +62,8 @@ PlanNode* Planner::GeneratePlan()
 
 	if (mPlanContext.mRelList.size() == 1)
 	{
+		joinPath.push_back(0);
+
 		SeqScanNode *seqScanNode = new SeqScanNode(&mPlanContext, 0);
 		newPlanNode = seqScanNode;
 	}
