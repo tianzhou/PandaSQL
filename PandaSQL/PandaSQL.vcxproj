@@ -380,6 +380,7 @@ xcopy /y "3rdParty\berkeleydb\lib\$(Platform)\*.dll" "$(OutDir)"
     <Text Include="ReadMe.txt" />
     <Text Include="select.txt" />
     <Text Include="select_data.txt" />
+    <Text Include="select_index.txt" />
     <Text Include="select_join_2table.txt" />
     <Text Include="select_join_3table.txt" />
     <Text Include="select_where.txt" />

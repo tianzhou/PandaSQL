@@ -408,6 +408,7 @@
     <Text Include="select_where.txt" />
     <Text Include="select_where_join.txt" />
     <Text Include="update.txt" />
+    <Text Include="select_index.txt" />
   </ItemGroup>
   <ItemGroup>
     <Antlr3ParserLexer Include="Parser\SQL.g">
