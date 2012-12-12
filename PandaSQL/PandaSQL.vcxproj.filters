@@ -225,6 +225,9 @@
     <ClCompile Include="Node\IndexScanNode.cpp">
       <Filter>Source Files\Node</Filter>
     </ClCompile>
+    <ClCompile Include="Node\ScanNode.cpp">
+      <Filter>Source Files\Node</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DB.h">
@@ -381,6 +384,9 @@
       <Filter>Source Files\Storage\BerkeleyDB</Filter>
     </ClInclude>
     <ClInclude Include="Node\IndexScanNode.h">
+      <Filter>Source Files\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="Node\ScanNode.h">
       <Filter>Source Files\Node</Filter>
     </ClInclude>
   </ItemGroup>
