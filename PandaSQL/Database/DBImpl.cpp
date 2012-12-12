@@ -767,20 +767,20 @@ Status DBImpl::GetColumnDefFromQualifiedName(const Table::TableRefList &inTableR
 	return result;
 }
 
-TupleIterator* DBImpl::CreateSeqScanIteratorForTable(const Table &inTable, const TupleDesc &inTupleDesc)
+TupleIterator* DBImpl::CreateSeqScanIteratorForTable(const Table &inTable, const TupleDesc &inTupleDesc, const BooleanExpr *inTuplePredicate /*= NULL*/)
 {
 	const ColumnDefList &allColumnList = inTable.GetAllColumns();
 
-	TupleIterator *theIter = mpBackend->CreateSeqScanIterator(inTable.GetName(), inTupleDesc, NULL, (IDBBackend::PayloadPtr)inTable.GetPayload());
+	TupleIterator *theIter = mpBackend->CreateSeqScanIterator(inTable.GetName(), inTupleDesc, inTuplePredicate, (IDBBackend::PayloadPtr)inTable.GetPayload());
 
 	return theIter;
 }
 
-TupleIterator* DBImpl::CreateIndexScanIteratorForTable(const Index &inIndex, const TupleDesc &inTupleDesc)
+TupleIterator* DBImpl::CreateIndexScanIteratorForTable(const Index &inIndex, const TupleDesc &inTupleDesc, const BooleanExpr *inTuplePredicate /*= NULL*/)
 {
 	const UInt32List &columnIndexList = inIndex.GetColumnIndexList();
 
-	TupleIterator *theIter = mpBackend->CreateIndexScanIterator(inIndex.GetIndexName(), columnIndexList, inTupleDesc, NULL, (IDBBackend::PayloadPtr)inIndex.GetPayload());
+	TupleIterator *theIter = mpBackend->CreateIndexScanIterator(inIndex.GetIndexName(), columnIndexList, inTupleDesc, inTuplePredicate, (IDBBackend::PayloadPtr)inIndex.GetPayload());
 
 	return theIter;
 }
