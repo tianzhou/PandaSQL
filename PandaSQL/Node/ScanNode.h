@@ -30,6 +30,7 @@ public:
 protected:
 
 	//TODO: Better interface?
+	//Derive class might return NULL if fail to create
 	virtual TupleIterator* CreateScanIterator(const Table *pTable) = 0;
 
 private:

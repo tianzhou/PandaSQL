@@ -22,7 +22,18 @@ IndexScanNode::~IndexScanNode()
 
 TupleIterator* IndexScanNode::CreateScanIterator(const Table *pTable)
 {
-	return mpPlanContext->mpDB->CreateSeqScanIteratorForTable(*pTable, mTupleDesc);
+	TupleIterator *result = NULL;
+	std::vector<const Index *> indexList;
+
+	mLastStatus = mpPlanContext->mpDB->GetAllIndexesByTableName(pTable->GetName(), &indexList);
+
+	if (mLastStatus.OK())
+	{
+		//TODO: Fetch most appropriate index
+		result = mpPlanContext->mpDB->CreateIndexScanIteratorForTable(*indexList[0], mTupleDesc, mpLocalPredicateExpr);
+	}
+
+	return result;
 }
 
 }	// PandaSQL

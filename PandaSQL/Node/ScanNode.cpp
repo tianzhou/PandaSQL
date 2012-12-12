@@ -39,6 +39,11 @@ ScanNode::~ScanNode()
 
 void ScanNode::InitTupleIteratorIfNeeded()
 {
+	if (!mLastStatus.OK())
+	{
+		return;
+	}
+
 	if (!mpTupleIterator)
 	{
 		const RelNode *pRelNode = mpPlanContext->mRelList[mRelIndex];

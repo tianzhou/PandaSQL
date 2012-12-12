@@ -54,8 +54,8 @@ public:
 
 	Status GetColumnDefFromQualifiedName(const Table::TableRefList &inTableRefList, const ColumnQualifiedName &inQualifiedName, ColumnDef *io_columnDef) const;
 
-	TupleIterator* CreateSeqScanIteratorForTable(const Table &inTable, const TupleDesc &inTupleDesc, const BooleanExpr *inTuplePredicate = NULL);
-	TupleIterator* CreateIndexScanIteratorForTable(const Index &inIndex, const TupleDesc &inTupleDesc, const BooleanExpr *inTuplePredicate = NULL);
+	TupleIterator* CreateSeqScanIteratorForTable(const Table &inTable, const TupleDesc &inTupleDesc, const Expr *inTuplePredicate = NULL);
+	TupleIterator* CreateIndexScanIteratorForTable(const Index &inIndex, const TupleDesc &inTupleDesc, const Expr *inTuplePredicate = NULL);
 
 private:
 

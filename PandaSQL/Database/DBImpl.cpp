@@ -767,7 +767,7 @@ Status DBImpl::GetColumnDefFromQualifiedName(const Table::TableRefList &inTableR
 	return result;
 }
 
-TupleIterator* DBImpl::CreateSeqScanIteratorForTable(const Table &inTable, const TupleDesc &inTupleDesc, const BooleanExpr *inTuplePredicate /*= NULL*/)
+TupleIterator* DBImpl::CreateSeqScanIteratorForTable(const Table &inTable, const TupleDesc &inTupleDesc, const Expr *inTuplePredicate /*= NULL*/)
 {
 	const ColumnDefList &allColumnList = inTable.GetAllColumns();
 
@@ -776,7 +776,7 @@ TupleIterator* DBImpl::CreateSeqScanIteratorForTable(const Table &inTable, const
 	return theIter;
 }
 
-TupleIterator* DBImpl::CreateIndexScanIteratorForTable(const Index &inIndex, const TupleDesc &inTupleDesc, const BooleanExpr *inTuplePredicate /*= NULL*/)
+TupleIterator* DBImpl::CreateIndexScanIteratorForTable(const Index &inIndex, const TupleDesc &inTupleDesc, const Expr *inTuplePredicate /*= NULL*/)
 {
 	const UInt32List &columnIndexList = inIndex.GetColumnIndexList();
 
@@ -830,6 +830,11 @@ Status DBImpl::GetAllIndexesByTableName(const std::string &tableName, std::vecto
 		PDASSERT(index);
 
 		o_indexList->push_back(index);
+	}
+
+	if (o_indexList->size() == 0)
+	{
+		result = Status::kIndexMissing;
 	}
 
 	return result;

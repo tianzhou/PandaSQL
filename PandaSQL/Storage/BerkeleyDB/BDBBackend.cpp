@@ -404,7 +404,7 @@ Status BDBBackend::InsertData(const std::string &tableName, const TupleDesc &tup
 	return result;
 }
 
-TupleIterator* BDBBackend::CreateSeqScanIterator(const std::string &tableName, const TupleDesc &tupleDesc, const BooleanExpr *inTuplePredicate, PayloadPtr payload)
+TupleIterator* BDBBackend::CreateSeqScanIterator(const std::string &tableName, const TupleDesc &tupleDesc, const Expr *inTuplePredicate, PayloadPtr payload)
 {
 	TupleIterator *result = NULL;
 
@@ -415,7 +415,7 @@ TupleIterator* BDBBackend::CreateSeqScanIterator(const std::string &tableName, c
 	return result;
 }
 
-TupleIterator* BDBBackend::CreateIndexScanIterator(const std::string &indexName, const UInt32List &columnIndexList, const TupleDesc &tupleDesc, const BooleanExpr *inTuplePredicate, PayloadPtr payload)
+TupleIterator* BDBBackend::CreateIndexScanIterator(const std::string &indexName, const UInt32List &columnIndexList, const TupleDesc &tupleDesc, const Expr *inTuplePredicate, PayloadPtr payload)
 {
 	TupleIterator *result = NULL;
 

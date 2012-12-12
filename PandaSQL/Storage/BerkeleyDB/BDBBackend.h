@@ -29,8 +29,8 @@ public:
 
 	virtual Status InsertData(const std::string &tableName, const TupleDesc &tupleDesc, const ValueList &tupleValueList, PayloadPtr payload);
 
-	virtual TupleIterator* CreateSeqScanIterator(const std::string &tableName, const TupleDesc &tupleDesc, const BooleanExpr *inTuplePredicate, PayloadPtr payload);
-	virtual TupleIterator* CreateIndexScanIterator(const std::string &indexName, const UInt32List &tupleIndexList, const TupleDesc &tupleDesc, const BooleanExpr *inTuplePredicate, PayloadPtr payload);
+	virtual TupleIterator* CreateSeqScanIterator(const std::string &tableName, const TupleDesc &tupleDesc, const Expr *inTuplePredicate, PayloadPtr payload);
+	virtual TupleIterator* CreateIndexScanIterator(const std::string &indexName, const UInt32List &tupleIndexList, const TupleDesc &tupleDesc, const Expr *inTuplePredicate, PayloadPtr payload);
 
 privileged:
 

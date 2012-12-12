@@ -10,6 +10,7 @@
 #include "Expr/BooleanExpr.h"
 #include "Expr/ExprWalker.h"
 
+#include "Node/IndexScanNode.h"
 #include "Node/NestLoopNode.h"
 #include "Node/PlanNode.h"
 #include "Node/RelNode.h"
@@ -64,7 +65,7 @@ PlanNode* Planner::GeneratePlan()
 	{
 		joinPath.push_back(0);
 
-		SeqScanNode *seqScanNode = new SeqScanNode(&mPlanContext, 0);
+		IndexScanNode *seqScanNode = new IndexScanNode(&mPlanContext, 0);
 		newPlanNode = seqScanNode;
 	}
 	else if (mPlanContext.mRelList.size() > 1)

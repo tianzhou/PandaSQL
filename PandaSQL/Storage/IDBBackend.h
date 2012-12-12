@@ -12,7 +12,7 @@
 namespace PandaSQL
 {
 
-class BooleanExpr;
+class Expr;
 class TupleIterator;
 
 class IDBBackend
@@ -49,8 +49,8 @@ public:
 	virtual Status InsertData(const std::string &tableName, const TupleDesc &tupleDesc, const ValueList &tupleValueList, PayloadPtr tablePayload) = 0;
 
 	//Return NULL if table for tableName is not opened
-	virtual TupleIterator* CreateSeqScanIterator(const std::string &tableName, const TupleDesc &tupleDesc, const BooleanExpr *inTuplePredicate, PayloadPtr payload) = 0;
-	virtual TupleIterator* CreateIndexScanIterator(const std::string &indexName, const UInt32List &tupleIndexList, const TupleDesc &tupleDesc, const BooleanExpr *inTuplePredicate, PayloadPtr payload) = 0;
+	virtual TupleIterator* CreateSeqScanIterator(const std::string &tableName, const TupleDesc &tupleDesc, const Expr *inTuplePredicate, PayloadPtr payload) = 0;
+	virtual TupleIterator* CreateIndexScanIterator(const std::string &indexName, const UInt32List &tupleIndexList, const TupleDesc &tupleDesc, const Expr *inTuplePredicate, PayloadPtr payload) = 0;
 
 protected:
 	IDBBackend(const std::string &inRootPath);
