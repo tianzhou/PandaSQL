@@ -29,8 +29,8 @@ public:
 
 protected:
 
-	//TODO: Better interface?
-	//Derive class might return NULL if fail to create
+	//Derive class might return NULL if fail to create.
+	//In that case, mLastStatus should be set properly
 	virtual TupleIterator* CreateScanIterator(const Table *pTable) = 0;
 
 private:
