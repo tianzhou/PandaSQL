@@ -87,8 +87,8 @@ void StringToTuple(const TupleDesc &desc, const std::string &inString, ValueList
 		o_tupleValueList->push_back(oneValue);
 	}
 
-	//TODO: Check
-	PDASSERT(offset <= inString.length());
+	//Should consume the whole string
+	PDASSERT(offset == inString.length());
 }
 
 
