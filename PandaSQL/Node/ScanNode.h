@@ -31,7 +31,7 @@ protected:
 
 	//Derive class might return NULL if fail to create.
 	//In that case, mLastStatus should be set properly
-	virtual TupleIterator* CreateScanIterator(const Table *pTable) = 0;
+	virtual TupleIterator* CreateScanIterator() = 0;
 
 private:
 

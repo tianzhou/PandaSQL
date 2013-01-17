@@ -52,7 +52,7 @@ void ScanNode::InitTupleIteratorIfNeeded()
 		ColumnDefListToTupleDesc(pTable->GetAllColumns(), &mTupleDesc); 
 
 		//Ask derived class to create iterator, it might return NULL on error
-		mpTupleIterator = this->CreateScanIterator(pTable);
+		mpTupleIterator = this->CreateScanIterator();
 	}
 }
 

@@ -2,6 +2,8 @@
 
 #include "Node/IndexScanNode.h"
 
+#include "Node/RelNode.h"
+
 #include "Database/DBImpl.h"
 
 #include "Optimizer/Plan/PlanContext.h"
@@ -20,10 +22,15 @@ IndexScanNode::~IndexScanNode()
 {
 }
 
-TupleIterator* IndexScanNode::CreateScanIterator(const Table *pTable)
+TupleIterator* IndexScanNode::CreateScanIterator()
 {
 	TupleIterator *result = NULL;
+
+	const RelNode *pRelNode = mpPlanContext->mRelList[mRelIndex];
+	const Table *pTable = pRelNode->GetTable();
+
 	std::vector<const Index *> indexList;
+
 
 	mLastStatus = mpPlanContext->mpDB->GetAllIndexesByTableName(pTable->GetName(), &indexList);
 

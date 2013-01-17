@@ -2,6 +2,8 @@
 
 #include "Node/SeqScanNode.h"
 
+#include "Node/RelNode.h"
+
 #include "Database/DBImpl.h"
 
 #include "Optimizer/Plan/PlanContext.h"
@@ -19,8 +21,11 @@ SeqScanNode::~SeqScanNode()
 {
 }
 
-TupleIterator* SeqScanNode::CreateScanIterator(const Table *pTable)
+TupleIterator* SeqScanNode::CreateScanIterator()
 {
+	const RelNode *pRelNode = mpPlanContext->mRelList[mRelIndex];
+	const Table *pTable = pRelNode->GetTable();
+
 	return mpPlanContext->mpDB->CreateSeqScanIteratorForTable(*pTable, mTupleDesc);
 }
 

@@ -26,7 +26,7 @@ public:
 
 protected:
 
-	virtual TupleIterator* CreateScanIterator(const Table *pTable);
+	virtual TupleIterator* CreateScanIterator();
 
 private:
 
