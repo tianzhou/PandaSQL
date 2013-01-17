@@ -13,7 +13,7 @@ class IndexScanNode : public ScanNode
 
 public:
 
-	IndexScanNode(PlanContext *io_pPlanContext, uint32_t inRelIndex);
+	IndexScanNode(PlanContext *io_pPlanContext, uint32_t inRelIndex, const std::string &inIndexName);
 	virtual ~IndexScanNode();
 
 	//Derived from ScanNode
@@ -30,6 +30,7 @@ protected:
 
 private:
 
+	const std::string mIndexName;
 };
 
 }	// namespace PandaSQL

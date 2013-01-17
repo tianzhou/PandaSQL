@@ -57,6 +57,66 @@ PlanNode* Planner::GeneratePlan()
 		mPlanContext.mRelList.push_back(theRelNode);
 	}
 
+	std::vector<std::string> candidateIndexNameList;
+
+	//Find appropriate index, whereExpr should be in CNF now
+	//e.g. (A AND C) OR (A AND D) OR (B AND C)
+	if (whereExpr)
+	{
+		const BooleanExpr::BooleanList &whereList = whereExpr->GetBooleanList();
+
+		BooleanExpr::BooleanList::const_iterator whereIter = whereList.begin();
+
+		while (whereIter != whereList.end())
+		{
+			TableAndColumnSetMap requiredColumns;
+			DependentColumnListWalker walker(&requiredColumns);
+
+			(*whereIter)->Walk(&walker);
+
+			TableAndColumnSetMap::const_iterator tableColumnIter = requiredColumns.begin();
+
+			while (tableColumnIter != requiredColumns.end())
+			{
+				ColumnNameSet columnNameSet = tableColumnIter->second;
+
+				std::vector<std::string> indexNameList;
+				pDB->GetAllIndexNameByTableName(tableColumnIter->first, &indexNameList);
+
+				const Table *pTable;
+				pDB->GetTableByName(tableColumnIter->first, &pTable);
+				const ColumnDefList &columnDefList = pTable->GetAllColumns();
+
+				std::vector<std::string>::const_iterator indexNameIter = indexNameList.begin();
+
+				while (indexNameIter != indexNameList.end())
+				{
+					const Index *pIndex = NULL;
+
+					pDB->GetIndexByName(*indexNameIter, tableColumnIter->first, &pIndex);
+
+					const UInt32List &columnIndexList = pIndex->GetColumnIndexList();
+				
+					//TODO: For now, we only consider single index
+					if (columnIndexList.size() == 1)
+					{
+						if (columnDefList[columnIndexList[0]].qualifiedName.columnName
+							== *columnNameSet.begin())
+						{
+							candidateIndexNameList.push_back(*indexNameIter); 
+						}
+					}
+
+					indexNameIter++;
+				}
+
+				tableColumnIter++;
+			}
+
+			whereIter++;
+		}
+	}
+
 	//Generate Plan
 	JoinInfoList joinInfoList;
 	JoinPath joinPath;
@@ -65,8 +125,14 @@ PlanNode* Planner::GeneratePlan()
 	{
 		joinPath.push_back(0);
 
-		IndexScanNode *seqScanNode = new IndexScanNode(&mPlanContext, 0);
-		newPlanNode = seqScanNode;
+		if (candidateIndexNameList.size() > 0)
+		{
+			newPlanNode = new IndexScanNode(&mPlanContext, 0, candidateIndexNameList[0]);
+		}
+		else
+		{
+			newPlanNode = new SeqScanNode(&mPlanContext, 0);
+		}		
 	}
 	else if (mPlanContext.mRelList.size() > 1)
 	{
@@ -125,6 +191,7 @@ PlanNode* Planner::GeneratePlan()
 		mPlanContext.mpPredicateExpr->Walk(&walker);
 
 		//Initial mask is clear, which means no table info is available
+		//We populate the mask bottom-up as we encounter base relations
 		Bitmask tableMask(joinPath.size());
 		newPlanNode->SetupPredicate_Recursive(*mPlanContext.mpPredicateExpr, &tableMask);
 	}

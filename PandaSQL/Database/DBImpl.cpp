@@ -813,26 +813,16 @@ Status DBImpl::GetIndexByName(const std::string &indexName, const std::string &t
 	return result;
 }
 
-Status DBImpl::GetAllIndexesByTableName(const std::string &tableName, std::vector<const Index *> *o_indexList) const
+Status DBImpl::GetAllIndexNameByTableName(const std::string &tableName, std::vector<std::string> *o_indexNameList) const
 {
 	Status result;
 
-	o_indexList->clear();
+	o_indexNameList->clear();
 
 	std::vector<std::string> indexNameList;
-	mIndexCatalog.GetIndexNameListForTable(tableName, &indexNameList);
+	mIndexCatalog.GetIndexNameListForTable(tableName, o_indexNameList);
 
-	std::vector<std::string>::const_iterator indexNameIter = indexNameList.begin();
-	for (; indexNameIter != indexNameList.end(); indexNameIter++)
-	{
-		const Index *index = mIndexCatalog.GetIndexByName(*indexNameIter, tableName);
-
-		PDASSERT(index);
-
-		o_indexList->push_back(index);
-	}
-
-	if (o_indexList->size() == 0)
+	if (o_indexNameList->size() == 0)
 	{
 		result = Status::kIndexMissing;
 	}
