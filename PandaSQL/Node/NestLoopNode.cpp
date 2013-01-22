@@ -65,6 +65,11 @@ PlanNode(kNodeNestLoop, io_pPlanContext)
 
 NestLoopNode::~NestLoopNode()
 {
+	delete mpOuterNode;
+	mpOuterNode = NULL;
+
+	delete mpInnerNode;
+	mpInnerNode = NULL;
 }
 
 const PlanNode& NestLoopNode::GetOuterNode() const
@@ -149,6 +154,9 @@ bool NestLoopNode::Step()
 
 void NestLoopNode::End()
 {
+	mpOuterNode->End();
+
+	mpInnerNode->End();
 }
 
 bool NestLoopNode::MatchPredicate() const
