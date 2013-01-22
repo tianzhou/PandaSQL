@@ -813,21 +813,58 @@ Status DBImpl::GetIndexByName(const std::string &indexName, const std::string &t
 	return result;
 }
 
-Status DBImpl::GetAllIndexNameByTableName(const std::string &tableName, std::vector<std::string> *o_indexNameList) const
+void DBImpl::GetIndexByTableColumns(const std::string &tableName, const ColumnNameSet &columnNameSet, const Index **o_index) const
 {
 	Status result;
 
-	o_indexNameList->clear();
-
 	std::vector<std::string> indexNameList;
-	mIndexCatalog.GetIndexNameListForTable(tableName, o_indexNameList);
+	mIndexCatalog.GetIndexNameListForTable(tableName, &indexNameList);
 
-	if (o_indexNameList->size() == 0)
+	const Table *pTable;
+	this->GetTableByName(tableName, &pTable);
+	const ColumnDefList &columnDefList = pTable->GetAllColumns();
+
+	std::vector<std::string>::const_iterator indexNameIter = indexNameList.begin();
+
+	size_t mostIndexMatchedCount = 0;
+
+	//Pick up the best index matching the passed in columns
+	while (indexNameIter != indexNameList.end())
 	{
-		result = Status::kIndexMissing;
-	}
+		const Index *pIndex = mIndexCatalog.GetIndexByName(*indexNameIter, tableName);
 
-	return result;
+		PDASSERT(pIndex);
+
+		const UInt32List &columnIndexList = pIndex->GetColumnIndexList();
+
+		ColumnNameSet::const_iterator columnNameIter = columnNameSet.begin();
+
+		UInt32List::const_iterator columnIndexIter = columnIndexList.begin();
+
+		size_t matchedCount = 0;
+
+		//Try match index as many as possible from left to right
+		while (columnIndexIter != columnIndexList.end())
+		{
+			std::string columnName = columnDefList[*columnIndexIter].qualifiedName.columnName;
+			
+			if (columnNameSet.find(columnName) == columnNameSet.end())
+			{
+				break;
+			}
+
+			matchedCount++;
+			columnIndexIter++;
+		}
+
+		if (matchedCount > mostIndexMatchedCount)
+		{
+			*o_index = pIndex;
+			mostIndexMatchedCount = matchedCount;
+		}
+
+		indexNameIter++;
+	}
 }
 
 Status DBImpl::Close_Private(bool forceClose)

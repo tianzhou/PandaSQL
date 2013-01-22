@@ -94,23 +94,27 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 
 #if 1
-		result = ReadSQLScript("./drop_table.txt", pVFS, &db);
+		//result = ReadSQLScript("./delete.txt", pVFS, &db);
 
-		result = ReadSQLScript("./create_table.txt", pVFS, &db);
+		//result = ReadSQLScript("./drop_table.txt", pVFS, &db);
 
-		result = ReadSQLScript("./insert.txt", pVFS, &db);
+		//result = ReadSQLScript("./create_table.txt", pVFS, &db);
+
+		//result = ReadSQLScript("./insert.txt", pVFS, &db);
 
 		//result = ReadSQLScript("./select.txt", pVFS, &db);
+
+		result = ReadSQLScript("./select_join_2table.txt", pVFS, &db);
 
 		//result = ReadSQLScript("./select_join_3table.txt", pVFS, &db);
 
 		//result = ReadSQLScript("./select_where.txt", pVFS, &db);
 
-		//result = ReadSQLScript("./delete.txt", pVFS, &db);
-
 		//result = ReadSQLScript("./update.txt", pVFS, &db);
 
-		result = ReadSQLScript("./select.txt", pVFS, &db);
+		//result = ReadSQLScript("./select.txt", pVFS, &db);
+
+		result = ReadSQLScript("./select_index.txt", pVFS, &db);
 #else
 
 		inQueryString = ("SELECT t1.field1, t2.field2 FROM t1;");

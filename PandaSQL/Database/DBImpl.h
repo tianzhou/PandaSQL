@@ -46,7 +46,7 @@ public:
 
 	Status GetTableByName(const std::string &tableName, const Table **o_table) const;
 	Status GetIndexByName(const std::string &indexName, const std::string &tableName, const Index **o_index) const;
-	Status GetAllIndexNameByTableName(const std::string &tableName, std::vector<std::string> *o_indexNameList) const;
+	void   GetIndexByTableColumns(const std::string &tableName, const ColumnNameSet &columnNameSet, const Index **o_index) const;
 
 	Table* GetTableByID(uint32_t inTableID) const;
 	uint32_t GetTableIDByName(const std::string &inTableName) const;

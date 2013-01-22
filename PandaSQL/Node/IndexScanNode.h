@@ -8,12 +8,14 @@
 namespace PandaSQL
 {
 
+class Index;
+
 class IndexScanNode : public ScanNode
 {
 
 public:
 
-	IndexScanNode(PlanContext *io_pPlanContext, uint32_t inRelIndex, const std::string &inIndexName);
+	IndexScanNode(PlanContext *io_pPlanContext, uint32_t inRelIndex, const Index &inIndex);
 	virtual ~IndexScanNode();
 
 	//Derived from ScanNode
@@ -30,7 +32,7 @@ protected:
 
 private:
 
-	const std::string mIndexName;
+	const Index &mIndex;
 };
 
 }	// namespace PandaSQL

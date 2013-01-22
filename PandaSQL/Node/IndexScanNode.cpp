@@ -12,10 +12,10 @@
 namespace PandaSQL
 {
 
-IndexScanNode::IndexScanNode(PlanContext *io_pPlanContext, uint32_t inRelIndex, const std::string &inIndexName)
+IndexScanNode::IndexScanNode(PlanContext *io_pPlanContext, uint32_t inRelIndex, const Index &inIndex)
 :
 ScanNode(kNodeIndexScan, io_pPlanContext, inRelIndex)
-,mIndexName(inIndexName)
+,mIndex(inIndex)
 {
 }
 
@@ -27,16 +27,9 @@ TupleIterator* IndexScanNode::CreateScanIterator()
 {
 	TupleIterator *result = NULL;
 
-	const RelNode *pRelNode = mpPlanContext->mRelList[mRelIndex];
-	const Table *pTable = pRelNode->GetTable();
-
-	const Index *pIndex = NULL;
-	mLastStatus = mpPlanContext->mpDB->GetIndexByName(mIndexName, pTable->GetName(), &pIndex);
-
 	if (mLastStatus.OK())
 	{
-		//TODO: Fetch most appropriate index
-		result = mpPlanContext->mpDB->CreateIndexScanIteratorForTable(*pIndex, mTupleDesc, mpLocalPredicateExpr);
+		result = mpPlanContext->mpDB->CreateIndexScanIteratorForTable(mIndex, mTupleDesc, mpLocalPredicateExpr);
 	}
 
 	return result;

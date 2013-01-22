@@ -57,7 +57,7 @@ PlanNode* Planner::GeneratePlan()
 		mPlanContext.mRelList.push_back(theRelNode);
 	}
 
-	std::vector<std::string> candidateIndexNameList;
+	std::map<std::string, const Index*> candidateIndexListForTable;
 
 	//Find appropriate index, whereExpr should be in CNF now
 	//e.g. (A AND C) OR (A AND D) OR (B AND C)
@@ -69,45 +69,23 @@ PlanNode* Planner::GeneratePlan()
 
 		while (whereIter != whereList.end())
 		{
-			TableAndColumnSetMap requiredColumns;
-			DependentColumnListWalker walker(&requiredColumns);
+			TableAndColumnSetMap requiredColumnsForTable;
+			DependentColumnListWalker walker(&requiredColumnsForTable);
 
 			(*whereIter)->Walk(&walker);
 
-			TableAndColumnSetMap::const_iterator tableColumnIter = requiredColumns.begin();
+			TableAndColumnSetMap::const_iterator tableColumnIter = requiredColumnsForTable.begin();
 
-			while (tableColumnIter != requiredColumns.end())
+			while (tableColumnIter != requiredColumnsForTable.end())
 			{
 				ColumnNameSet columnNameSet = tableColumnIter->second;
 
-				std::vector<std::string> indexNameList;
-				pDB->GetAllIndexNameByTableName(tableColumnIter->first, &indexNameList);
+				const Index *pIndex = NULL;
+				pDB->GetIndexByTableColumns(tableColumnIter->first, columnNameSet, &pIndex);
 
-				const Table *pTable;
-				pDB->GetTableByName(tableColumnIter->first, &pTable);
-				const ColumnDefList &columnDefList = pTable->GetAllColumns();
-
-				std::vector<std::string>::const_iterator indexNameIter = indexNameList.begin();
-
-				while (indexNameIter != indexNameList.end())
+				if (pIndex)
 				{
-					const Index *pIndex = NULL;
-
-					pDB->GetIndexByName(*indexNameIter, tableColumnIter->first, &pIndex);
-
-					const UInt32List &columnIndexList = pIndex->GetColumnIndexList();
-				
-					//TODO: For now, we only consider single index
-					if (columnIndexList.size() == 1)
-					{
-						if (columnDefList[columnIndexList[0]].qualifiedName.columnName
-							== *columnNameSet.begin())
-						{
-							candidateIndexNameList.push_back(*indexNameIter); 
-						}
-					}
-
-					indexNameIter++;
+					candidateIndexListForTable[tableColumnIter->first] = pIndex;
 				}
 
 				tableColumnIter++;
@@ -125,34 +103,19 @@ PlanNode* Planner::GeneratePlan()
 	{
 		joinPath.push_back(0);
 
-		if (candidateIndexNameList.size() > 0)
-		{
-			newPlanNode = new IndexScanNode(&mPlanContext, 0, candidateIndexNameList[0]);
-		}
-		else
-		{
-			newPlanNode = new SeqScanNode(&mPlanContext, 0);
-		}		
+		newPlanNode = this->CreateScanNode_Private(0, candidateIndexListForTable);	
 	}
 	else if (mPlanContext.mRelList.size() > 1)
 	{
-		//Setup join order
+		//Setup join order and join type
+
+		//TODO: Join order is fixed and we haven't setup
+		//any join info yet
 		JoinInfo joinInfo;
 
 		for (size_t i = 0; i < mPlanContext.mRelList.size(); i++)
 		{
 			joinPath.push_back(i);
-			
-			//if (i > 0)
-			//{
-			//	GenerateJoinInfo(
-			//		*mPlanContext.mRelList[i-1]
-			//		, *mPlanContext.mRelList[i]
-			//		, *mPlanContext.mpPredicateExpr
-			//		, &joinInfo);
-
-			//	joinInfoList.push_back(joinInfo);
-			//}
 		}
 
 		// Construct left deep tree
@@ -162,13 +125,13 @@ PlanNode* Planner::GeneratePlan()
 		//   B  C  D
 		//  /\ 
 		// E  F
-		PlanNode *outerNode = new SeqScanNode(&mPlanContext, joinPath[0]);
-		PlanNode *innerNode = new SeqScanNode(&mPlanContext, joinPath[1]);	
+		PlanNode *outerNode = this->CreateScanNode_Private(joinPath[0], candidateIndexListForTable);
+		PlanNode *innerNode = this->CreateScanNode_Private(joinPath[1], candidateIndexListForTable);
 
 		for (size_t i = 2; i < joinPath.size(); i++)
 		{
 			outerNode = new NestLoopNode(&mPlanContext, joinInfo, outerNode, innerNode);
-			innerNode = new SeqScanNode(&mPlanContext, joinPath[i]); 		
+			innerNode = this->CreateScanNode_Private(joinPath[i], candidateIndexListForTable); 		
 		}
 
 		newPlanNode = new NestLoopNode(&mPlanContext, joinInfo, outerNode, innerNode);
@@ -201,6 +164,27 @@ PlanNode* Planner::GeneratePlan()
 	newPlanNode->SetResultFunctor(&mPlanContext.mFinalResultFunctor);
 
 	return newPlanNode;
+}
+
+ScanNode* Planner::CreateScanNode_Private(int32_t inBaseRelIndex, const std::map<std::string, const Index*> inCandidateIndexListForTable)
+{
+	ScanNode *scanNode = NULL;
+
+	const RelNode *pRelNode = mPlanContext.mRelList[inBaseRelIndex];
+	const Table *pTable = pRelNode->GetTable();
+
+	std::map<std::string, const Index*>::const_iterator iter = inCandidateIndexListForTable.find(pTable->GetName());
+
+	if (iter == inCandidateIndexListForTable.end())
+	{
+		scanNode = new SeqScanNode(&mPlanContext, inBaseRelIndex);
+	}
+	else
+	{
+		scanNode = new IndexScanNode(&mPlanContext, inBaseRelIndex, *iter->second);
+	}
+
+	return scanNode;
 }
 
 }	// PandaSQL

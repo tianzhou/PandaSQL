@@ -7,7 +7,9 @@ namespace PandaSQL
 {
 
 class DBImpl;
+class Index;
 class PlanNode;
+class ScanNode;
 class Statement;
 
 class Planner
@@ -20,6 +22,8 @@ public:
 	PlanNode* GeneratePlan();
 
 private:
+
+	ScanNode* CreateScanNode_Private(int32_t inRelIndex, const std::map<std::string, const Index*> inCandidateIndexListForTable);
 
 	const Statement &mStatement;
 	PlanContext mPlanContext;
