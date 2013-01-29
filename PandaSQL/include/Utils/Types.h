@@ -4,8 +4,6 @@
 #include <string>
 #include <vector>
 
-#include "PandaSQLDef.h"
-
 namespace PandaSQL
 {
 

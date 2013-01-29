@@ -1,0 +1,3 @@
+SELECT * FROM Master WHERE name = 'Peter';
+
+SELECT * FROM Master;

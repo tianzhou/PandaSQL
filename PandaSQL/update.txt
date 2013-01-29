@@ -1,5 +1,0 @@
-UPDATE Master
-SET name = 'Gau'
-WHERE (master_id = 1 OR master_id > 1)
-AND (master_id = 2 OR master_id > 2)
-;

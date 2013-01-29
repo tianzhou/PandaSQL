@@ -1,6 +1,8 @@
 #ifndef PANDASQL_DB_H
 #define PANDASQL_DB_H
 
+#include "PandaSQLDef.h"
+
 #include "Utils/Status.h"
 #include "Utils/Types.h"
 
@@ -10,7 +12,7 @@ namespace PandaSQL
 class Statement;
 class DBImpl;
 
-class DB
+class PANDASQL_API DB
 {
 public:
 

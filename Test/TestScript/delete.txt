@@ -1,4 +1,4 @@
-DELETE FROM Master where master_id = 2;
+DELETE FROM Master;
 
 --DELETE FROM Detail;
 

@@ -3,6 +3,7 @@
 
 #include <string>
 
+#include "PandaSQLDef.h"
 #include "Utils/Status.h"
 
 namespace PandaSQL
@@ -10,7 +11,7 @@ namespace PandaSQL
 
 class File;
 
-class IVFS
+class PANDASQL_API IVFS
 {
 public:
 

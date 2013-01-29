@@ -25,24 +25,24 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <PlatformToolset>v110</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <PlatformToolset>v110</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <PlatformToolset>v110</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <PlatformToolset>v110</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -98,8 +98,8 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.;3rdParty\antlr\include;3rdParty\berkeleydb\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;PDDEBUG;_XKEYCHECK_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;include;3rdParty\antlr\include;3rdParty\berkeleydb\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>BUILD_LIB;PDDEBUG;WIN32;_DEBUG;_CONSOLE;_XKEYCHECK_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -126,8 +126,8 @@ xcopy /y "3rdParty\berkeleydb\lib\$(Platform)\*.dll" "$(OutDir)"
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.;3rdParty\antlr\include;3rdParty\berkeleydb\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>x64;_DEBUG;_CONSOLE;PDDEBUG;_XKEYCHECK_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;include;3rdParty\antlr\include;3rdParty\berkeleydb\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>BUILD_LIB;PDDEBUG;x64;_DEBUG;_CONSOLE;_XKEYCHECK_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -152,8 +152,8 @@ xcopy /y "3rdParty\berkeleydb\lib\$(Platform)\*.dll" "$(OutDir)"
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>.;3rdParty\antlr\include;3rdParty\berkeleydb\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_XKEYCHECK_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;include;3rdParty\antlr\include;3rdParty\berkeleydb\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>BUILD_LIB;WIN32;NDEBUG;_CONSOLE;_XKEYCHECK_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -182,8 +182,8 @@ xcopy /y "3rdParty\berkeleydb\lib\$(Platform)\*.dll" "$(OutDir)"
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>.;3rdParty\antlr\include;3rdParty\berkeleydb\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>x64;NDEBUG;_CONSOLE;_XKEYCHECK_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;include;3rdParty\antlr\include;3rdParty\berkeleydb\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>BUILD_LIB;x64;NDEBUG;_CONSOLE;_XKEYCHECK_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -209,7 +209,6 @@ xcopy /y "3rdParty\berkeleydb\lib\$(Platform)\*.dll" "$(OutDir)"
     <ClCompile Include="Catalog\Index.cpp" />
     <ClCompile Include="Catalog\IndexCatalog.cpp" />
     <ClCompile Include="DB.cpp" />
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="Node\IndexScanNode.cpp" />
     <ClCompile Include="Node\ScanNode.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -306,15 +305,17 @@ xcopy /y "3rdParty\berkeleydb\lib\$(Platform)\*.dll" "$(OutDir)"
   <ItemGroup>
     <ClInclude Include="Catalog\Index.h" />
     <ClInclude Include="Catalog\IndexCatalog.h" />
-    <ClInclude Include="DB.h" />
+    <ClInclude Include="include\DB.h" />
+    <ClInclude Include="include\PandaSQLDef.h" />
+    <ClInclude Include="include\Utils\Status.h" />
+    <ClInclude Include="include\Utils\Types.h" />
     <ClInclude Include="Node\IndexScanNode.h" />
     <ClInclude Include="Node\ScanNode.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Storage\BerkeleyDB\BDBIndexScanIterator.h" />
     <ClInclude Include="Utils\Bitmask.h" />
     <ClInclude Include="Utils\Common.h" />
     <ClInclude Include="Utils\Debug.h" />
-    <ClInclude Include="utils\Status.h" />
-    <ClInclude Include="Utils\Types.h" />
     <ClInclude Include="Utils\Value.h" />
     <ClInclude Include="Utils\WinUtils.h" />
     <ClInclude Include="Parser\ParserDriver.h" />
@@ -373,19 +374,7 @@ xcopy /y "3rdParty\berkeleydb\lib\$(Platform)\*.dll" "$(OutDir)"
     </Antlr3TreeParser>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="create_table.txt" />
-    <Text Include="delete.txt" />
-    <Text Include="drop_table.txt" />
-    <Text Include="insert.txt" />
-    <Text Include="ReadMe.txt" />
-    <Text Include="select.txt" />
-    <Text Include="select_data.txt" />
-    <Text Include="select_index.txt" />
-    <Text Include="select_join_2table.txt" />
-    <Text Include="select_join_3table.txt" />
-    <Text Include="select_where.txt" />
-    <Text Include="select_where_join.txt" />
-    <Text Include="update.txt" />
+    <ResourceCompile Include="PandaSQL.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

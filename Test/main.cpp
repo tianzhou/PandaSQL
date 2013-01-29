@@ -3,13 +3,16 @@
 
 #include "stdafx.h"
 
+#include <iostream>
+#include <string>
+
 #include "DB.h"
 
-#include "VFS/IVFS.h"
-#include "VFS/File.h"
-
-#include "Utils/Debug.h"
 #include "Utils/Status.h"
+
+#include "../VFS/IVFS.h"
+#include "../VFS/File.h"
+
 
 PandaSQL::Status ReadSQLScript(const char *filePath, PandaSQL::IVFS *io_VFS, PandaSQL::DB *io_db)
 {
@@ -55,8 +58,6 @@ PandaSQL::Status ReadSQLScript(const char *filePath, PandaSQL::IVFS *io_VFS, Pan
 		}
 
 		result = io_VFS->CloseFile(inputFile);
-
-		PDASSERT(result.OK());
 	}
 
 	return result;
@@ -94,27 +95,27 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 
 #if 1
-		//result = ReadSQLScript("./delete.txt", pVFS, &db);
+		//result = ReadSQLScript("TestScriptTestScript/delete.txt", pVFS, &db);
 
-		//result = ReadSQLScript("./drop_table.txt", pVFS, &db);
+		//result = ReadSQLScript("TestScript/drop_table.txt", pVFS, &db);
 
-		//result = ReadSQLScript("./create_table.txt", pVFS, &db);
+		//result = ReadSQLScript("TestScript/create_table.txt", pVFS, &db);
 
-		//result = ReadSQLScript("./insert.txt", pVFS, &db);
+		//result = ReadSQLScript("TestScript/insert.txt", pVFS, &db);
 
-		//result = ReadSQLScript("./select.txt", pVFS, &db);
+		//result = ReadSQLScript("TestScript/select.txt", pVFS, &db);
 
-		result = ReadSQLScript("./select_join_2table.txt", pVFS, &db);
+		result = ReadSQLScript("TestScript/select_join_2table.txt", pVFS, &db);
 
-		//result = ReadSQLScript("./select_join_3table.txt", pVFS, &db);
+		//result = ReadSQLScript("TestScript/select_join_3table.txt", pVFS, &db);
 
-		//result = ReadSQLScript("./select_where.txt", pVFS, &db);
+		//result = ReadSQLScript("TestScript/select_where.txt", pVFS, &db);
 
-		//result = ReadSQLScript("./update.txt", pVFS, &db);
+		//result = ReadSQLScript("TestScript/update.txt", pVFS, &db);
 
-		//result = ReadSQLScript("./select.txt", pVFS, &db);
+		//result = ReadSQLScript("TestScript/select.txt", pVFS, &db);
 
-		result = ReadSQLScript("./select_index.txt", pVFS, &db);
+		//result = ReadSQLScript("TestScript/select_index.txt", pVFS, &db);
 #else
 
 		inQueryString = ("SELECT t1.field1, t2.field2 FROM t1;");

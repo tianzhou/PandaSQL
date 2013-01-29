@@ -70,12 +70,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
+    <Filter Include="Source Files\include">
+      <UniqueIdentifier>{2756b7d2-207b-4a41-a924-ec4e74ae328a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\include\Utils">
+      <UniqueIdentifier>{534b8b1d-aea5-4253-af53-4fc6f173222d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DB.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
@@ -230,9 +233,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DB.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="Utils\Bitmask.h">
       <Filter>Source Files\Utils</Filter>
     </ClInclude>
@@ -240,12 +240,6 @@
       <Filter>Source Files\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Utils\Debug.h">
-      <Filter>Source Files\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\Status.h">
-      <Filter>Source Files\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="Utils\Types.h">
       <Filter>Source Files\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Utils\Value.h">
@@ -389,6 +383,21 @@
     <ClInclude Include="Node\ScanNode.h">
       <Filter>Source Files\Node</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Utils\Status.h">
+      <Filter>Source Files\include\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DB.h">
+      <Filter>Source Files\include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Utils\Types.h">
+      <Filter>Source Files\include\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PandaSQLDef.h">
+      <Filter>Source Files\include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Antlr3TreeParser Include="Parser\SQLSemanticAnalyzer.g">
@@ -396,23 +405,13 @@
     </Antlr3TreeParser>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="create_table.txt" />
-    <Text Include="delete.txt" />
-    <Text Include="drop_table.txt" />
-    <Text Include="insert.txt" />
-    <Text Include="ReadMe.txt" />
-    <Text Include="select.txt" />
-    <Text Include="select_data.txt" />
-    <Text Include="select_join_2table.txt" />
-    <Text Include="select_join_3table.txt" />
-    <Text Include="select_where.txt" />
-    <Text Include="select_where_join.txt" />
-    <Text Include="update.txt" />
-    <Text Include="select_index.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <Antlr3ParserLexer Include="Parser\SQL.g">
       <Filter>Source Files\Parser\antlr\grammar</Filter>
     </Antlr3ParserLexer>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="PandaSQL.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

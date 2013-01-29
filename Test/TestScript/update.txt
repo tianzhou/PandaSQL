@@ -1,0 +1,4 @@
+UPDATE Master
+SET name = 'Gau'
+WHERE master_id = 1 OR master_id = 2
+;
