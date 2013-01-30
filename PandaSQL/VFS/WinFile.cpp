@@ -55,43 +55,43 @@ Status WinFile::Read(File::Offset offset, File::Size amount, void *o_buf, File::
 	return result;
 }
 
-Status WinFile::ReadToDelimiter(File::Offset offset, File::Size amount, const char *delimiter, bool includeDelimiter, void *o_buf, File::Size *o_bytesRead)
-{
-	Status result;
-
-	*o_bytesRead = 0;
-
-	File::Size bytesRead = 0;
-
-	result = this->Read(offset, amount, o_buf, &bytesRead);
-
-	if (result.OK() || result.IsEOF())
-	{
-		//TODO: This one is not optimal, but we have to construct a null terminator
-		//to be used by strstr
-		std::string theStr((const char *)o_buf, bytesRead);
-		const char *pch = strstr(theStr.c_str(), delimiter);
-
-		if (pch)
-		{
-			*o_bytesRead = pch - theStr.c_str();
-
-			if (includeDelimiter)
-			{
-				*o_bytesRead += strlen(delimiter);
-			}
-
-			//We want the next read starts after the separator
-			if (result.IsEOF()
-				&&*o_bytesRead < bytesRead)
-			{
-				result = Status::kOK;
-			}
-		}
-	}
-
-	return result;
-}
+//Status WinFile::ReadToDelimiter(File::Offset offset, File::Size amount, const char *delimiter, bool includeDelimiter, void *o_buf, File::Size *o_bytesRead)
+//{
+//	Status result;
+//
+//	*o_bytesRead = 0;
+//
+//	File::Size bytesRead = 0;
+//
+//	result = this->Read(offset, amount, o_buf, &bytesRead);
+//
+//	if (result.OK() || result.IsEOF())
+//	{
+//		//TODO: This one is not optimal, but we have to construct a null terminator
+//		//to be used by strstr
+//		std::string theStr((const char *)o_buf, bytesRead);
+//		const char *pch = strstr(theStr.c_str(), delimiter);
+//
+//		if (pch)
+//		{
+//			*o_bytesRead = pch - theStr.c_str();
+//
+//			if (includeDelimiter)
+//			{
+//				*o_bytesRead += strlen(delimiter);
+//			}
+//
+//			//We want the next read starts after the separator
+//			if (result.IsEOF()
+//				&&*o_bytesRead < bytesRead)
+//			{
+//				result = Status::kOK;
+//			}
+//		}
+//	}
+//
+//	return result;
+//}
 
 Status WinFile::Write(File::Offset offset, File::Size amount, const void *inBuf, File::Size *o_bytesWritten)
 {

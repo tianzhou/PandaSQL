@@ -50,8 +50,8 @@ enum ConstraintType
 
 enum StorageType
 {
-	kCVS,
-	kBDB
+	kBamboo,
+	kBDB,
 };
 
 extern char *kNewLineSymbol; 

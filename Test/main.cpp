@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 
+#include <fstream>
 #include <iostream>
 #include <string>
 
@@ -10,55 +11,37 @@
 
 #include "Utils/Status.h"
 
-#include "../VFS/IVFS.h"
-#include "../VFS/File.h"
 
-
-PandaSQL::Status ReadSQLScript(const char *filePath, PandaSQL::IVFS *io_VFS, PandaSQL::DB *io_db)
+PandaSQL::Status ReadSQLScript(const char *filePath, PandaSQL::DB *io_db)
 {
 	PandaSQL::Status result;
 
-	PandaSQL::File *inputFile = NULL;
+	std::fstream fileStream;
+	char buf[1025]; //Add Null terminator
 
-	result = io_VFS->OpenFile(filePath, false, &inputFile);
+	fileStream.open(filePath, std::fstream::in);
 
-	if (result.OK())
+	while (fileStream.good())
 	{
-		PandaSQL::File::Offset offset = 0;
-		PandaSQL::File::Size amount = 512;
-		PandaSQL::File::Size o_bytesRead = 0;
-		char buf[513]; //Add Null terminator
+		fileStream.getline(buf, 1024, ';');
 
-		do
+		if (fileStream.good())
 		{
-			result = inputFile->ReadToDelimiter(offset, 512, ";", true, buf, &o_bytesRead);
+			std::string query(buf);
 
-			if (o_bytesRead > 0)
+			//The delim is discarded while parser needs it
+			query += ';';
+
+			result = io_db->Execute(query);
+
+			if (!result.OK())
 			{
-				char *pBuf = buf;
-				pBuf[o_bytesRead] = '\0';
 
-				while (*pBuf == '\n' || *pBuf == '\r')
-				{
-					pBuf++;
-				}
-
-				std::string query(pBuf);
-
-				result = io_db->Execute(query);
 			}
-
-			offset += o_bytesRead;
-
-		}while (result.OK());
-
-		if (result.IsEOF())
-		{
-			result = PandaSQL::Status::kOK;
 		}
-
-		result = io_VFS->CloseFile(inputFile);
 	}
+
+	fileStream.close();
 
 	return result;
 }
@@ -67,8 +50,6 @@ int _tmain(int argc, _TCHAR* argv[])
 {
 	std::string inQueryString;
 	PandaSQL::Status result;
-
-	PandaSQL::IVFS *pVFS = PandaSQL::IVFS::CreateVFS();
 
 	PandaSQL::DB db(PandaSQL::kBDB);
 	PandaSQL::OpenOptions openOptions;
@@ -95,27 +76,27 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 
 #if 1
-		//result = ReadSQLScript("TestScriptTestScript/delete.txt", pVFS, &db);
+		//result = ReadSQLScript("TestScriptTestScript/delete.txt", &db);
 
-		//result = ReadSQLScript("TestScript/drop_table.txt", pVFS, &db);
+		//result = ReadSQLScript("TestScript/drop_table.txt", &db);
 
-		//result = ReadSQLScript("TestScript/create_table.txt", pVFS, &db);
+		//result = ReadSQLScript("TestScript/create_table.txt", &db);
 
-		//result = ReadSQLScript("TestScript/insert.txt", pVFS, &db);
+		//result = ReadSQLScript("TestScript/insert.txt", &db);
 
-		//result = ReadSQLScript("TestScript/select.txt", pVFS, &db);
+		//result = ReadSQLScript("TestScript/select.txt", &db);
 
-		result = ReadSQLScript("TestScript/select_join_2table.txt", pVFS, &db);
+		result = ReadSQLScript("TestScript/select_join_2table.txt", &db);
 
-		//result = ReadSQLScript("TestScript/select_join_3table.txt", pVFS, &db);
+		//result = ReadSQLScript("TestScript/select_join_3table.txt", &db);
 
-		//result = ReadSQLScript("TestScript/select_where.txt", pVFS, &db);
+		//result = ReadSQLScript("TestScript/select_where.txt", &db);
 
-		//result = ReadSQLScript("TestScript/update.txt", pVFS, &db);
+		//result = ReadSQLScript("TestScript/update.txt", &db);
 
-		//result = ReadSQLScript("TestScript/select.txt", pVFS, &db);
+		//result = ReadSQLScript("TestScript/select.txt", &db);
 
-		//result = ReadSQLScript("TestScript/select_index.txt", pVFS, &db);
+		//result = ReadSQLScript("TestScript/select_index.txt", &db);
 #else
 
 		inQueryString = ("SELECT t1.field1, t2.field2 FROM t1;");

@@ -11,7 +11,7 @@ namespace PandaSQL
 
 class File;
 
-class PANDASQL_API IVFS
+class IVFS
 {
 public:
 
