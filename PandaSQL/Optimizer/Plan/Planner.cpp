@@ -115,7 +115,7 @@ PlanNode* Planner::GeneratePlan()
 
 		for (size_t i = 0; i < mPlanContext.mRelList.size(); i++)
 		{
-			joinPath.push_back(i);
+			joinPath.push_back((uint32_t)i);
 		}
 
 		// Construct left deep tree
@@ -166,7 +166,7 @@ PlanNode* Planner::GeneratePlan()
 	return newPlanNode;
 }
 
-ScanNode* Planner::CreateScanNode_Private(int32_t inBaseRelIndex, const std::map<std::string, const Index*> inCandidateIndexListForTable)
+ScanNode* Planner::CreateScanNode_Private(uint32_t inBaseRelIndex, const std::map<std::string, const Index*> inCandidateIndexListForTable)
 {
 	ScanNode *scanNode = NULL;
 

@@ -383,9 +383,6 @@
     <ClInclude Include="Node\ScanNode.h">
       <Filter>Source Files\Node</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\Utils\Status.h">
       <Filter>Source Files\include\Utils</Filter>
     </ClInclude>
@@ -408,10 +405,5 @@
     <Antlr3ParserLexer Include="Parser\SQL.g">
       <Filter>Source Files\Parser\antlr\grammar</Filter>
     </Antlr3ParserLexer>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="PandaSQL.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
   </ItemGroup>
 </Project>

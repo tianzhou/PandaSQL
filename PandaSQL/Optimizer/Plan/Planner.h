@@ -23,7 +23,7 @@ public:
 
 private:
 
-	ScanNode* CreateScanNode_Private(int32_t inRelIndex, const std::map<std::string, const Index*> inCandidateIndexListForTable);
+	ScanNode* CreateScanNode_Private(uint32_t inRelIndex, const std::map<std::string, const Index*> inCandidateIndexListForTable);
 
 	const Statement &mStatement;
 	PlanContext mPlanContext;

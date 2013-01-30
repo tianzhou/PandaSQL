@@ -387,7 +387,7 @@ Status BDBBackend::InsertData(const std::string &tableName, const TupleDesc &tup
 	std::string rowString;
 	TupleToString(tupleDesc, tupleValueList, &rowString);
 	data.data = (void *)rowString.c_str();
-	data.size = rowString.length();
+	data.size = (u_int32_t)rowString.length();
 
 	ret = pTable->put(pTable, NULL, &key, &data, DB_APPEND);
 

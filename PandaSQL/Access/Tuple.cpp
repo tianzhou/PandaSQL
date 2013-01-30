@@ -32,7 +32,7 @@ void StringToTupleElmentOffsetAndLength(const TupleDesc &desc, const std::string
 		{
 			*o_offset = currentElmentOffset;
 
-			size_t length = *(const size_t *)(inString.c_str() + *o_offset);
+			uint32_t length = *(const uint32_t *)(inString.c_str() + *o_offset);
 			*o_offset += sizeof(length);
 			currentElmentOffset += sizeof(length);
 
@@ -58,7 +58,7 @@ void StringToTupleElement(const TupleDescElement &descElement, const std::string
 	{
 		std::string stringValue;
 
-		size_t length = *(const size_t *)(inString.c_str() + *io_offset);
+		uint32_t length = *(const uint32_t *)(inString.c_str() + *io_offset);
 		*io_offset += sizeof(length);
 
 		stringValue.append(inString.c_str() + *io_offset, length);
@@ -74,7 +74,7 @@ void StringToTupleElement(const TupleDescElement &descElement, const std::string
 
 void StringToTuple(const TupleDesc &desc, const std::string &inString, ValueList *o_tupleValueList)
 {
-	size_t offset = 0;
+	uint32_t offset = 0;
 
 	o_tupleValueList->clear();
 
@@ -102,7 +102,7 @@ void TupleElementToString(const TupleDescElement &descElement, const Value &tupl
 	}
 	else if (descElement.mDataType == kText)
 	{
-		size_t length = tupleValue.GetAsString().length();
+		uint32_t length = (uint32_t)tupleValue.GetAsString().length();
 		
 		o_string->append((const char *)&length, sizeof(length));
 

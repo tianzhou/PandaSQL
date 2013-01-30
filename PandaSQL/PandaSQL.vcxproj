@@ -311,7 +311,6 @@ xcopy /y "3rdParty\berkeleydb\lib\$(Platform)\*.dll" "$(OutDir)"
     <ClInclude Include="include\Utils\Types.h" />
     <ClInclude Include="Node\IndexScanNode.h" />
     <ClInclude Include="Node\ScanNode.h" />
-    <ClInclude Include="resource.h" />
     <ClInclude Include="Storage\BerkeleyDB\BDBIndexScanIterator.h" />
     <ClInclude Include="Utils\Bitmask.h" />
     <ClInclude Include="Utils\Common.h" />
@@ -372,9 +371,6 @@ xcopy /y "3rdParty\berkeleydb\lib\$(Platform)\*.dll" "$(OutDir)"
       <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(RootDir)%(Directory)SQL.g;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(RootDir)%(Directory)SQL.g;%(AdditionalDependencies)</AdditionalDependencies>
     </Antlr3TreeParser>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="PandaSQL.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -188,7 +188,7 @@ bool BDBIndexScanIterator::Update(const ValueList &inValueList)
 	std::string rowString;
 	TupleToString(mTupleDesc, inValueList, &rowString);
 	data.data = (void *)rowString.c_str();
-	data.size = rowString.length();
+	data.size = (u_int32_t)rowString.length();
 
 	ret = mpDBCursor->put(mpDBCursor, &key, &data, DB_CURRENT);
 
@@ -273,7 +273,7 @@ bool BDBIndexScanIterator::PutCursor_Private(const ValueList &inValueList, u_int
 	std::string rowString;
 	TupleToString(mTupleDesc, inValueList, &rowString);
 	data.data = (void *)rowString.c_str();
-	data.size = rowString.length();
+	data.size = (u_int32_t)rowString.length();
 
 	ret = mpDBCursor->put(mpDBCursor, &key, &data, flags);
 
