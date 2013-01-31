@@ -1,7 +1,7 @@
 #ifndef PANDASQL_DEF_H
 #define PANDASQL_DEF_H
 
-#ifdef BUILD_LIB
+#ifdef PANDASQL_LIB
 #define PANDASQL_API __declspec( dllexport )
 #else
 #define PANDASQL_API __declspec( dllimport )

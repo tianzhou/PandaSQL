@@ -52,7 +52,7 @@ enum ConstraintType
 
 enum StorageType
 {
-	kCVS,
+	kBamboo,
 	kBDB
 };
 

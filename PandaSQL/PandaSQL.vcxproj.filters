@@ -76,6 +76,9 @@
     <Filter Include="Source Files\include\Utils">
       <UniqueIdentifier>{534b8b1d-aea5-4253-af53-4fc6f173222d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Storage\BambooDB">
+      <UniqueIdentifier>{daf2bb0f-0127-4827-92a2-cfcb75c7d5b3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DB.cpp">
@@ -230,6 +233,9 @@
     </ClCompile>
     <ClCompile Include="Node\ScanNode.cpp">
       <Filter>Source Files\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="Storage\BambooDB\BambooBackend.cpp">
+      <Filter>Source Files\Storage\BambooDB</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -394,6 +400,9 @@
     </ClInclude>
     <ClInclude Include="include\PandaSQLDef.h">
       <Filter>Source Files\include</Filter>
+    </ClInclude>
+    <ClInclude Include="Storage\BambooDB\BambooBackend.h">
+      <Filter>Source Files\Storage\BambooDB</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

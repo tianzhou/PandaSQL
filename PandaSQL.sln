@@ -2,11 +2,16 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PandaSQL", "PandaSQL\PandaSQL.vcxproj", "{E216E88F-A604-43F3-8DD1-3A6EDDFCF18E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D910A8F7-50CE-48D8-8AF6-9CB9B3A16E84} = {D910A8F7-50CE-48D8-8AF6-9CB9B3A16E84}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test", "Test\Test.vcxproj", "{D41F336E-9071-4AEA-B2A7-B22C8480C1BC}"
 	ProjectSection(ProjectDependencies) = postProject
 		{E216E88F-A604-43F3-8DD1-3A6EDDFCF18E} = {E216E88F-A604-43F3-8DD1-3A6EDDFCF18E}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BambooDB", "PandaSQL\Storage\BambooDB\BambooDB\BambooDB.vcxproj", "{D910A8F7-50CE-48D8-8AF6-9CB9B3A16E84}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +37,14 @@ Global
 		{D41F336E-9071-4AEA-B2A7-B22C8480C1BC}.Release|Win32.Build.0 = Release|Win32
 		{D41F336E-9071-4AEA-B2A7-B22C8480C1BC}.Release|x64.ActiveCfg = Release|x64
 		{D41F336E-9071-4AEA-B2A7-B22C8480C1BC}.Release|x64.Build.0 = Release|x64
+		{D910A8F7-50CE-48D8-8AF6-9CB9B3A16E84}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D910A8F7-50CE-48D8-8AF6-9CB9B3A16E84}.Debug|Win32.Build.0 = Debug|Win32
+		{D910A8F7-50CE-48D8-8AF6-9CB9B3A16E84}.Debug|x64.ActiveCfg = Debug|x64
+		{D910A8F7-50CE-48D8-8AF6-9CB9B3A16E84}.Debug|x64.Build.0 = Debug|x64
+		{D910A8F7-50CE-48D8-8AF6-9CB9B3A16E84}.Release|Win32.ActiveCfg = Release|Win32
+		{D910A8F7-50CE-48D8-8AF6-9CB9B3A16E84}.Release|Win32.Build.0 = Release|Win32
+		{D910A8F7-50CE-48D8-8AF6-9CB9B3A16E84}.Release|x64.ActiveCfg = Release|x64
+		{D910A8F7-50CE-48D8-8AF6-9CB9B3A16E84}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -2,6 +2,7 @@
 
 #include "Storage/IDBBackend.h"
 
+#include "Storage/BambooDB/BambooBackend.h"
 #include "Storage/BerkeleyDB/BDBBackend.h"
 
 namespace PandaSQL
@@ -13,8 +14,8 @@ IDBBackend *IDBBackend::CreateBackend(const std::string &inRootPath, StorageType
 
 	switch (inType)
 	{
-	case kCVS:
-		//result = new CVSStorage(io_VFS, inDBRootPath);
+	case kBamboo:
+		result = new BambooBackend(inRootPath);
 		break;
 	case kBDB:
 		result = new BDBBackend(inRootPath);
