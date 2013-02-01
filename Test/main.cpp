@@ -51,8 +51,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	std::string inQueryString;
 	PandaSQL::Status result;
 
-	PandaSQL::DB db(PandaSQL::kBamboo);
-	//PandaSQL::DB db(PandaSQL::kBDB);
+	//PandaSQL::DB db(PandaSQL::kBamboo);
+	PandaSQL::DB db(PandaSQL::kBDB);
 	PandaSQL::OpenOptions openOptions;
 	openOptions.create_if_missing = true;
 	result = db.Open("C:\\Users\\Tianzhou\\Desktop\\PD_Data\\testDB\\BDB", openOptions);
