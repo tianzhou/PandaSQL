@@ -208,7 +208,7 @@ xcopy /y "Storage\BambooDB\BambooDB\lib\$(Platform)\*.dll" "$(OutDir)"</Command>
   <ItemGroup>
     <ClCompile Include="Catalog\Index.cpp" />
     <ClCompile Include="Catalog\IndexCatalog.cpp" />
-    <ClCompile Include="DB.cpp" />
+    <ClCompile Include="Database\DB.cpp" />
     <ClCompile Include="Node\IndexScanNode.cpp" />
     <ClCompile Include="Node\ScanNode.cpp" />
     <ClCompile Include="stdafx.cpp">

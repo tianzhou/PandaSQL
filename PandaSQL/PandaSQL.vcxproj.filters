@@ -81,9 +81,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DB.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -236,6 +233,9 @@
     </ClCompile>
     <ClCompile Include="Storage\BambooDB\BambooBackend.cpp">
       <Filter>Source Files\Storage\BambooDB</Filter>
+    </ClCompile>
+    <ClCompile Include="Database\DB.cpp">
+      <Filter>Source Files\Database</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
